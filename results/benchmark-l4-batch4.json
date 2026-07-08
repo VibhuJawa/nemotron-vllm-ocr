@@ -1,0 +1,159 @@
+{
+  "benchmark": "nemotron-ocr-v2-direct-vs-vllm",
+  "images": [
+    "/home/vjawa/nemotron-vllm-ocr/examples/sample_invoice.png",
+    "/home/vjawa/nemotron-vllm-ocr/examples/sample_invoice.png",
+    "/home/vjawa/nemotron-vllm-ocr/examples/sample_invoice.png",
+    "/home/vjawa/nemotron-vllm-ocr/examples/sample_invoice.png"
+  ],
+  "direct": {
+    "backend": "direct",
+    "image_count": 4,
+    "warmup": 1,
+    "iterations": 3,
+    "init_seconds": 1.6994359917007387,
+    "latencies_seconds": [
+      0.25626944098621607,
+      0.2537782993167639,
+      0.2543506510555744
+    ],
+    "latency_mean_seconds": 0.2547994637861848,
+    "latency_p50_seconds": 0.2543506510555744,
+    "latency_min_seconds": 0.2537782993167639,
+    "latency_max_seconds": 0.25626944098621607,
+    "throughput_images_per_second": 15.698620164117001,
+    "region_counts": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "text_signature": [
+      "NEMOTRON OCR V2 vLLM plugin integration benchmark OCR vLLM Invoice total: $42.19 Status: verified direct vs vLLM output Batch size: 4 sample pages",
+      "NEMOTRON OCR V2 vLLM plugin integration benchmark OCR vLLM Invoice total: $42.19 Status: verified direct vs vLLM output Batch size: 4 sample pages",
+      "NEMOTRON OCR V2 vLLM plugin integration benchmark OCR vLLM Invoice total: $42.19 Status: verified direct vs vLLM output Batch size: 4 sample pages",
+      "NEMOTRON OCR V2 vLLM plugin integration benchmark OCR vLLM Invoice total: $42.19 Status: verified direct vs vLLM output Batch size: 4 sample pages"
+    ],
+    "sample_regions": [
+      {
+        "text": "NEMOTRON OCR V2",
+        "confidence": 0.9312800222388172,
+        "left": 0.050809621810913086,
+        "upper": 0.1273827588116681,
+        "right": 0.48376747767130535,
+        "lower": 0.036148219638400605
+      },
+      {
+        "text": "vLLM plugin integration benchmark",
+        "confidence": 0.937815830553561,
+        "left": 0.05077977180480957,
+        "upper": 0.3279069123444734,
+        "right": 0.6789597829182943,
+        "lower": 0.25760712800202545
+      },
+      {
+        "text": "OCR vLLM",
+        "confidence": 0.9282478722960965,
+        "left": 0.7506834030151367,
+        "upper": 0.5392505221896702,
+        "right": 0.8636359532674154,
+        "lower": 0.3384725500036169
+      },
+      {
+        "text": "Invoice total: $42.19 Status: verified direct vs vLLM output Batch size: 4 sample pages",
+        "confidence": 0.9339654385064554,
+        "left": 0.049190954367319746,
+        "upper": 0.7409600717050058,
+        "right": 0.6748440424601237,
+        "lower": 0.38763741387261286
+      }
+    ],
+    "environment": {
+      "python": "3.12.13",
+      "platform": "Linux-6.17.0-1017-aws-x86_64-with-glibc2.39",
+      "torch": "2.11.0+cu130",
+      "cuda_available": true,
+      "gpu": "NVIDIA L4",
+      "cuda_device_count": 1,
+      "vllm": "0.24.0"
+    }
+  },
+  "vllm": {
+    "backend": "vllm",
+    "image_count": 4,
+    "warmup": 1,
+    "iterations": 3,
+    "init_seconds": 2.8566672527231276,
+    "latencies_seconds": [
+      2.390506344847381,
+      0.25773152988404036,
+      3.5666767861694098
+    ],
+    "latency_mean_seconds": 2.0716382203002772,
+    "latency_p50_seconds": 2.390506344847381,
+    "latency_min_seconds": 0.25773152988404036,
+    "latency_max_seconds": 3.5666767861694098,
+    "throughput_images_per_second": 1.9308390629229717,
+    "region_counts": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "text_signature": [
+      "NEMOTRON OCR V2 vLLM plugin integration benchmark OCR vLLM Invoice total: $42.19 Status: verified direct vs vLLM output Batch size: 4 sample pages",
+      "NEMOTRON OCR V2 vLLM plugin integration benchmark OCR vLLM Invoice total: $42.19 Status: verified direct vs vLLM output Batch size: 4 sample pages",
+      "NEMOTRON OCR V2 vLLM plugin integration benchmark OCR vLLM Invoice total: $42.19 Status: verified direct vs vLLM output Batch size: 4 sample pages",
+      "NEMOTRON OCR V2 vLLM plugin integration benchmark OCR vLLM Invoice total: $42.19 Status: verified direct vs vLLM output Batch size: 4 sample pages"
+    ],
+    "sample_regions": [
+      {
+        "text": "NEMOTRON OCR V2",
+        "confidence": 0.9312112357502974,
+        "left": 0.0507485826810201,
+        "upper": 0.12738284358271845,
+        "right": 0.48376747767130535,
+        "lower": 0.03614365613019025
+      },
+      {
+        "text": "vLLM plugin integration benchmark",
+        "confidence": 0.9381043523172768,
+        "left": 0.05058307647705078,
+        "upper": 0.32870582297996237,
+        "right": 0.6786678314208985,
+        "lower": 0.25576296205873844
+      },
+      {
+        "text": "OCR vLLM",
+        "confidence": 0.928271738675823,
+        "left": 0.7506834030151367,
+        "upper": 0.5392505221896702,
+        "right": 0.8636210123697917,
+        "lower": 0.3384726065176505
+      },
+      {
+        "text": "Invoice total: $42.19 Status: verified direct vs vLLM output Batch size: 4 sample pages",
+        "confidence": 0.9339348582208328,
+        "left": 0.049190954367319746,
+        "upper": 0.7409600151909722,
+        "right": 0.6747117360432943,
+        "lower": 0.38762984099211517
+      }
+    ],
+    "environment": {
+      "python": "3.12.13",
+      "platform": "Linux-6.17.0-1017-aws-x86_64-with-glibc2.39",
+      "torch": "2.11.0+cu130",
+      "cuda_available": true,
+      "gpu": "NVIDIA L4",
+      "cuda_device_count": 1,
+      "vllm": "0.24.0"
+    }
+  },
+  "comparison": {
+    "texts_match": true,
+    "region_counts_match": true,
+    "vllm_latency_over_direct": 8.130465384490348,
+    "vllm_init_over_direct": 1.6809501897534078
+  }
+}

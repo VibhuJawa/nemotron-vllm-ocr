@@ -1,0 +1,13 @@
+{
+  "architectures": ["NemotronOCRVllmForPooling"],
+  "model_type": "bert",
+  "io_processor_plugin": "nemotron_ocr_v2_io",
+  "nemotron_ocr_lang": "multi",
+  "nemotron_ocr_merge_level": "paragraph",
+  "torch_dtype": "float32",
+  "vocab_size": 512,
+  "hidden_size": 512,
+  "num_hidden_layers": 1,
+  "num_attention_heads": 1,
+  "max_position_embeddings": 4096
+}

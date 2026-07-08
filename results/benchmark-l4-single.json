@@ -1,0 +1,144 @@
+{
+  "benchmark": "nemotron-ocr-v2-direct-vs-vllm",
+  "images": [
+    "/home/vjawa/nemotron-vllm-ocr/examples/sample_invoice.png"
+  ],
+  "direct": {
+    "backend": "direct",
+    "image_count": 1,
+    "warmup": 1,
+    "iterations": 3,
+    "init_seconds": 1.725307506043464,
+    "latencies_seconds": [
+      0.10429019294679165,
+      0.10807626182213426,
+      0.1073592770844698
+    ],
+    "latency_mean_seconds": 0.1065752439511319,
+    "latency_p50_seconds": 0.1073592770844698,
+    "latency_min_seconds": 0.10429019294679165,
+    "latency_max_seconds": 0.10807626182213426,
+    "throughput_images_per_second": 9.383042092388092,
+    "region_counts": [
+      4
+    ],
+    "text_signature": [
+      "NEMOTRON OCR V2 vLLM plugin integration benchmark OCR vLLM Invoice total: $42.19 Status: verified direct vs vLLM output Batch size: 4 sample pages"
+    ],
+    "sample_regions": [
+      {
+        "text": "NEMOTRON OCR V2",
+        "confidence": 0.931255592009827,
+        "left": 0.0507485826810201,
+        "upper": 0.12738284358271845,
+        "right": 0.48376747767130535,
+        "lower": 0.03614365613019025
+      },
+      {
+        "text": "vLLM plugin integration benchmark",
+        "confidence": 0.9380676594825431,
+        "left": 0.05058307647705078,
+        "upper": 0.32870582297996237,
+        "right": 0.6786678314208985,
+        "lower": 0.25576296205873844
+      },
+      {
+        "text": "OCR vLLM",
+        "confidence": 0.9282938379429575,
+        "left": 0.7506834030151367,
+        "upper": 0.5392505221896702,
+        "right": 0.8636210123697917,
+        "lower": 0.3384726065176505
+      },
+      {
+        "text": "Invoice total: $42.19 Status: verified direct vs vLLM output Batch size: 4 sample pages",
+        "confidence": 0.9339240050038023,
+        "left": 0.049190954367319746,
+        "upper": 0.7409600151909722,
+        "right": 0.6747117360432943,
+        "lower": 0.38762984099211517
+      }
+    ],
+    "environment": {
+      "python": "3.12.13",
+      "platform": "Linux-6.17.0-1017-aws-x86_64-with-glibc2.39",
+      "torch": "2.11.0+cu130",
+      "cuda_available": true,
+      "gpu": "NVIDIA L4",
+      "cuda_device_count": 1,
+      "vllm": "0.24.0"
+    }
+  },
+  "vllm": {
+    "backend": "vllm",
+    "image_count": 1,
+    "warmup": 1,
+    "iterations": 3,
+    "init_seconds": 2.9088556580245495,
+    "latencies_seconds": [
+      0.10701752500608563,
+      0.11034913407638669,
+      0.10962072992697358
+    ],
+    "latency_mean_seconds": 0.10899579633648197,
+    "latency_p50_seconds": 0.10962072992697358,
+    "latency_min_seconds": 0.10701752500608563,
+    "latency_max_seconds": 0.11034913407638669,
+    "throughput_images_per_second": 9.174665754199275,
+    "region_counts": [
+      4
+    ],
+    "text_signature": [
+      "NEMOTRON OCR V2 vLLM plugin integration benchmark OCR vLLM Invoice total: $42.19 Status: verified direct vs vLLM output Batch size: 4 sample pages"
+    ],
+    "sample_regions": [
+      {
+        "text": "NEMOTRON OCR V2",
+        "confidence": 0.9312112357502974,
+        "left": 0.0507485826810201,
+        "upper": 0.12738284358271845,
+        "right": 0.48376747767130535,
+        "lower": 0.03614365613019025
+      },
+      {
+        "text": "vLLM plugin integration benchmark",
+        "confidence": 0.9381043523172768,
+        "left": 0.05058307647705078,
+        "upper": 0.32870582297996237,
+        "right": 0.6786678314208985,
+        "lower": 0.25576296205873844
+      },
+      {
+        "text": "OCR vLLM",
+        "confidence": 0.928271738675823,
+        "left": 0.7506834030151367,
+        "upper": 0.5392505221896702,
+        "right": 0.8636210123697917,
+        "lower": 0.3384726065176505
+      },
+      {
+        "text": "Invoice total: $42.19 Status: verified direct vs vLLM output Batch size: 4 sample pages",
+        "confidence": 0.9339348582208328,
+        "left": 0.049190954367319746,
+        "upper": 0.7409600151909722,
+        "right": 0.6747117360432943,
+        "lower": 0.38762984099211517
+      }
+    ],
+    "environment": {
+      "python": "3.12.13",
+      "platform": "Linux-6.17.0-1017-aws-x86_64-with-glibc2.39",
+      "torch": "2.11.0+cu130",
+      "cuda_available": true,
+      "gpu": "NVIDIA L4",
+      "cuda_device_count": 1,
+      "vllm": "0.24.0"
+    }
+  },
+  "comparison": {
+    "texts_match": true,
+    "region_counts_match": true,
+    "vllm_latency_over_direct": 1.02271214491857,
+    "vllm_init_over_direct": 1.6859925826760238
+  }
+}

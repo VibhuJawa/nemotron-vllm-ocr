@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nemotron-vllm-ocr"
+version = "0.1.0"
+description = "vLLM pooling/plugin wrapper for NVIDIA Nemotron OCR V2"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+dependencies = [
+  "vllm>=0.24.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "ipykernel>=6",
+  "pytest>=8",
+]
+
+[project.entry-points."vllm.general_plugins"]
+nemotron_ocr_vllm = "nemotron_ocr_vllm.plugin:register"
+
+[project.entry-points."vllm.io_processor_plugins"]
+nemotron_ocr_v2_io = "nemotron_ocr_vllm.io_processor:get_io_processor_class"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nemotron_ocr_vllm"]
