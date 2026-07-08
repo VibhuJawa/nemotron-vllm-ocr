@@ -16,6 +16,10 @@ def main() -> None:
         default=str(Path(__file__).resolve().parent / "model-config"),
         help="Path to the tiny vLLM wrapper model config.",
     )
+    parser.add_argument(
+        "--output",
+        help="Optional path for writing the OCR JSON payload. Useful because vLLM logs may share stdout.",
+    )
     args = parser.parse_args()
 
     llm = LLM(
@@ -34,7 +38,12 @@ def main() -> None:
         pooling_task="plugin",
         use_tqdm=False,
     )
-    print(json.dumps(outputs[0].outputs, ensure_ascii=False, indent=2))
+    payload = json.dumps(outputs[0].outputs, ensure_ascii=False, indent=2)
+    if args.output:
+        output_path = Path(args.output)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(payload + "\n")
+    print(payload)
 
 
 if __name__ == "__main__":

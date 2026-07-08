@@ -77,6 +77,13 @@ Run the vLLM-backed OCR path:
 python run_vllm_ocr.py examples/sample_invoice.png
 ```
 
+For scripts or notebooks, prefer writing JSON to a file so vLLM logs cannot
+interleave with the payload:
+
+```bash
+python run_vllm_ocr.py examples/sample_invoice.png --output results/ocr.json
+```
+
 Run two images in one vLLM plugin call:
 
 ```bash
