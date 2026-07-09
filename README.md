@@ -15,6 +15,28 @@ comes from native request queues, continuous batching, CPU/GPU overlap, and
 enough concurrent replicas to fill pipeline gaps that are visible in a single
 in-process call.
 
+## Optimized source code and pull requests
+
+The benchmarked implementation is split at the correct ownership boundary:
+
+- **vLLM integration and serving path:**
+  [`VibhuJawa/vllm#1`](https://github.com/VibhuJawa/vllm/pull/1), pinned at
+  [`267b6f6d6`](https://github.com/VibhuJawa/vllm/commit/267b6f6d6aecf5e33d82f549941f9ee486e29ab1).
+  This contains the native pooling model and I/O plugin, JPEG-byte ingestion,
+  vLLM queue/sweep tooling, benchmark drivers, tests, and A100 report.
+- **Nemotron OCR model and CUDA optimizations:**
+  [`nvidia/nemotron-ocr-v2` PR #8](https://huggingface.co/nvidia/nemotron-ocr-v2/discussions/8),
+  pinned at
+  [`bb392d4`](https://huggingface.co/nvidia/nemotron-ocr-v2/commit/bb392d494b616d3a1692c3dbe59f63c1d2a8a7fa).
+  This contains current-stream CUDA launches, reduced GPU synchronization,
+  relational staging, fused OpenAI Triton decoding, and regression tests.
+- **Results and telemetry:**
+  [`results/a100-2026-07-08/`](results/a100-2026-07-08/README.md) contains the
+  raw JSON/CSV traces, exact 1,000-page manifest, provenance, and final charts.
+
+Until both pull requests merge, use the pinned commits above for an exact
+reproduction rather than the repositories' default branches.
+
 ## A100 headline
 
 The throughput-tuned native vLLM deployment reaches **70.12 images/s** on one
