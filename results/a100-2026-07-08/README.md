@@ -8,14 +8,18 @@ This report includes only `infer_length=1024` throughput artifacts. Headline res
 - Native vLLM serving scales from **44.72** at one replica to **65.49 images/s** at eight replicas (**1.46×**) on the separate 1K-unique JPEG workload.
 - The 512-document settings sweeps peak at `max_num_seqs=64` (**46.21 images/s**), renderer workers=4 (**46.21 images/s**), and detector batch=16 (**47.69 images/s**).
 - **HF baseline pending.** No HF throughput value is inferred, copied from a different resolution, or otherwise fabricated. Add its result path to `configs/ocr_benchmark_report.json` (or pass `--hf-baseline-json`) after the 1024-resolution 1K-unique run completes.
-- The latest work-conserving native serving run reaches **69.09 images/s** over
-  10,000 timed requests (1,000 unique JPEG images × 10 replays), with
-  10,000/10,000 successful responses, **99.37%** average GPU utilization, and
-  **388.72 W** average GPU power. This is an interim result, not a claim that the
-  70 images/s target has been crossed.
+- The final long work-conserving native serving run reaches **70.12 images/s**
+  over 30,000 timed requests (1,000 unique JPEG images × 30 replays), with
+  30,000/30,000 successful responses, **99.74%** average GPU utilization, and
+  **393.17 W** average GPU power. This crosses the 70 images/s target without
+  changing `infer_length=1024`.
 - The earlier fixed-shard sustained replay run is **68.62 images/s**. The
   work-conserving dispatcher removes slow-shard tail imbalance while each vLLM
   replica retains its native queue and continuous batching.
+- The rec128 conservative profile completed the same 30K workload at
+  **69.54 images/s**. Rec64 remains labeled as the throughput profile because
+  its batching-quality impact is not separable from observed run-to-run OCR
+  nondeterminism with the current 32-image diagnostic.
 - **GPU-active comparison pending.** The generator will not draw the three-run chart until every measured result and raw trace is present.
 
 ## Baseline vs optimized
@@ -50,16 +54,16 @@ The 8-replica point also changes detector batch from 8 to 16, so this is a deplo
 
 | Metric | Result |
 |---|---:|
-| Completed requests | 10,000 / 10,000 |
-| Aggregate throughput | **69.09 images/s** |
-| Timed duration | 144.73 s |
+| Completed requests | 30,000 / 30,000 |
+| Aggregate throughput | **70.12 images/s** |
+| Timed duration | 427.86 s |
 | Unique documents | 1,000 JPEG Q100 4:4:4 images |
-| Replays | 10× |
+| Replays | 30× |
 | vLLM replicas | 8 |
 | Concurrency per replica | 128 |
-| Average / maximum GPU utilization | 99.37% / 100% |
-| Average / maximum GPU power | 388.72 W / 444.38 W |
-| Peak observed GPU memory | 68,543 MiB |
+| Average / maximum GPU utilization | 99.74% / 100% |
+| Average / maximum GPU power | 393.17 W / 446.51 W |
+| Peak observed GPU memory | 67,555 MiB |
 
 This run uses a client-side, work-conserving dispatcher that sends the next
 request to whichever native vLLM `/pooling` replica becomes free. It introduces
@@ -67,8 +71,9 @@ no intermediate HTTP proxy. Global dispatch prevents a statically assigned slow
 shard from determining the whole run, while vLLM remains responsible for the
 queue and batching inside every replica.
 
-Artifacts: [`native-r8-dynamic-10k.json`](native-r8-dynamic-10k.json) and
-[`native-r8-dynamic-10k-gpu-trace.csv`](native-r8-dynamic-10k-gpu-trace.csv).
+Artifacts: [`optimized-vllm-r8-rec64-30k.json`](optimized-vllm-r8-rec64-30k.json)
+and
+[`optimized-vllm-r8-rec64-30k-gpu-trace.csv`](optimized-vllm-r8-rec64-30k-gpu-trace.csv).
 Exact settings, hardware, source state, hashes, and pending items are recorded
 in [`run-metadata.json`](run-metadata.json).
 

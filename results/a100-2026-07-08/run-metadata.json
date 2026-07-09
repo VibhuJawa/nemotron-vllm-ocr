@@ -9,8 +9,8 @@
   },
   "workload": {
     "unique_document_images": 1000,
-    "timed_requests": 10000,
-    "replay_count": 10,
+    "timed_requests": 30000,
+    "replay_count": 30,
     "payload": "base64 JPEG bytes in JSON data URI",
     "jpeg_quality": 100,
     "jpeg_subsampling": "4:4:4",
@@ -25,30 +25,30 @@
     "max_num_seqs_per_replica": 64,
     "renderer_workers_per_replica": 4,
     "detector_max_batch_size": 16,
-    "recognizer_chunk_size": 128,
+    "recognizer_chunk_size": 64,
     "relational_chunk_size": 128,
     "client_concurrency_per_replica": 128,
     "dispatcher": "client-side work-conserving queue",
     "uvicorn_access_log": false
   },
   "result": {
-    "completed": 10000,
+    "completed": 30000,
     "failed": 0,
-    "elapsed_seconds": 144.7312108911574,
-    "images_per_second": 69.09359728580125,
-    "gpu_utilization_avg_pct": 99.36734693877551,
+    "elapsed_seconds": 427.8647627606988,
+    "images_per_second": 70.11561271470899,
+    "gpu_utilization_avg_pct": 99.74449594438006,
     "gpu_utilization_max_pct": 100.0,
-    "gpu_power_avg_w": 388.7236904761905,
-    "gpu_power_max_w": 444.38,
-    "gpu_memory_used_max_mib": 68543.0
+    "gpu_power_avg_w": 393.16866164542296,
+    "gpu_power_max_w": 446.51,
+    "gpu_memory_used_max_mib": 67555.0
   },
   "source_provenance": {
     "vllm_base_commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
     "vllm_working_tree_optimizations_pending_publication": true,
     "nemotron_ocr_base_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
     "nemotron_ocr_working_tree_optimizations_pending_publication": true,
-    "result_sha256": "b142ba4099e4d6d2c3a8e366ae3888280a479e963f1a4a784680dd6638d1afac",
-    "gpu_trace_sha256": "65bd0593d5ae67ba7f4e50d6eacc717a0f2a6fbb9ffd22c41f28ead9b05bc28b"
+    "result_sha256": "a77abaa9afb2fb5a4b5753489f3e9d008f7f39dda42bd0ac2545fb906a55972c",
+    "gpu_trace_sha256": "b6ca419d6ec188e8a867aa8ec8a2be17b32eb7255a95ee913a0534a80549dd32"
   },
   "accuracy_gate": {
     "images": 32,
