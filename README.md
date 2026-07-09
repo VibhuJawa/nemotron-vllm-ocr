@@ -36,6 +36,27 @@ The clean official NVIDIA/Hugging Face comparison is being measured on the
 same JPEG corpus. It remains explicitly pending until that run completes; no
 model-card value or different workload is substituted.
 
+### Live HF in-process baseline snapshot
+
+The isolated 30K HF run is in progress. The following values are a labeled
+midpoint snapshot and will be replaced by the final artifact:
+
+| Metric | HF live snapshot | Optimized vLLM final |
+| --- | ---: | ---: |
+| Throughput | 31.74 images/s on 512-image tuning run | **70.12 images/s** |
+| Average GPU utilization | 50.66% | **99.74%** |
+| Median GPU utilization | 46% | ~100% |
+| Samples at ≥90% utilization | 38.98% | nearly continuous |
+| Average GPU power | 234.99 W | 393.17 W |
+| Maximum GPU power | 425.29 W | 446.51 W |
+| Peak GPU memory | 18.09 GiB | 65.97 GiB |
+
+HF reaches 100% utilization during compute bursts, but drops during sequential
+decode, CPU postprocessing, and transitions between batches. The optimized
+replica queues fill those gaps. Final throughput and the aligned utilization,
+power, and memory graph will replace this snapshot after all 30,000 HF requests
+complete.
+
 ### How the optimized path works
 
 ```mermaid
