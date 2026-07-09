@@ -10,11 +10,76 @@ project registers a tiny vLLM pooling model plus an IO processor plugin; the
 vLLM engine receives image paths, batches them as plugin prompts, and calls
 `NemotronOCRV2` inside the vLLM worker.
 
-That makes sense when you need a vLLM-shaped integration point or want to prove
-the OCR pipeline can live behind vLLM's plugin API. It is not expected to beat
-the direct `NemotronOCRV2` Python API for standalone OCR latency because the
-actual OCR compute remains the NVIDIA pipeline and vLLM adds scheduling and
-serialization overhead.
+vLLM does not make one OCR kernel intrinsically faster. The throughput gain
+comes from native request queues, continuous batching, CPU/GPU overlap, and
+enough concurrent replicas to fill pipeline gaps that are visible in a single
+in-process call.
+
+## A100 headline
+
+The throughput-tuned native vLLM deployment reaches **70.12 images/s** on one
+A100 80GB over 30,000 timed JPEG-byte requests at the default
+`infer_length=1024`. The conservative recognizer-chunk profile reaches
+**69.54 images/s**; see the accuracy note below.
+
+| Metric | Optimized result |
+| --- | ---: |
+| Completed requests | 30,000 / 30,000 |
+| Failed requests | 0 |
+| Throughput profile (recognizer chunk 64) | **70.12 images/s** |
+| Conservative profile (recognizer chunk 128) | **69.54 images/s** |
+| Average / maximum GPU utilization | 99.74% / 100% |
+| Average / maximum GPU power | 393.17 W / 446.51 W |
+| Peak observed GPU memory | 67,555 MiB |
+
+The clean official NVIDIA/Hugging Face comparison is being measured on the
+same JPEG corpus. It remains explicitly pending until that run completes; no
+model-card value or different workload is substituted.
+
+### How the optimized path works
+
+```mermaid
+flowchart LR
+    A["JPEG bytes"] --> B["Work-conserving dispatcher"]
+    B --> C
+    subgraph G["One A100 80GB with CUDA MPS"]
+        C["8 native vLLM /pooling replicas"]
+        C --> D["4 renderer workers per replica<br/>base64 + JPEG decode"]
+        D --> E["vLLM AsyncLLM queues<br/>max_num_seqs = 64"]
+        E --> F["Detector batch 16"]
+        F --> H["Rectify + NMS<br/>current CUDA stream"]
+        H --> I["Recognizer chunk 64"]
+        I --> J["Relational model + OCR JSON"]
+    end
+    J --> K["Structured response"]
+```
+
+Key optimizations:
+
+- Native vLLM `/pooling` requests carry JPEG bytes rather than filesystem paths.
+- A work-conserving dispatcher gives the next image to whichever vLLM replica
+  becomes available, avoiding fixed-shard tail imbalance.
+- Eight long-lived replicas execute concurrently through CUDA MPS; vLLM keeps
+  an independent continuous-batching queue inside each replica.
+- Custom CUDA kernels launch on PyTorch's current stream, enabling correct
+  overlap instead of implicitly serializing through the default stream.
+- Detector batch 16, recognizer chunk 64, `max_num_seqs=64`, and four renderer
+  workers were selected from measured sweeps.
+- NMS/postprocessing synchronization and GPU-to-CPU transfers were reduced;
+  probability extraction uses a fused Triton path.
+- OCR payload serialization avoids per-byte Python lists, and request/access
+  logging is disabled for the sustained serving configuration.
+- `infer_length=1024` is retained, and experimental compilation paths that
+  changed output equivalence were rejected. A controlled optimized-kernel check
+  passed with zero text/region-count mismatches over 32 images. The rec64 versus
+  rec128 batching comparison is not bitwise stable beyond the model's observed
+  same-configuration nondeterminism, so rec128 at 69.54 img/s remains the
+  conservative accuracy profile while rec64 is labeled the throughput profile.
+
+[Raw optimized result](results/a100-2026-07-08/optimized-vllm-r8-rec64-30k.json)
+· [Raw GPU trace](results/a100-2026-07-08/optimized-vllm-r8-rec64-30k-gpu-trace.csv)
+· [Results summary](results/a100-2026-07-08/README.md)
+· [Detailed report](results/a100-2026-07-08/DETAILED_REPORT.md)
 
 ## Repository Layout
 
@@ -92,7 +157,7 @@ python run_vllm_ocr.py examples/sample_invoice.png examples/sample_invoice.png
 
 ## Benchmark
 
-### A100 optimization results
+### A100 optimization progression
 
 The current A100 optimization checkpoint, including raw summaries, a sustained
 GPU trace, normalized provenance, and PNG/SVG charts, is available in
@@ -107,11 +172,15 @@ Current measured highlights at the accuracy-preserving default
 | Offline vLLM, 16 replicas | 63.76 images/s | 1,000 unique PNG documents, 4.17× |
 | Native vLLM `/pooling`, 1 replica | 44.72 images/s | 1,000 unique JPEG-byte documents |
 | Native vLLM `/pooling`, 8 replicas | 65.49 images/s | 1,000 unique JPEG-byte documents |
-| Native vLLM, 8 replicas, sustained | **69.09 images/s** | 10,000/10,000 requests; 1K unique × 10 |
+| Native vLLM, 8 replicas, sustained | **70.12 images/s** | 30,000/30,000 requests; 1K unique × 30 |
 
 The clean official NVIDIA/Hugging Face in-process baseline is still being
 measured on the identical JPEG-byte workload. It is deliberately left pending
 rather than substituting NVIDIA's model-card number or a different benchmark.
+
+![A100 deployment optimization curve](results/a100-2026-07-08/deployment_optimization_curve.png)
+
+[Vector version](results/a100-2026-07-08/deployment_optimization_curve.svg)
 
 The benchmark measures initialization separately from loaded-engine inference.
 For `--backend both`, it runs direct OCR and vLLM OCR in separate subprocesses so

@@ -45,12 +45,290 @@
         "recognizer_chunk_size": 128,
         "replicas": 1
       },
+      "metadata_sources": {
+        "timed_workload_image_count": "count_field"
+      },
       "timed_workload_image_count": 1000
     },
     "source": "a100_replica_sweeps/accuracy_baseline_1024/sweep_summary.json",
     "source_sha256": "293ba2ef6874760e14f37ff54475449e3ce1a2d010251db6db6cdd9961d67123",
     "throughput": 15.275952129087576,
     "workload_kind": "unique_1k"
+  },
+  "deployment_optimization_curve": {
+    "best_run_id": "r8_rec64_mps25",
+    "best_throughput": 69.36875802724438,
+    "comparison_contract": "Matched A100 native-vLLM runs over 1,000 JPEG Q100 4:4:4 document images repeated 10 times at infer_length=1024.",
+    "groups": [
+      {
+        "artifact_dispatcher": "work_conserving_client_side_queue",
+        "id": "work_conserving",
+        "label": "Work-conserving client-side queue",
+        "reference_id": "r8_rec128_logs_on",
+        "runs": [
+          {
+            "access_log": "on",
+            "count": 10000,
+            "cudnn_benchmark": "off/default",
+            "delta_vs_group_reference_images_per_second": 0.0,
+            "delta_vs_group_reference_pct": 0.0,
+            "id": "r8_rec128_logs_on",
+            "infer_length": 1024,
+            "label": "r8 rec128 \u00b7 access log on",
+            "mps": "25%",
+            "recognizer_chunk_size": 128,
+            "replicas": 8,
+            "source": "native_vllm_replicas/r8_s64_rw4_c128_det16_mps25_jpeg_q100_dynamic10k/summary.json",
+            "source_sha256": "1aaa96c114c33dd97989f0196f722118b12d325ad48ecdcb7e252a13ae8e5a53",
+            "throughput": 68.99055773463459,
+            "workload_kind": "sustained_replay",
+            "workload_metadata": {
+              "metadata_sources": {
+                "replay_count": "manifest",
+                "timed_workload_image_count": "artifact",
+                "unique_image_count": "artifact"
+              },
+              "replay_count": 10,
+              "replicas": 8,
+              "timed_workload_image_count": 10000,
+              "unique_image_count": 1000
+            }
+          },
+          {
+            "access_log": "off",
+            "count": 10000,
+            "cudnn_benchmark": "off/default",
+            "delta_vs_group_reference_images_per_second": 0.10303955116665975,
+            "delta_vs_group_reference_pct": 0.14935312099229048,
+            "id": "r8_rec128_logs_off",
+            "infer_length": 1024,
+            "label": "r8 rec128 \u00b7 access log off",
+            "mps": "25%",
+            "recognizer_chunk_size": 128,
+            "replicas": 8,
+            "source": "native_vllm_replicas/r8_s64_rw4_c128_det16_mps25_noaccesslog_jpeg_q100_dynamic10k/summary.json",
+            "source_sha256": "b142ba4099e4d6d2c3a8e366ae3888280a479e963f1a4a784680dd6638d1afac",
+            "throughput": 69.09359728580125,
+            "workload_kind": "sustained_replay",
+            "workload_metadata": {
+              "metadata_sources": {
+                "replay_count": "manifest",
+                "timed_workload_image_count": "artifact",
+                "unique_image_count": "artifact"
+              },
+              "replay_count": 10,
+              "replicas": 8,
+              "timed_workload_image_count": 10000,
+              "unique_image_count": 1000
+            }
+          },
+          {
+            "access_log": "not isolated",
+            "count": 10000,
+            "cudnn_benchmark": "off/default",
+            "delta_vs_group_reference_images_per_second": 0.01535855777287054,
+            "delta_vs_group_reference_pct": 0.022261825787728284,
+            "id": "r9_rec128_mixed",
+            "infer_length": 1024,
+            "label": "r9 rec128 \u00b7 mixed MPS",
+            "mps": "mixed",
+            "recognizer_chunk_size": 128,
+            "replicas": 9,
+            "source": "native_vllm_replicas/r9_s64_rw4_c128_det16_mps_mixed_jpeg_q100_dynamic10k/summary.json",
+            "source_sha256": "8744c40337a7625d2d26b2968a0de23203abc7e4f62bab7ce10dbba22e12e996",
+            "throughput": 69.00591629240746,
+            "workload_kind": "sustained_replay",
+            "workload_metadata": {
+              "metadata_sources": {
+                "replay_count": "manifest",
+                "timed_workload_image_count": "artifact",
+                "unique_image_count": "artifact"
+              },
+              "replay_count": 10,
+              "replicas": 9,
+              "timed_workload_image_count": 10000,
+              "unique_image_count": 1000
+            }
+          },
+          {
+            "access_log": "off",
+            "count": 10000,
+            "cudnn_benchmark": "off/default",
+            "delta_vs_group_reference_images_per_second": -0.4703805637509362,
+            "delta_vs_group_reference_pct": -0.6818042630706178,
+            "id": "r8_rec128_mps16",
+            "infer_length": 1024,
+            "label": "r8 rec128 \u00b7 MPS16",
+            "mps": "16%",
+            "recognizer_chunk_size": 128,
+            "replicas": 8,
+            "source": "native_vllm_replicas/r8_s64_rw4_c128_det16_mps16_noaccesslog_jpeg_q100_dynamic10k/summary.json",
+            "source_sha256": "603589df03abdf32c8925b0b3b4efd9818ff5591177da1c336e8ba8e01c7fa98",
+            "throughput": 68.52017717088366,
+            "workload_kind": "sustained_replay",
+            "workload_metadata": {
+              "metadata_sources": {
+                "replay_count": "artifact",
+                "timed_workload_image_count": "artifact",
+                "unique_image_count": "artifact"
+              },
+              "replay_count": 10,
+              "replicas": 8,
+              "timed_workload_image_count": 10000,
+              "unique_image_count": 1000
+            }
+          },
+          {
+            "access_log": "off",
+            "count": 10000,
+            "cudnn_benchmark": "on",
+            "delta_vs_group_reference_images_per_second": -2.5141686917724826,
+            "delta_vs_group_reference_pct": -3.6442214330879685,
+            "id": "r8_rec128_cudnn",
+            "infer_length": 1024,
+            "label": "r8 rec128 \u00b7 cuDNN benchmark",
+            "mps": "25%",
+            "recognizer_chunk_size": 128,
+            "replicas": 8,
+            "source": "native_vllm_replicas/r8_s64_rw4_c128_det16_mps25_cudnnbenchmark_noaccesslog_jpeg_q100_dynamic10k/summary.json",
+            "source_sha256": "45be88e2ca05d0d7fb500059c111d62c0019aff482923e35072a0e951dcc25fe",
+            "throughput": 66.47638904286211,
+            "workload_kind": "sustained_replay",
+            "workload_metadata": {
+              "metadata_sources": {
+                "replay_count": "artifact",
+                "timed_workload_image_count": "artifact",
+                "unique_image_count": "artifact"
+              },
+              "replay_count": 10,
+              "replicas": 8,
+              "timed_workload_image_count": 10000,
+              "unique_image_count": 1000
+            }
+          },
+          {
+            "access_log": "off",
+            "count": 10000,
+            "cudnn_benchmark": "off/default",
+            "delta_vs_group_reference_images_per_second": 0.37820029260979027,
+            "delta_vs_group_reference_pct": 0.5481913830360785,
+            "id": "r8_rec64_mps25",
+            "infer_length": 1024,
+            "label": "r8 rec64 \u00b7 MPS25",
+            "mps": "25%",
+            "recognizer_chunk_size": 64,
+            "replicas": 8,
+            "source": "native_vllm_replicas/r8_s64_rw4_c128_det16_rec64_mps25_noaccesslog_jpeg_q100_dynamic10k/summary.json",
+            "source_sha256": "0bd490e603c58d9fb1b62a22daf96e843bd016217c70b9e3b67c85ea8c38a512",
+            "throughput": 69.36875802724438,
+            "workload_kind": "sustained_replay",
+            "workload_metadata": {
+              "metadata_sources": {
+                "replay_count": "artifact",
+                "timed_workload_image_count": "artifact",
+                "unique_image_count": "artifact"
+              },
+              "replay_count": 10,
+              "replicas": 8,
+              "timed_workload_image_count": 10000,
+              "unique_image_count": 1000
+            }
+          },
+          {
+            "access_log": "off",
+            "count": 10000,
+            "cudnn_benchmark": "off/default",
+            "delta_vs_group_reference_images_per_second": -0.15814856490733575,
+            "delta_vs_group_reference_pct": -0.22923218785335653,
+            "id": "r8_rec48_mps25",
+            "infer_length": 1024,
+            "label": "r8 rec48 \u00b7 MPS25",
+            "mps": "25%",
+            "recognizer_chunk_size": 48,
+            "replicas": 8,
+            "source": "native_vllm_replicas/r8_s64_rw4_c128_det16_rec48_mps25_noaccesslog_jpeg_q100_dynamic10k/summary.json",
+            "source_sha256": "c921873faef93fbb2470aa2b8ff7f7e67a37d7a988d6ffd12dcb509adf6157ee",
+            "throughput": 68.83240916972726,
+            "workload_kind": "sustained_replay",
+            "workload_metadata": {
+              "metadata_sources": {
+                "replay_count": "artifact",
+                "timed_workload_image_count": "artifact",
+                "unique_image_count": "artifact"
+              },
+              "replay_count": 10,
+              "replicas": 8,
+              "timed_workload_image_count": 10000,
+              "unique_image_count": 1000
+            }
+          }
+        ]
+      },
+      {
+        "artifact_dispatcher": null,
+        "id": "fixed_shard",
+        "label": "Fixed-shard clients",
+        "reference_id": "r8_fixed",
+        "runs": [
+          {
+            "access_log": "not isolated",
+            "count": 10000,
+            "cudnn_benchmark": "off/default",
+            "delta_vs_group_reference_images_per_second": 0.0,
+            "delta_vs_group_reference_pct": 0.0,
+            "id": "r8_fixed",
+            "infer_length": 1024,
+            "label": "r8 fixed shard",
+            "mps": "25%",
+            "recognizer_chunk_size": 128,
+            "replicas": 8,
+            "source": "native_vllm_replicas/r8_s64_rw4_c128_det16_mps25_orjson_jpeg_q100_replay10/summary.json",
+            "source_sha256": "2ab679589b5ecaadd34e6d3d7e533216f98d7b35f9b6f1c5b7d03535e3c61a4c",
+            "throughput": 68.62025548289631,
+            "workload_kind": "sustained_replay",
+            "workload_metadata": {
+              "metadata_sources": {
+                "replay_count": "artifact",
+                "timed_workload_image_count": "artifact",
+                "unique_image_count": "artifact"
+              },
+              "replay_count": 10,
+              "replicas": 8,
+              "timed_workload_image_count": 10000,
+              "unique_image_count": 1000
+            }
+          },
+          {
+            "access_log": "not isolated",
+            "count": 10000,
+            "cudnn_benchmark": "off/default",
+            "delta_vs_group_reference_images_per_second": -4.2939353193921335,
+            "delta_vs_group_reference_pct": -6.257533273775707,
+            "id": "r9_fixed",
+            "infer_length": 1024,
+            "label": "r9 fixed shard",
+            "mps": "mixed",
+            "recognizer_chunk_size": 128,
+            "replicas": 9,
+            "source": "native_vllm_replicas/r9_s64_rw4_c128_det16_mps_mixed_jpeg_q100_replay10/summary.json",
+            "source_sha256": "c3215f45b52e0c623f67c4c24d6e80e08beb9f78088a90329b18b696059eb7cf",
+            "throughput": 64.32632016350418,
+            "workload_kind": "sustained_replay",
+            "workload_metadata": {
+              "metadata_sources": {
+                "replay_count": "artifact",
+                "timed_workload_image_count": "artifact",
+                "unique_image_count": "artifact"
+              },
+              "replay_count": 10,
+              "replicas": 9,
+              "timed_workload_image_count": 10000,
+              "unique_image_count": 1000
+            }
+          }
+        ]
+      }
+    ]
   },
   "detector_sweep": {
     "count": 512,
@@ -85,7 +363,7 @@
     "algorithm": {
       "active_detection_window_seconds": 5.0,
       "alignment": "each run's first sustained GPU-active sample becomes t=0",
-      "comparison_contract": "Matched A100 runs over the same 1,000-image JPEG Q100 4:4:4 corpus, repeated 10 times at infer_length=1024.",
+      "comparison_contract": "Matched A100 publication runs over the same 1,000-image JPEG Q100 4:4:4 corpus, repeated 30 times (30,000 timed images) at infer_length=1024.",
       "gpu_utilization_threshold_pct": 20.0,
       "max_plot_points_per_run": 1200,
       "minimum_active_sample_fraction": 0.6,
@@ -94,10 +372,49 @@
       "trailing_trace_policy": "retain all samples through raw trace end"
     },
     "available": false,
+    "input_status": [
+      {
+        "id": "official_hf",
+        "label": "Official NVIDIA/HF in-process",
+        "result_path": null,
+        "result_path_exists": false,
+        "trace_path": null,
+        "trace_path_exists": false
+      },
+      {
+        "id": "vllm_baseline",
+        "label": "vLLM baseline",
+        "result_path": null,
+        "result_path_exists": false,
+        "trace_path": null,
+        "trace_path_exists": false
+      },
+      {
+        "id": "optimized_native_vllm",
+        "label": "Optimized native vLLM",
+        "result_path": "publication_runs/optimized_vllm_r8_rec64_jpeg_q100_30k/summary.json",
+        "result_path_exists": true,
+        "trace_path": "publication_runs/optimized_vllm_r8_rec64_jpeg_q100_30k/gpu_trace.csv",
+        "trace_path_exists": true
+      }
+    ],
     "missing_inputs": [
       "Official NVIDIA/HF in-process: result_path, trace_path",
       "vLLM baseline: result_path, trace_path"
     ],
+    "publication_methodology": {
+      "controls": [
+        "Record zero failed requests and exactly 30,000 completed images.",
+        "Record 1,000 unique images, replay_count=30, and timed_workload_image_count=30,000.",
+        "Keep dataset encoding, model revision, GPU identity/power limit, and infer_length fixed.",
+        "Retain result JSON and raw GPU CSV paths plus SHA-256 hashes in report_data.json."
+      ],
+      "hardware": "One NVIDIA A100 80GB; run systems sequentially with no overlapping GPU workload.",
+      "quality_contract": "infer_length=1024 with the same model checkpoint and OCR post-processing contract.",
+      "telemetry": "Raw nvidia-smi timestamp, utilization.gpu, and power.draw samples at a target 250 ms interval, captured around the complete timed run.",
+      "throughput_metric": "Completed timed images divided by the artifact's measured timed span; exclude engine startup and warmup.",
+      "workload": "The same ordered 1,000-image JPEG Q100 4:4:4 corpus repeated 30 times, for 30,000 timed images per system."
+    },
     "runs": []
   },
   "hf_baseline": null,
@@ -116,6 +433,9 @@
       "metadata": {
         "detector_batch": 8,
         "max_num_seqs": 64,
+        "metadata_sources": {
+          "timed_workload_image_count": "count_field"
+        },
         "renderer_workers": 4,
         "replicas": 1,
         "timed_workload_image_count": 1000
@@ -132,6 +452,9 @@
       "metadata": {
         "detector_batch": 8,
         "max_num_seqs": 64,
+        "metadata_sources": {
+          "timed_workload_image_count": "count_field"
+        },
         "renderer_workers": 4,
         "replicas": 2,
         "timed_workload_image_count": 1000
@@ -148,6 +471,9 @@
       "metadata": {
         "detector_batch": 8,
         "max_num_seqs": 64,
+        "metadata_sources": {
+          "timed_workload_image_count": "count_field"
+        },
         "renderer_workers": 4,
         "replicas": 4,
         "timed_workload_image_count": 1000
@@ -164,6 +490,9 @@
       "metadata": {
         "detector_batch": 16,
         "max_num_seqs": 64,
+        "metadata_sources": {
+          "timed_workload_image_count": "count_field"
+        },
         "renderer_workers": 4,
         "replicas": 8,
         "timed_workload_image_count": 1000
@@ -174,6 +503,75 @@
       "workload_kind": "unique_1k"
     }
   ],
+  "nondeterminism_comparisons": {
+    "comparisons": [
+      {
+        "candidate_images": 32,
+        "comparison_type": "same_config_repeat",
+        "id": "png_baseline_repeat",
+        "label": "PNG baseline vs same-config repeat",
+        "max_confidence_abs_error": 0.4093804185166606,
+        "max_coordinate_abs_error": 0.6377850715899848,
+        "paired_regions": 764,
+        "passed": false,
+        "reference_images": 32,
+        "region_count_mismatches": 2,
+        "sha256": "7c34bc3e291a56a90e8a31c3196584f43a91c9b8c4055f878582f67b7ba66475",
+        "source": "equivalence_baseline_repeat_1024_32_comparison.json",
+        "text_exact_rate": 0.9345549738219895,
+        "text_mismatches": 50
+      },
+      {
+        "candidate_images": 32,
+        "comparison_type": "same_config_repeat",
+        "id": "jpeg_rec128_repeat",
+        "label": "JPEG rec128 vs same-config repeat",
+        "max_confidence_abs_error": 0.36957779948628144,
+        "max_coordinate_abs_error": 0.45224424373392896,
+        "paired_regions": 743,
+        "passed": false,
+        "reference_images": 32,
+        "region_count_mismatches": 1,
+        "sha256": "a5aeefcfc7271c7e3664d6eb2484419a1db3088a4627423e482b629bdd4c50cd",
+        "source": "jpeg_equivalence/rec128_repeat_comparison.json",
+        "text_exact_rate": 0.9650067294751009,
+        "text_mismatches": 26
+      },
+      {
+        "candidate_images": 32,
+        "comparison_type": "batching_variant",
+        "id": "jpeg_rec128_vs_rec64",
+        "label": "JPEG rec128 vs rec64",
+        "max_confidence_abs_error": 0.15459564164731676,
+        "max_coordinate_abs_error": 0.6092090099497633,
+        "paired_regions": 743,
+        "passed": false,
+        "reference_images": 32,
+        "region_count_mismatches": 1,
+        "sha256": "9f451cf78d6afc4a3c8d28e5229f671bb3012bec2b219ed0550d6fea746102e7",
+        "source": "jpeg_equivalence/rec128_vs_rec64_comparison.json",
+        "text_exact_rate": 0.9421265141318977,
+        "text_mismatches": 43
+      },
+      {
+        "candidate_images": 32,
+        "comparison_type": "batching_variant",
+        "id": "jpeg_rec128_repeat_vs_rec64",
+        "label": "JPEG rec128 repeat vs rec64",
+        "max_confidence_abs_error": 0.3688396481237509,
+        "max_coordinate_abs_error": 0.6092090099497633,
+        "paired_regions": 743,
+        "passed": false,
+        "reference_images": 32,
+        "region_count_mismatches": 2,
+        "sha256": "d93dc28d37c19e03494d161db32d9688ed42055c87638d360da26ff0455ca9b3",
+        "source": "jpeg_equivalence/rec128_repeat_vs_rec64_comparison.json",
+        "text_exact_rate": 0.9340511440107672,
+        "text_mismatches": 49
+      }
+    ],
+    "interpretation_scope": "Mismatch documentation only. Region sequence shifts make raw paired-region coordinate/confidence maxima unsuitable as quality evidence."
+  },
   "optimized": {
     "count": 1000,
     "infer_length": 1024,
@@ -186,6 +584,9 @@
         "recognizer_chunk_size": 128,
         "replicas": 16
       },
+      "metadata_sources": {
+        "timed_workload_image_count": "count_field"
+      },
       "timed_workload_image_count": 1000
     },
     "source": "a100_replica_sweeps/accuracy_optimized2_1024_mps_inproc_pct25_r16_q32_s32/sweep_summary.json",
@@ -193,7 +594,131 @@
     "throughput": 63.75782513955438,
     "workload_kind": "unique_1k"
   },
+  "optimized_30k_variants": {
+    "comparison_contract": "Matched 30,000-image A100 runs using the same 1,000-image JPEG Q100 4:4:4 corpus repeated 30 times at infer_length=1024; only recognizer batching differs.",
+    "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+    "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2",
+    "runs": [
+      {
+        "completed": 30000,
+        "delta_vs_publication_images_per_second": 0.0,
+        "delta_vs_publication_pct": 0.0,
+        "elapsed_seconds": 427.8647627606988,
+        "failed": 0,
+        "gpu_power_w_avg": 393.16866164542296,
+        "gpu_trace_samples": 1726,
+        "gpu_utilization_pct_avg": 99.74449594438006,
+        "id": "rec64_publication",
+        "label": "Throughput publication pair",
+        "recognizer_chunk_size": 64,
+        "result_sha256": "a77abaa9afb2fb5a4b5753489f3e9d008f7f39dda42bd0ac2545fb906a55972c",
+        "result_source": "publication_runs/optimized_vllm_r8_rec64_jpeg_q100_30k/summary.json",
+        "role": "publication",
+        "throughput": 70.11561271470899,
+        "trace_sha256": "b6ca419d6ec188e8a867aa8ec8a2be17b32eb7255a95ee913a0534a80549dd32",
+        "trace_source": "publication_runs/optimized_vllm_r8_rec64_jpeg_q100_30k/gpu_trace.csv",
+        "workload_metadata": {
+          "metadata_sources": {
+            "replay_count": "artifact",
+            "timed_workload_image_count": "artifact",
+            "unique_image_count": "artifact"
+          },
+          "replay_count": 30,
+          "timed_workload_image_count": 30000,
+          "unique_image_count": 1000
+        }
+      },
+      {
+        "completed": 30000,
+        "delta_vs_publication_images_per_second": -0.5775705172868726,
+        "delta_vs_publication_pct": -0.8237402411884087,
+        "elapsed_seconds": 431.41853080689907,
+        "failed": 0,
+        "gpu_power_w_avg": 390.89464101091323,
+        "gpu_trace_samples": 1741,
+        "gpu_utilization_pct_avg": 99.60941987363584,
+        "id": "rec128_conservative",
+        "label": "Conservative accuracy profile",
+        "recognizer_chunk_size": 128,
+        "result_sha256": "5796c1f749a54fab48992b36d957bf27254d78a33a642f9e9881912ef3d07b95",
+        "result_source": "publication_runs/optimized_vllm_r8_rec128_jpeg_q100_30k/summary.json",
+        "role": "accuracy_profile",
+        "throughput": 69.53804219742212,
+        "trace_sha256": "396e8b8722d7d73bfccd5582fda6e121e034a36345343f8632c0bf0f6473e6a7",
+        "trace_source": "publication_runs/optimized_vllm_r8_rec128_jpeg_q100_30k/gpu_trace.csv",
+        "workload_metadata": {
+          "metadata_sources": {
+            "replay_count": "artifact",
+            "timed_workload_image_count": "artifact",
+            "unique_image_count": "artifact"
+          },
+          "replay_count": 30,
+          "timed_workload_image_count": 30000,
+          "unique_image_count": 1000
+        }
+      }
+    ]
+  },
   "schema_version": 1,
+  "sequence_aware_audit": {
+    "aligned_equal_length_page_count": 30,
+    "aligned_region_agreement": {
+      "A_equals_B_not_C": 7,
+      "A_equals_C_not_B": 3,
+      "B_equals_C_not_A": 7,
+      "all_different": 1,
+      "all_same": 611
+    },
+    "aligned_region_count": 629,
+    "method": "Levenshtein distance over each page's ordered region-text sequence; triple agreement is position-wise only on pages where A, B, and C have equal region counts.",
+    "pairs": [
+      {
+        "exact_page_sequences": 22,
+        "first_label": "rec128 reference",
+        "page_count": 32,
+        "page_text_sequence_levenshtein_total": 16,
+        "pair": "A-B",
+        "second_label": "rec128 repeat"
+      },
+      {
+        "exact_page_sequences": 18,
+        "first_label": "rec128 reference",
+        "page_count": 32,
+        "page_text_sequence_levenshtein_total": 21,
+        "pair": "A-C",
+        "second_label": "rec64"
+      },
+      {
+        "exact_page_sequences": 21,
+        "first_label": "rec128 repeat",
+        "page_count": 32,
+        "page_text_sequence_levenshtein_total": 16,
+        "pair": "B-C",
+        "second_label": "rec64"
+      }
+    ],
+    "profiles": [
+      {
+        "id": "A",
+        "label": "rec128 reference",
+        "sha256": "50ef2508e2a8153c6cb77e105aa098f13ad746313ed3afb01c1592db38597964",
+        "source": "jpeg_equivalence/vllm_optimized_predictions.json"
+      },
+      {
+        "id": "B",
+        "label": "rec128 repeat",
+        "sha256": "a46d668c9a06db6f4bcf4ddfd1dbe270f1fc7559950591238b3790beb0644083",
+        "source": "jpeg_equivalence/vllm_optimized_rec128_repeat_predictions.json"
+      },
+      {
+        "id": "C",
+        "label": "rec64",
+        "sha256": "f6edbb4308ade03cf631d69c0a64fb21eb71121bc8ba3e8599e54331c9cf2b7f",
+        "source": "jpeg_equivalence/vllm_optimized_rec64_predictions.json"
+      }
+    ],
+    "total_page_count": 32
+  },
   "settings_sweep": {
     "count": 512,
     "infer_length": 1024,
@@ -238,6 +763,11 @@
     "infer_length": 1024,
     "label": "8 replicas, sustained replay",
     "metadata": {
+      "metadata_sources": {
+        "replay_count": "artifact",
+        "timed_workload_image_count": "artifact",
+        "unique_image_count": "artifact"
+      },
       "replay_count": 10,
       "replicas": 8,
       "timed_workload_image_count": 10000,

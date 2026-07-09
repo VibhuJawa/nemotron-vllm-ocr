@@ -1,0 +1,84 @@
+{
+  "backend": "native_vllm_pooling_multi_endpoint",
+  "dispatcher": "work_conserving_client_side_queue",
+  "replicas": 8,
+  "unique_image_count": 1000,
+  "replay_count": 30,
+  "infer_length": 1024,
+  "timed_workload_image_count": 30000,
+  "timed_repeated_image_count": 29000,
+  "completed": 30000,
+  "failed": 0,
+  "elapsed_s": 427.8647627606988,
+  "aggregate_images_per_second": 70.11561271470899,
+  "concurrency_per_endpoint": 128,
+  "total_concurrency": 1024,
+  "warmups_per_endpoint": 32,
+  "timed_started_at_epoch_s": 1783575462.5915637,
+  "timed_finished_at_epoch_s": 1783575890.456331,
+  "errors": [],
+  "endpoints": [
+    {
+      "endpoint": "http://127.0.0.1:8071/pooling",
+      "completed": 3722,
+      "mean_e2el_ms": 14444.856639696241,
+      "median_e2el_ms": 14048.947762697935
+    },
+    {
+      "endpoint": "http://127.0.0.1:8072/pooling",
+      "completed": 3789,
+      "mean_e2el_ms": 14295.275046656536,
+      "median_e2el_ms": 13817.499909549952
+    },
+    {
+      "endpoint": "http://127.0.0.1:8073/pooling",
+      "completed": 3847,
+      "mean_e2el_ms": 14078.673325042299,
+      "median_e2el_ms": 13752.625320106745
+    },
+    {
+      "endpoint": "http://127.0.0.1:8074/pooling",
+      "completed": 3773,
+      "mean_e2el_ms": 14365.907334056856,
+      "median_e2el_ms": 13943.296801298857
+    },
+    {
+      "endpoint": "http://127.0.0.1:8075/pooling",
+      "completed": 3713,
+      "mean_e2el_ms": 14480.65618322668,
+      "median_e2el_ms": 14127.22197547555
+    },
+    {
+      "endpoint": "http://127.0.0.1:8076/pooling",
+      "completed": 3793,
+      "mean_e2el_ms": 14282.783047089612,
+      "median_e2el_ms": 13911.785960197449
+    },
+    {
+      "endpoint": "http://127.0.0.1:8077/pooling",
+      "completed": 3613,
+      "mean_e2el_ms": 15068.86139908409,
+      "median_e2el_ms": 14408.662088215351
+    },
+    {
+      "endpoint": "http://127.0.0.1:8078/pooling",
+      "completed": 3750,
+      "mean_e2el_ms": 14443.69515978694,
+      "median_e2el_ms": 14049.216713756323
+    }
+  ],
+  "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+  "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2",
+  "gpu_trace_csv": "/raid/vjawa/tmp/ocr_optimization/results/publication_runs/optimized_vllm_r8_rec64_jpeg_q100_30k/gpu_trace.csv",
+  "gpu_trace": {
+    "samples": 1726,
+    "gpu_util_pct_avg": 99.74449594438006,
+    "gpu_util_pct_max": 100.0,
+    "gpu_mem_util_pct_avg": 65.73522595596755,
+    "gpu_mem_util_pct_max": 76.0,
+    "gpu_memory_used_mib_avg": 67524.62688296639,
+    "gpu_memory_used_mib_max": 67555.0,
+    "gpu_power_w_avg": 393.16866164542296,
+    "gpu_power_w_max": 446.51
+  }
+}
