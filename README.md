@@ -37,6 +37,22 @@ The benchmarked implementation is split at the correct ownership boundary:
 Until both pull requests merge, use the pinned commits above for an exact
 reproduction rather than the repositories' default branches.
 
+### Model-patch-only Hugging Face A/B
+
+The model PR now has its own isolated, repeated direct-HF measurement. Across
+three matched 10K-image repetitions per condition, clean upstream reached
+**31.0416 images/s** and PR #8 reached **31.6150 images/s**: a **1.847%**
+model-only uplift. Every paired repetition was positive; the paired 95%
+small-sample interval is **1.28% to 2.42%**.
+
+![Model PR #8 isolated Hugging Face A/B](results/a100-2026-07-09-model-pr8-ab/model_pr8_hf_ab.png)
+
+[Full protocol, statistics, raw JSON/CSV telemetry, and vector chart](results/a100-2026-07-09-model-pr8-ab/README.md)
+
+This is the speedup attributable to the model patch under direct HF execution.
+The 2.24x headline below is the complete optimized vLLM serving stack and is
+not attributed to the model PR alone.
+
 ## A100 headline
 
 The throughput-tuned native vLLM deployment reaches **70.12 images/s** on one

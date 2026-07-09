@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "benchmark_date": "2026-07-09",
+  "comparison": "isolated Hugging Face in-process model-source A/B",
+  "hardware": {
+    "device": "NVIDIA A100-SXM4-80GB",
+    "gpu_uuid": "GPU-cff1bde8-b1d6-39fb-5345-7be496ca6448"
+  },
+  "workload": {
+    "dataset": "bo767_1k_pooling_jpeg_q100_444.jsonl",
+    "dataset_sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+    "dataset_jsonl_bytes": 856608912,
+    "decoded_jpeg_bytes": 642407686,
+    "encoding": "JPEG quality 100, 4:4:4, base64 bytes in JSONL",
+    "unique_images_per_run": 1000,
+    "replay_count_per_run": 10,
+    "timed_images_per_run": 10000,
+    "repetitions_per_condition": 3,
+    "total_timed_images_per_condition": 30000,
+    "batch_size": 64,
+    "warmup_images_per_run": 128,
+    "infer_length": 1024,
+    "merge_level": "paragraph",
+    "detector_max_batch_size": 32,
+    "recognizer_chunk_size": 128,
+    "relational_chunk_size": 128
+  },
+  "software": {
+    "baseline_model_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+    "patched_model_commit": "bb392d494b616d3a1692c3dbe59f63c1d2a8a7fa",
+    "model_pr": "https://huggingface.co/nvidia/nemotron-ocr-v2/discussions/8",
+    "benchmark_driver_commit": "ec7b7fb48c8dad71722d16d0b901804daea72cc3",
+    "benchmark_driver_sha256": "2f79e737083a4a67f1e83243cc7958bbd3d79ba06dd4a7ab2e4e533a225a7350",
+    "baseline_extension_sha256": "05ac1b8d35a36b82595257ec85f081adb922c088249da9a83eaf6bc2b963ec1e",
+    "patched_extension_sha256": "9e36cfbc656fb91d3dbafa6cf2aeb7e47c02477f763b063ba0a2bff711fe7794",
+    "torch_version": "2.11.0+cu130",
+    "torch_cuda_version": "13.0"
+  },
+  "execution_order": [
+    "baseline-r1",
+    "patched-r1",
+    "patched-r2",
+    "baseline-r2",
+    "baseline-r3",
+    "patched-r3"
+  ],
+  "runs": [
+    {
+      "id": "baseline-r1",
+      "result": "baseline-r1.json",
+      "gpu_trace": "baseline-r1-gpu-trace.csv",
+      "images_per_second": 30.99503096158488,
+      "elapsed_s": 322.63236040621996,
+      "gpu_util_pct_timed_avg": 50.860265417642466,
+      "gpu_power_w_timed_avg": 232.167619047619
+    },
+    {
+      "id": "baseline-r2",
+      "result": "baseline-r2.json",
+      "gpu_trace": "baseline-r2-gpu-trace.csv",
+      "images_per_second": 31.02609259818372,
+      "elapsed_s": 322.309358432889,
+      "gpu_util_pct_timed_avg": 51.1,
+      "gpu_power_w_timed_avg": 232.74539062499997
+    },
+    {
+      "id": "baseline-r3",
+      "result": "baseline-r3.json",
+      "gpu_trace": "baseline-r3-gpu-trace.csv",
+      "images_per_second": 31.10401091142909,
+      "elapsed_s": 321.5019448287785,
+      "gpu_util_pct_timed_avg": 50.96481626270524,
+      "gpu_power_w_timed_avg": 234.16572322126663
+    },
+    {
+      "id": "patched-r1",
+      "result": "patched-r1.json",
+      "gpu_trace": "patched-r1-gpu-trace.csv",
+      "images_per_second": 31.64815152279966,
+      "elapsed_s": 315.97422025725245,
+      "gpu_util_pct_timed_avg": 51.03505976095617,
+      "gpu_power_w_timed_avg": 232.9717450199203
+    },
+    {
+      "id": "patched-r2",
+      "result": "patched-r2.json",
+      "gpu_trace": "patched-r2-gpu-trace.csv",
+      "images_per_second": 31.5732656892199,
+      "elapsed_s": 316.72365153580904,
+      "gpu_util_pct_timed_avg": 50.69952305246423,
+      "gpu_power_w_timed_avg": 233.4137519872814
+    },
+    {
+      "id": "patched-r3",
+      "result": "patched-r3.json",
+      "gpu_trace": "patched-r3-gpu-trace.csv",
+      "images_per_second": 31.62367782634718,
+      "elapsed_s": 316.2187540270388,
+      "gpu_util_pct_timed_avg": 51.13434022257552,
+      "gpu_power_w_timed_avg": 234.82437996820352
+    }
+  ],
+  "aggregate": {
+    "baseline": {
+      "repetitions": 3,
+      "total_timed_images": 30000,
+      "total_elapsed_s": 966.4436636678874,
+      "images_per_second_mean": 31.04171149039923,
+      "images_per_second_stdev": 0.05614374152602707,
+      "images_per_second_pooled": 31.041643841031295,
+      "ms_per_image_pooled": 32.21478878892958,
+      "warmup_s_mean": 10.936296803255876,
+      "gpu_util_pct_timed_weighted_mean": 50.975,
+      "gpu_power_w_timed_weighted_mean": 233.02572395833334,
+      "gpu_power_w_max": 419.95,
+      "gpu_memory_used_mib_max": 22875.0,
+      "pytorch_peak_allocated_gb_max": 17.314579968,
+      "pytorch_peak_reserved_gb_max": 23.437770752
+    },
+    "patched": {
+      "repetitions": 3,
+      "total_timed_images": 30000,
+      "total_elapsed_s": 948.9166258201003,
+      "images_per_second_mean": 31.61503167945558,
+      "images_per_second_stdev": 0.03818427568760738,
+      "images_per_second_pooled": 31.615000921785438,
+      "ms_per_image_pooled": 31.630554194003345,
+      "warmup_s_mean": 5.903033811599016,
+      "gpu_util_pct_timed_weighted_mean": 50.956245027844076,
+      "gpu_power_w_timed_weighted_mean": 233.73723415539644,
+      "gpu_power_w_max": 420.88,
+      "gpu_memory_used_mib_max": 20081.0,
+      "pytorch_peak_allocated_gb_max": 18.389402112,
+      "pytorch_peak_reserved_gb_max": 20.508049408
+    },
+    "pooled_uplift_pct": 1.847057725713186,
+    "paired_uplift_pct_by_repetition": [
+      2.1071782829455987,
+      1.7635900792361214,
+      1.6707392380933772
+    ],
+    "paired_uplift_pct_mean": 1.847169200091699,
+    "paired_uplift_pct_stdev": 0.2299105522809323,
+    "paired_uplift_pct_95_ci": [
+      1.2760397268198105,
+      2.4182986733635876
+    ],
+    "paired_t_statistic": 13.915807138881492,
+    "paired_t_degrees_of_freedom": 2,
+    "paired_t_two_sided_p": 0.0051243052964330404
+  },
+  "limitations": [
+    "The confidence interval uses a paired Student-t calculation with only three repetitions.",
+    "The same deterministic 1,000-page workload is replayed; this measures timing, not OCR accuracy.",
+    "Absolute throughput should be compared within this A/B because it used a different physical A100 from the earlier deployment study.",
+    "The patched sm_80 extension binary was rebuilt earlier from the exact committed C++ sources and is pinned by SHA-256; this repackaging host lacked Python development headers."
+  ]
+}
