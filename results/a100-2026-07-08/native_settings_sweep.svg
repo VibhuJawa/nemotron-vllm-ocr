@@ -4,7 +4,7 @@
 <rect x="0" y="0" width="1600" height="900" rx="0" fill="#FFFFFF"/>
 <rect x="0" y="0" width="18" height="900" rx="0" fill="#2F6BFF"/>
 <text x="72" y="82" font-family="DejaVu Sans, sans-serif" font-size="42" font-weight="bold" fill="#172B4D" text-anchor="start">Native vLLM setting sweeps</text>
-<text x="72" y="128" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="normal" fill="#64748B" text-anchor="start">A100 · infer_length=1024 · 512 unique documents · concurrency 128 · truncated y-axis</text>
+<text x="72" y="128" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="normal" fill="#64748B" text-anchor="start">A100 · infer_length=1024 · 512 unique document pages · concurrency 128 · truncated y-axis</text>
 <rect x="95" y="205" width="705" height="570" rx="18" fill="#F7F9FC"/>
 <text x="150" y="244" font-family="DejaVu Sans, sans-serif" font-size="24" font-weight="bold" fill="#172B4D" text-anchor="start">Scheduler capacity (renderer workers=4)</text>
 <text x="150" y="278" font-family="DejaVu Sans, sans-serif" font-size="18" font-weight="bold" fill="#64748B" text-anchor="start">Throughput (images/s)</text>

@@ -33,36 +33,57 @@ A100 80GB over 30,000 timed JPEG-byte requests at the default
 | Peak observed GPU memory | 67,555 MiB |
 
 The clean official NVIDIA/Hugging Face in-process baseline reaches
-**31.25 images/s** on the identical 30K JPEG workload, making optimized vLLM
-**2.24× faster**. This is a measured local result, not the model-card number.
+**31.25 images/s**, the isolated single-replica native-vLLM baseline reaches
+**43.89 images/s**, and optimized native vLLM reaches **70.12 images/s** on the
+identical 30K JPEG workload. Optimized vLLM is therefore **2.24× faster than
+official HF** and **1.60× faster than the clean vLLM baseline**. These are
+measured local results, not model-card numbers.
 
-### GPU-active comparison: official HF vs optimized vLLM
+### GPU-active comparison: official HF, clean vLLM, and optimized vLLM
 
-![GPU-active aligned utilization, power, and memory](results/a100-2026-07-08/gpu_active_hf_vs_optimized.png)
+![GPU-active aligned utilization, power, and memory](results/a100-2026-07-08/gpu_active_comparison.png)
 
-[Vector chart](results/a100-2026-07-08/gpu_active_hf_vs_optimized.svg)
+[Vector chart](results/a100-2026-07-08/gpu_active_comparison.svg)
 
-Both systems processed the same 30,000 JPEG-byte requests on the same A100,
+All three systems processed the same 30,000 JPEG-byte requests on the same A100,
 with startup and warmup excluded. Lines are trailing 15-second rolling means,
-aligned independently at the first sustained GPU-active sample.
+aligned independently at the first sustained GPU-active sample. The figure
+identifies the model, hardware, workload, and execution workflow directly.
 
-| Metric | Official HF in-process | Optimized vLLM |
-| --- | ---: | ---: |
-| Throughput | 31.25 images/s | **70.12 images/s (2.24×)** |
-| Average GPU utilization | 50.75% | **99.74%** |
-| Median GPU utilization | 46% | ~100% |
-| Samples at ≥90% utilization | 39.11% | nearly continuous |
-| Average GPU power | 235.14 W | 393.17 W |
-| Maximum GPU power | 425.29 W | 446.51 W |
-| Peak GPU memory | 18.09 GiB | 65.97 GiB |
+| Metric | Official HF in-process | Clean vLLM baseline | Optimized native vLLM |
+| --- | ---: | ---: | ---: |
+| Throughput | 31.25 images/s (1.00×) | 43.89 images/s (1.40×) | **70.12 images/s (2.24×)** |
+| Average GPU utilization | 50.75% | 73.69% | **99.74%** |
+| Average GPU power | 235.14 W | 297.21 W | 393.17 W |
+| Maximum GPU power | 425.29 W | 414.24 W | 446.51 W |
+| Peak GPU memory | 18.09 GiB | 7.25 GiB | 65.97 GiB |
 
-HF reaches 100% utilization during compute bursts, but drops during sequential
-decode, CPU postprocessing, and transitions between batches. The optimized
-replica queues fill those gaps. The clean vLLM baseline will be added as the
-third line after its isolated rerun completes.
+HF reaches 100% utilization during compute bursts but leaves gaps during
+sequential decode, CPU postprocessing, and batch transitions. One native vLLM
+queue closes part of that gap; the work-conserving eight-replica deployment
+keeps the A100 almost continuously occupied.
 
 [Raw HF result](results/a100-2026-07-08/hf-official-inprocess-b64-d32-30k.json)
 · [Raw HF GPU trace](results/a100-2026-07-08/hf-official-inprocess-b64-d32-30k-gpu-trace.csv)
+· [Raw clean-vLLM result](results/a100-2026-07-08/vllm-baseline-isolated-30k.json)
+· [Raw clean-vLLM GPU trace](results/a100-2026-07-08/vllm-baseline-isolated-30k-gpu-trace.csv)
+
+### Benchmark page corpus
+
+The workload uses the **Digital Corpora Bo767** PDF collection used by NVIDIA's
+[NeMo Retriever benchmark examples](https://docs.nvidia.com/nemo/retriever/latest/extraction/notebooks/).
+The exact local source contains 767 numerically named PDFs. This should not be
+confused with the separate SAFEDOCS `page1_png` pool used in the earlier L4
+experiments.
+
+The 1,000-page pool is deterministic: sort the 767 PDF filenames, render page 1
+from every PDF, then render the first 233 available page-2 entries in the same
+order. Pages were rendered at 144 DPI, encoded as JPEG quality 100 with 4:4:4
+chroma sampling, and submitted as JPEG bytes. The sustained benchmark replays
+that same ordered pool 30 times; it is **1,000 unique pages and 30,000 requests**,
+not 30,000 unique documents.
+
+[Exact 1,000-page manifest with source PDF/page and PNG/JPEG SHA-256 hashes](results/a100-2026-07-08/bo767-1k-page-manifest.csv)
 
 ### How the optimized path works
 
@@ -94,7 +115,8 @@ Key optimizations:
 - Detector batch 16, recognizer chunk 64, `max_num_seqs=64`, and four renderer
   workers were selected from measured sweeps.
 - NMS/postprocessing synchronization and GPU-to-CPU transfers were reduced;
-  probability extraction uses a fused Triton path.
+  probability extraction uses a fused **OpenAI Triton** GPU-kernel path (not
+  NVIDIA Triton Inference Server).
 - OCR payload serialization avoids per-byte Python lists, and request/access
   logging is disabled for the sustained serving configuration.
 - `infer_length=1024` is retained, and experimental compilation paths that
@@ -196,15 +218,17 @@ Current measured highlights at the accuracy-preserving default
 
 | Workload | Throughput | Notes |
 | --- | ---: | --- |
-| Offline vLLM, 1 replica | 15.28 images/s | 1,000 unique PNG documents |
-| Offline vLLM, 16 replicas | 63.76 images/s | 1,000 unique PNG documents, 4.17× |
-| Native vLLM `/pooling`, 1 replica | 44.72 images/s | 1,000 unique JPEG-byte documents |
-| Native vLLM `/pooling`, 8 replicas | 65.49 images/s | 1,000 unique JPEG-byte documents |
+| Offline vLLM, 1 replica | 15.28 images/s | 1,000 unique PNG document pages |
+| Offline vLLM, 16 replicas | 63.76 images/s | 1,000 unique PNG document pages, 4.17× |
+| Native vLLM `/pooling`, 1 replica | 44.72 images/s | 1,000 unique JPEG-byte pages |
+| Native vLLM `/pooling`, 8 replicas | 65.49 images/s | 1,000 unique JPEG-byte pages |
+| Official NVIDIA/HF in-process | 31.25 images/s | Matched 30K workload; 1K unique × 30 |
+| Clean native-vLLM baseline | 43.89 images/s | Matched 30K workload; 1 replica; 1K unique × 30 |
 | Native vLLM, 8 replicas, sustained | **70.12 images/s** | 30,000/30,000 requests; 1K unique × 30 |
 
-The clean official NVIDIA/Hugging Face in-process baseline is still being
-measured on the identical JPEG-byte workload. It is deliberately left pending
-rather than substituting NVIDIA's model-card number or a different benchmark.
+The three 30K rows form the final matched headline comparison. The shorter
+1K-unique and 512-image runs remain tuning/scaling evidence and are not mixed
+into that speedup calculation.
 
 ![A100 deployment optimization curve](results/a100-2026-07-08/deployment_optimization_curve.png)
 
