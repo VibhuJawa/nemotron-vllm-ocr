@@ -1,0 +1,252 @@
+{
+  "accuracy_checks": [
+    {
+      "candidate_images": 32,
+      "label": "Optimized Triton path vs repeated baseline",
+      "max_confidence_abs_error": 0.0004151769855736953,
+      "max_coordinate_abs_error": 2.0498793029677387e-07,
+      "passed": true,
+      "reference_images": 32,
+      "region_count_mismatches": 0,
+      "role": "optimized_validation",
+      "sha256": "a7e52556f73c85be96b98ed223f63bf5a3e1c1baec164f6dcc2e7af6ecf2ab9a",
+      "source": "equivalence_optimized_triton_1024_32_comparison.json",
+      "text_exact_rate": 1.0,
+      "text_mismatches": 0
+    },
+    {
+      "candidate_images": 32,
+      "label": "Repeated baseline vs baseline",
+      "max_confidence_abs_error": 0.4093804185166606,
+      "max_coordinate_abs_error": 0.6377850715899848,
+      "passed": false,
+      "reference_images": 32,
+      "region_count_mismatches": 2,
+      "role": "repeatability_context",
+      "sha256": "7c34bc3e291a56a90e8a31c3196584f43a91c9b8c4055f878582f67b7ba66475",
+      "source": "equivalence_baseline_repeat_1024_32_comparison.json",
+      "text_exact_rate": 0.9345549738219895,
+      "text_mismatches": 50
+    }
+  ],
+  "accuracy_contract": {
+    "description": "Only default-resolution (infer_length=1024) results are eligible for this report.",
+    "infer_length": 1024
+  },
+  "baseline": {
+    "count": 1000,
+    "infer_length": 1024,
+    "label": "Single replica baseline",
+    "metadata": {
+      "config": {
+        "detector_max_batch_size": 8,
+        "gpu_memory_utilization": 0.92,
+        "max_num_seqs": 64,
+        "recognizer_chunk_size": 128,
+        "replicas": 1
+      },
+      "timed_workload_image_count": 1000
+    },
+    "source": "a100_replica_sweeps/accuracy_baseline_1024/sweep_summary.json",
+    "source_sha256": "293ba2ef6874760e14f37ff54475449e3ce1a2d010251db6db6cdd9961d67123",
+    "throughput": 15.275952129087576,
+    "workload_kind": "unique_1k"
+  },
+  "detector_sweep": {
+    "count": 512,
+    "infer_length": 1024,
+    "points": [
+      [
+        8,
+        46.50919632404039
+      ],
+      [
+        12,
+        47.21522839410076
+      ],
+      [
+        16,
+        47.69281567505891
+      ],
+      [
+        24,
+        47.539809764875805
+      ],
+      [
+        32,
+        47.21888039568503
+      ]
+    ],
+    "sha256": "ba8fc77590b6d6aa6a8233269282d71e3b527eaf915e3ef3ce0254f11a693a94",
+    "source": "native_vllm_sweeps/native_detector_jpeg_q100_20260708/summary.csv",
+    "workload_kind": "unique_512"
+  },
+  "gpu_active_comparison": {
+    "algorithm": {
+      "active_detection_window_seconds": 5.0,
+      "alignment": "each run's first sustained GPU-active sample becomes t=0",
+      "comparison_contract": "Matched A100 runs over the same 1,000-image JPEG Q100 4:4:4 corpus, repeated 10 times at infer_length=1024.",
+      "gpu_utilization_threshold_pct": 20.0,
+      "max_plot_points_per_run": 1200,
+      "minimum_active_sample_fraction": 0.6,
+      "rolling_mean_direction": "trailing",
+      "rolling_window_seconds": 15.0,
+      "trailing_trace_policy": "retain all samples through raw trace end"
+    },
+    "available": false,
+    "missing_inputs": [
+      "Official NVIDIA/HF in-process: result_path, trace_path",
+      "vLLM baseline: result_path, trace_path"
+    ],
+    "runs": []
+  },
+  "hf_baseline": null,
+  "methodology": {
+    "hardware": "NVIDIA A100 80GB",
+    "native_input": "JPEG quality 100, 4:4:4",
+    "native_scaling_note": "The 8-replica point uses detector batch 16; the 1/2/4-replica points use detector batch 8.",
+    "offline_input": "PNG source pages",
+    "unique_dataset": "1,000 real document page images"
+  },
+  "native_scaling": [
+    {
+      "count": 1000,
+      "infer_length": 1024,
+      "label": "1 replica",
+      "metadata": {
+        "detector_batch": 8,
+        "max_num_seqs": 64,
+        "renderer_workers": 4,
+        "replicas": 1,
+        "timed_workload_image_count": 1000
+      },
+      "source": "native_vllm/native_single_s64_c128_jpeg_q100_444_1k.json",
+      "source_sha256": "f3c030f2e03c8fd479e0c4947dd395536fa6b71db0f65f593a111abd3fdd0d20",
+      "throughput": 44.715446603951506,
+      "workload_kind": "unique_1k"
+    },
+    {
+      "count": 1000,
+      "infer_length": 1024,
+      "label": "2 replicas",
+      "metadata": {
+        "detector_batch": 8,
+        "max_num_seqs": 64,
+        "renderer_workers": 4,
+        "replicas": 2,
+        "timed_workload_image_count": 1000
+      },
+      "source": "native_vllm_replicas/r2_s64_rw4_c128_mps50_jpeg_q100_1k/summary.json",
+      "source_sha256": "6dbd4cac707f4fe750f322807e9d457c8f28c8329ab88987275f37801be55bdb",
+      "throughput": 57.14699816543492,
+      "workload_kind": "unique_1k"
+    },
+    {
+      "count": 1000,
+      "infer_length": 1024,
+      "label": "4 replicas",
+      "metadata": {
+        "detector_batch": 8,
+        "max_num_seqs": 64,
+        "renderer_workers": 4,
+        "replicas": 4,
+        "timed_workload_image_count": 1000
+      },
+      "source": "native_vllm_replicas/r4_s64_rw4_c128_mps25_jpeg_q100_1k/summary.json",
+      "source_sha256": "f6c852e6602683cd9f693d75b1e611b80bfa87a40d4dd64837d106c224bc89f2",
+      "throughput": 59.52556178173274,
+      "workload_kind": "unique_1k"
+    },
+    {
+      "count": 1000,
+      "infer_length": 1024,
+      "label": "8 replicas",
+      "metadata": {
+        "detector_batch": 16,
+        "max_num_seqs": 64,
+        "renderer_workers": 4,
+        "replicas": 8,
+        "timed_workload_image_count": 1000
+      },
+      "source": "native_vllm_replicas/r8_s64_rw4_c128_det16_mps25_jpeg_q100_1k/summary.json",
+      "source_sha256": "c328b3cb353377dd6bdd3ce02e0056fd63c635da12146b6bae4afdb2a15c964e",
+      "throughput": 65.48850431834748,
+      "workload_kind": "unique_1k"
+    }
+  ],
+  "optimized": {
+    "count": 1000,
+    "infer_length": 1024,
+    "label": "Optimized 16 replicas",
+    "metadata": {
+      "config": {
+        "detector_max_batch_size": 8,
+        "gpu_memory_utilization": 0.15,
+        "max_num_seqs": 32,
+        "recognizer_chunk_size": 128,
+        "replicas": 16
+      },
+      "timed_workload_image_count": 1000
+    },
+    "source": "a100_replica_sweeps/accuracy_optimized2_1024_mps_inproc_pct25_r16_q32_s32/sweep_summary.json",
+    "source_sha256": "4cb686027ff4e672d7d9683c4c7e80ba587eb57a9da4d17db266d83c6b9c1278",
+    "throughput": 63.75782513955438,
+    "workload_kind": "unique_1k"
+  },
+  "schema_version": 1,
+  "settings_sweep": {
+    "count": 512,
+    "infer_length": 1024,
+    "max_num_seqs": [
+      [
+        32,
+        45.27941422793423
+      ],
+      [
+        64,
+        46.21179155864086
+      ],
+      [
+        96,
+        46.2032682876311
+      ],
+      [
+        128,
+        45.92128041666689
+      ]
+    ],
+    "renderer_workers": [
+      [
+        1,
+        44.102156494879154
+      ],
+      [
+        2,
+        45.54374298356456
+      ],
+      [
+        4,
+        46.21179155864086
+      ]
+    ],
+    "sha256": "bc2c62a7634ff971424472e7767b09cfb4fcfbe7e6c2f230b08d2d3346b370a6",
+    "source": "native_vllm_sweeps/native_jpeg_q100_targeted_20260708/summary.csv",
+    "workload_kind": "unique_512"
+  },
+  "sustained_replay": {
+    "count": 10000,
+    "infer_length": 1024,
+    "label": "8 replicas, sustained replay",
+    "metadata": {
+      "replay_count": 10,
+      "replicas": 8,
+      "timed_workload_image_count": 10000,
+      "unique_image_count": 1000
+    },
+    "source": "native_vllm_replicas/r8_s64_rw4_c128_det16_mps25_orjson_jpeg_q100_replay10/summary.json",
+    "source_sha256": "2ab679589b5ecaadd34e6d3d7e533216f98d7b35f9b6f1c5b7d03535e3c61a4c",
+    "throughput": 68.62025548289631,
+    "workload_kind": "sustained_replay"
+  },
+  "title": "Nemotron OCR v2 on A100: vLLM throughput"
+}

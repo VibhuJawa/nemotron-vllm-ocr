@@ -92,6 +92,27 @@ python run_vllm_ocr.py examples/sample_invoice.png examples/sample_invoice.png
 
 ## Benchmark
 
+### A100 optimization results
+
+The current A100 optimization checkpoint, including raw summaries, a sustained
+GPU trace, normalized provenance, and PNG/SVG charts, is available in
+[`results/a100-2026-07-08/`](results/a100-2026-07-08/README.md).
+
+Current measured highlights at the accuracy-preserving default
+`infer_length=1024` are:
+
+| Workload | Throughput | Notes |
+| --- | ---: | --- |
+| Offline vLLM, 1 replica | 15.28 images/s | 1,000 unique PNG documents |
+| Offline vLLM, 16 replicas | 63.76 images/s | 1,000 unique PNG documents, 4.17× |
+| Native vLLM `/pooling`, 1 replica | 44.72 images/s | 1,000 unique JPEG-byte documents |
+| Native vLLM `/pooling`, 8 replicas | 65.49 images/s | 1,000 unique JPEG-byte documents |
+| Native vLLM, 8 replicas, sustained | **69.09 images/s** | 10,000/10,000 requests; 1K unique × 10 |
+
+The clean official NVIDIA/Hugging Face in-process baseline is still being
+measured on the identical JPEG-byte workload. It is deliberately left pending
+rather than substituting NVIDIA's model-card number or a different benchmark.
+
 The benchmark measures initialization separately from loaded-engine inference.
 For `--backend both`, it runs direct OCR and vLLM OCR in separate subprocesses so
 GPU memory and module state do not leak between backends.

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+<title>Nemotron OCR v2 benchmark chart</title>
+<rect x="0" y="0" width="1600" height="900" rx="0" fill="#FFFFFF"/>
+<rect x="0" y="0" width="18" height="900" rx="0" fill="#2F6BFF"/>
+<text x="72" y="82" font-family="DejaVu Sans, sans-serif" font-size="42" font-weight="bold" fill="#172B4D" text-anchor="start">Baseline to optimized throughput</text>
+<text x="72" y="128" font-family="DejaVu Sans, sans-serif" font-size="21" font-weight="normal" fill="#64748B" text-anchor="start">A100 · infer_length=1024 · 1,000 distinct document images, processed once</text>
+<text x="170" y="208" font-family="DejaVu Sans, sans-serif" font-size="18" font-weight="bold" fill="#64748B" text-anchor="start">Throughput (images/s)</text>
+<line x1="170" y1="700.0" x2="1450" y2="700.0" stroke="#DCE3EC" stroke-width="1"/>
+<text x="152" y="707.0" font-family="DejaVu Sans, sans-serif" font-size="17" font-weight="normal" fill="#64748B" text-anchor="end">0</text>
+<line x1="170" y1="606.0" x2="1450" y2="606.0" stroke="#DCE3EC" stroke-width="1"/>
+<text x="152" y="613.0" font-family="DejaVu Sans, sans-serif" font-size="17" font-weight="normal" fill="#64748B" text-anchor="end">16</text>
+<line x1="170" y1="512.0" x2="1450" y2="512.0" stroke="#DCE3EC" stroke-width="1"/>
+<text x="152" y="519.0" font-family="DejaVu Sans, sans-serif" font-size="17" font-weight="normal" fill="#64748B" text-anchor="end">32</text>
+<line x1="170" y1="418.0" x2="1450" y2="418.0" stroke="#DCE3EC" stroke-width="1"/>
+<text x="152" y="425.0" font-family="DejaVu Sans, sans-serif" font-size="17" font-weight="normal" fill="#64748B" text-anchor="end">48</text>
+<line x1="170" y1="324.0" x2="1450" y2="324.0" stroke="#DCE3EC" stroke-width="1"/>
+<text x="152" y="331.0" font-family="DejaVu Sans, sans-serif" font-size="17" font-weight="normal" fill="#64748B" text-anchor="end">64</text>
+<line x1="170" y1="230.0" x2="1450" y2="230.0" stroke="#DCE3EC" stroke-width="1"/>
+<text x="152" y="237.0" font-family="DejaVu Sans, sans-serif" font-size="17" font-weight="normal" fill="#64748B" text-anchor="end">80</text>
+<line x1="170" y1="230" x2="170" y2="700" stroke="#172B4D" stroke-width="2"/>
+<line x1="170" y1="700" x2="1450" y2="700" stroke="#172B4D" stroke-width="2"/>
+<rect x="365.0" y="610.2537812416105" width="250" height="89.74621875838955" rx="8" fill="#2F6BFF"/>
+<text x="490.0" y="592.2537812416105" font-family="DejaVu Sans, sans-serif" font-size="29" font-weight="bold" fill="#172B4D" text-anchor="middle">15.28</text>
+<text x="490.0" y="740" font-family="DejaVu Sans, sans-serif" font-size="20" font-weight="bold" fill="#172B4D" text-anchor="middle">vLLM baseline</text>
+<text x="490.0" y="772" font-family="DejaVu Sans, sans-serif" font-size="17" font-weight="normal" fill="#64748B" text-anchor="middle">Single replica baseline</text>
+<rect x="1005.0" y="325.4227773051181" width="250" height="374.5772226948819" rx="8" fill="#009E9A"/>
+<text x="1130.0" y="307.4227773051181" font-family="DejaVu Sans, sans-serif" font-size="29" font-weight="bold" fill="#172B4D" text-anchor="middle">63.76</text>
+<text x="1130.0" y="740" font-family="DejaVu Sans, sans-serif" font-size="20" font-weight="bold" fill="#172B4D" text-anchor="middle">vLLM optimized</text>
+<text x="1130.0" y="772" font-family="DejaVu Sans, sans-serif" font-size="17" font-weight="normal" fill="#64748B" text-anchor="middle">Optimized 16 replicas</text>
+<rect x="1090" y="160" width="360" height="66" rx="14" fill="#D9F4F1"/>
+<text x="1270" y="202" font-family="DejaVu Sans, sans-serif" font-size="23" font-weight="bold" fill="#172B4D" text-anchor="middle">4.17× vs vLLM baseline</text>
+<text x="170" y="820" font-family="DejaVu Sans, sans-serif" font-size="18" font-weight="bold" fill="#F59E0B" text-anchor="start">HF baseline pending — no value is inferred or substituted.</text>
+<text x="1450" y="820" font-family="DejaVu Sans, sans-serif" font-size="17" font-weight="normal" fill="#64748B" text-anchor="end">Steady-state metric; offline replica harness (PNG inputs)</text>
+</svg>

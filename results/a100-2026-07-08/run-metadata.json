@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "interim",
+  "hardware": {
+    "gpu": "NVIDIA A100-SXM4-80GB",
+    "gpu_memory_mib": 81920,
+    "driver_version": "580.95.05",
+    "gpu_count_used": 1
+  },
+  "workload": {
+    "unique_document_images": 1000,
+    "timed_requests": 10000,
+    "replay_count": 10,
+    "payload": "base64 JPEG bytes in JSON data URI",
+    "jpeg_quality": 100,
+    "jpeg_subsampling": "4:4:4",
+    "infer_length": 1024,
+    "merge_level": "paragraph"
+  },
+  "deployment": {
+    "api": "native vLLM /pooling",
+    "replicas": 8,
+    "cuda_mps_active_thread_percentage_per_replica": 25,
+    "gpu_memory_utilization_per_replica": 0.12,
+    "max_num_seqs_per_replica": 64,
+    "renderer_workers_per_replica": 4,
+    "detector_max_batch_size": 16,
+    "recognizer_chunk_size": 128,
+    "relational_chunk_size": 128,
+    "client_concurrency_per_replica": 128,
+    "dispatcher": "client-side work-conserving queue",
+    "uvicorn_access_log": false
+  },
+  "result": {
+    "completed": 10000,
+    "failed": 0,
+    "elapsed_seconds": 144.7312108911574,
+    "images_per_second": 69.09359728580125,
+    "gpu_utilization_avg_pct": 99.36734693877551,
+    "gpu_utilization_max_pct": 100.0,
+    "gpu_power_avg_w": 388.7236904761905,
+    "gpu_power_max_w": 444.38,
+    "gpu_memory_used_max_mib": 68543.0
+  },
+  "source_provenance": {
+    "vllm_base_commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+    "vllm_working_tree_optimizations_pending_publication": true,
+    "nemotron_ocr_base_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+    "nemotron_ocr_working_tree_optimizations_pending_publication": true,
+    "result_sha256": "b142ba4099e4d6d2c3a8e366ae3888280a479e963f1a4a784680dd6638d1afac",
+    "gpu_trace_sha256": "65bd0593d5ae67ba7f4e50d6eacc717a0f2a6fbb9ffd22c41f28ead9b05bc28b"
+  },
+  "accuracy_gate": {
+    "images": 32,
+    "region_count_mismatches": 0,
+    "text_mismatches": 0,
+    "text_exact_rate": 1.0,
+    "max_coordinate_abs_error": 2.0498793029677387e-7,
+    "max_confidence_abs_error": 0.0004151769855736953,
+    "source": "accuracy-equivalence.json"
+  },
+  "pending": [
+    "Matched clean official NVIDIA/Hugging Face in-process sustained baseline",
+    "Matched single-replica vLLM sustained baseline",
+    "Three-run GPU-active-aligned utilization and power chart",
+    "Publication of the exact optimized vLLM and Nemotron OCR source patches"
+  ]
+}
