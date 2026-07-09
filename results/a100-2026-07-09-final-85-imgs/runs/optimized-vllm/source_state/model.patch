@@ -1,0 +1,1535 @@
+diff --git a/nemotron-ocr/cpp/better_grid_sample/gpu_indirect_grid_sample.cu b/nemotron-ocr/cpp/better_grid_sample/gpu_indirect_grid_sample.cu
+index 673e445..eb0dfda 100644
+--- a/nemotron-ocr/cpp/better_grid_sample/gpu_indirect_grid_sample.cu
++++ b/nemotron-ocr/cpp/better_grid_sample/gpu_indirect_grid_sample.cu
+@@ -79,21 +79,18 @@ void single_ex_grid_sample_bilinear_kernel(const float *pInputImage,
+     }
+ }
+ 
+-template<typename T>
++template<typename input_t>
+ __global__
+-void indirect_grid_sample_forward_bilinear_kernel(torch::PackedTensorAccessor32<T, 4> inputs,
+-                                                  torch::PackedTensorAccessor32<T, 4> grid,
++void indirect_grid_sample_forward_bilinear_kernel(torch::PackedTensorAccessor32<input_t, 4> inputs,
++                                                  torch::PackedTensorAccessor32<float, 4> grid,
+                                                   torch::PackedTensorAccessor32<int64_t, 1> inputIndices,
+-                                                  torch::PackedTensorAccessor32<T, 4> outputs)
++                                                  torch::PackedTensorAccessor32<float, 4> outputs)
+ {
+-    static_assert(std::is_same<T, float>::value, "Currently only float32 is supported!");
+-    //typedef typename fp_promote<T>::type accum_t;
+     typedef float accum_t;
+-    constexpr T NEG_ONE = -1;
+-    constexpr T ONE = 1;
+-    constexpr T ZERO = 0;
+-    constexpr T TWO = 2;
+-    constexpr T ZERO_PT_5 = 0.5;
++    constexpr float NEG_ONE = -1;
++    constexpr float ONE = 1;
++    constexpr float ZERO = 0;
++    constexpr float ZERO_PT_5 = 0.5;
+     typedef decltype(inputs.stride(0)) index_t;
+ 
+     const index_t n = blockDim.z * blockIdx.z + threadIdx.z;
+@@ -148,12 +145,12 @@ void indirect_grid_sample_forward_bilinear_kernel(torch::PackedTensorAccessor32<
+     for (index_t row = 0; row < 2; ++row) {
+         #pragma unroll
+         for (index_t col = 0; col < 2; ++col) {
+-            T Tpx = my_get_pixel_clamped(localInputs, inXint + col, inYint + row);
+-            opVal += rs[row] * ps[col] * Convert<T, accum_t>::LeftToRight(Tpx);
++            input_t inputPixel = my_get_pixel_clamped(localInputs, inXint + col, inYint + row);
++            opVal += rs[row] * ps[col] * Convert<input_t, accum_t>::LeftToRight(inputPixel);
+         }
+     }
+ 
+-    outputs[n][c][outY][outX] = Convert<T, accum_t>::RightToLeft(opVal);
++    outputs[n][c][outY][outX] = opVal;
+ }
+ 
+ template<typename T>
+@@ -230,14 +227,20 @@ void indirect_grid_sample_backward_bilinear_kernel(torch::PackedTensorAccessor64
+ 
+ torch::Tensor gpu_indirect_grid_sample_forward(torch::Tensor input, torch::Tensor grid, torch::Tensor inputIndices, const std::string &method)
+ {
+-    auto output = input.new_empty({ inputIndices.size(0), input.size(1), grid.size(1), grid.size(2) });
++    auto output = input.new_empty(
++        { inputIndices.size(0), input.size(1), grid.size(1), grid.size(2) },
++        input.options().dtype(torch::kFloat32));
+ 
+ 
+     if (method != "bilinear"s) {
+         throw runtime_error("Only 'bilinear' sampling is currently supported!");
+     }
+ 
+-    if (input.size(0) == 1 && input.is_contiguous() && grid.is_contiguous()) {
++    if (grid.scalar_type() != torch::kFloat32) {
++        throw std::runtime_error("The CUDA grid must have dtype float32!");
++    }
++
++    if (input.scalar_type() == torch::kFloat32 && input.size(0) == 1 && input.is_contiguous() && grid.is_contiguous()) {
+         uint32_t gridNumCells = grid.size(1) * grid.size(2);
+         dim3 blockDim(32, 3, 1);
+         dim3 gridDim(div_up(gridNumCells, blockDim.x),
+@@ -259,11 +262,18 @@ torch::Tensor gpu_indirect_grid_sample_forward(torch::Tensor input, torch::Tenso
+         dim3 gridDim(div_up(grid.size(1) * grid.size(2), blockDim.x),
+                         div_up(input.size(1), blockDim.y),
+                         div_up(inputIndices.size(0), blockDim.z));
+-        indirect_grid_sample_forward_bilinear_kernel KERNEL_ARG2(gridDim, blockDim) (
+-            input.packed_accessor32<float, 4>(),
+-            grid.packed_accessor32<float, 4>(),
+-            inputIndices.packed_accessor32<int64_t, 1>(),
+-            output.packed_accessor32<float, 4>()
++        AT_DISPATCH_FLOATING_TYPES_AND_HALF(
++            input.scalar_type(),
++            "gpu_indirect_grid_sample_forward",
++            ([&] {
++                typedef typename remap_half<scalar_t>::type input_t;
++                indirect_grid_sample_forward_bilinear_kernel KERNEL_ARG2(gridDim, blockDim) (
++                    input.packed_accessor32<input_t, 4>(),
++                    grid.packed_accessor32<float, 4>(),
++                    inputIndices.packed_accessor32<int64_t, 1>(),
++                    output.packed_accessor32<float, 4>()
++                );
++            })
+         );
+     }
+ 
+diff --git a/nemotron-ocr/src/nemotron_ocr/inference/models/detector/aspp.py b/nemotron-ocr/src/nemotron_ocr/inference/models/detector/aspp.py
+index 62de878..56fbdd2 100644
+--- a/nemotron-ocr/src/nemotron_ocr/inference/models/detector/aspp.py
++++ b/nemotron-ocr/src/nemotron_ocr/inference/models/detector/aspp.py
+@@ -3,8 +3,145 @@
+ 
+ """Atrous Spatial Pyramid Pooling implementation."""
+ 
++import os
++
+ import torch
+ from torch import nn
++from torch.nn import functional as F
++
++try:
++    import triton
++    import triton.language as tl
++except ImportError:
++    triton = None
++    tl = None
++
++
++if triton is not None:
++
++    @triton.jit
++    def _aspp_concat_kernel(
++        branch_0,
++        branch_1,
++        branch_2,
++        branch_3,
++        branch_4,
++        branch_5,
++        branch_6,
++        pooled,
++        output,
++        total_elements,
++        channels: tl.constexpr,
++        spatial_size: tl.constexpr,
++        BLOCK_SIZE: tl.constexpr,
++    ):
++        offsets = tl.program_id(0) * BLOCK_SIZE + tl.arange(0, BLOCK_SIZE)
++        valid = offsets < total_elements
++        spatial = offsets % spatial_size
++        quotient = offsets // spatial_size
++        output_channel = quotient % (8 * channels)
++        batch = quotient // (8 * channels)
++        branch = output_channel // channels
++        channel = output_channel % channels
++        source_offsets = (batch * channels + channel) * spatial_size + spatial
++
++        values = tl.load(
++            branch_0 + source_offsets,
++            mask=valid & (branch == 0),
++            other=0.0,
++        )
++        branch_values = tl.load(
++            branch_1 + source_offsets,
++            mask=valid & (branch == 1),
++            other=0.0,
++        )
++        values = tl.where(branch == 1, branch_values, values)
++        branch_values = tl.load(
++            branch_2 + source_offsets,
++            mask=valid & (branch == 2),
++            other=0.0,
++        )
++        values = tl.where(branch == 2, branch_values, values)
++        branch_values = tl.load(
++            branch_3 + source_offsets,
++            mask=valid & (branch == 3),
++            other=0.0,
++        )
++        values = tl.where(branch == 3, branch_values, values)
++        branch_values = tl.load(
++            branch_4 + source_offsets,
++            mask=valid & (branch == 4),
++            other=0.0,
++        )
++        values = tl.where(branch == 4, branch_values, values)
++        branch_values = tl.load(
++            branch_5 + source_offsets,
++            mask=valid & (branch == 5),
++            other=0.0,
++        )
++        values = tl.where(branch == 5, branch_values, values)
++        branch_values = tl.load(
++            branch_6 + source_offsets,
++            mask=valid & (branch == 6),
++            other=0.0,
++        )
++        values = tl.where(branch == 6, branch_values, values)
++        pooled_offsets = batch * channels + channel
++        branch_values = tl.load(
++            pooled + pooled_offsets,
++            mask=valid & (branch == 7),
++            other=0.0,
++        )
++        values = tl.where(branch == 7, branch_values, values)
++        tl.store(output + offsets, values, mask=valid)
++
++
++def _aspp_concat(branches, pooled):
++    """Concatenate fixed ASPP branches without expanding the pooled tensor."""
++    if len(branches) != 7:
++        raise ValueError("fused ASPP concat expects seven spatial branches")
++
++    def eager_concat():
++        expanded_pooled = pooled.expand(-1, -1, *branches[0].shape[2:])
++        return torch.cat([*branches, expanded_pooled], dim=1)
++
++    if triton is None or not branches[0].is_cuda:
++        return eager_concat()
++
++    batch, channels, height, width = branches[0].shape
++    if pooled.shape != (batch, channels, 1, 1):
++        raise ValueError("fused ASPP pooled branch has an unexpected shape")
++    expected_shape = branches[0].shape
++    if (
++        any(not branch.is_contiguous() for branch in branches)
++        or not pooled.is_contiguous()
++        or any(branch.shape != expected_shape for branch in branches)
++        or any(branch.dtype != branches[0].dtype for branch in branches)
++        or any(branch.device != branches[0].device for branch in branches)
++        or pooled.dtype != branches[0].dtype
++        or pooled.device != branches[0].device
++    ):
++        # Channels-last and other non-standard layouts are valid eager inputs,
++        # but the Triton kernel indexes a dense NCHW allocation.
++        return eager_concat()
++    output = torch.empty(
++        (batch, 8 * channels, height, width),
++        dtype=branches[0].dtype,
++        device=branches[0].device,
++    )
++    total_elements = output.numel()
++    block_size = 4096
++    _aspp_concat_kernel[(triton.cdiv(total_elements, block_size),)](
++        *branches,
++        pooled,
++        output,
++        total_elements,
++        channels=channels,
++        spatial_size=height * width,
++        BLOCK_SIZE=block_size,
++        num_warps=8,
++    )
++    return output
+ 
+ 
+ def _grow(rate, power):
+@@ -84,6 +221,9 @@ class ASPP(nn.Module):
+             nn.ReLU(inplace=True),
+             nn.Dropout(p=dropout),
+         )
++        self._fused_concat = (
++            os.environ.get("NEMOTRON_OCR_FUSED_ASPP_CONCAT", "0") == "1"
++        )
+ 
+     def forward(self, x):
+         """The module forward function.
+@@ -96,12 +236,24 @@ class ASPP(nn.Module):
+         """
+         outs = [kernel(x) for kernel in self.kernels]
+ 
+-        global_pool = self.global_pool(x).expand(-1, -1, *x.shape[2:])
+-        outs.append(global_pool)
+-
+-        concatenated = torch.cat(outs, dim=1)
++        global_pool = self.global_pool(x)
++        if self._fused_concat:
++            concatenated = _aspp_concat(outs, global_pool)
++        else:
++            outs.append(global_pool.expand(-1, -1, *x.shape[2:]))
++            concatenated = torch.cat(outs, dim=1)
+ 
+-        out = self.final(concatenated)
++        fused_norm_relu_add = getattr(self, "_fused_norm_relu_add", None)
++        if fused_norm_relu_add is not None:
++            out = self.final[0](concatenated)
++            if x.shape == out.shape:
++                out = fused_norm_relu_add(out, x)
++                return self.final[3](out)
++            # This model constructs residual ASPP modules, but retain a safe
++            # fallback if a future checkpoint changes the channel count.
++            out = self.final[3](F.relu(fused_norm_relu_add.batch_norm(out)))
++        else:
++            out = self.final(concatenated)
+ 
+         if x.shape == out.shape:
+             return x + out
+diff --git a/nemotron-ocr/src/nemotron_ocr/inference/models/detector/fots_detector.py b/nemotron-ocr/src/nemotron_ocr/inference/models/detector/fots_detector.py
+index 8ad5bb7..8b6122c 100644
+--- a/nemotron-ocr/src/nemotron_ocr/inference/models/detector/fots_detector.py
++++ b/nemotron-ocr/src/nemotron_ocr/inference/models/detector/fots_detector.py
+@@ -2,6 +2,7 @@
+ # SPDX-License-Identifier: Apache-2.0
+ 
+ import logging
++import os
+ from typing import List, Optional, Tuple
+ 
+ import torch
+@@ -9,6 +10,15 @@ import torch.nn as nn
+ import torch.nn.functional as F
+ import math
+ 
++try:
++    import triton
++    import triton.language as tl
++    from triton.language.extra import libdevice
++except ImportError:
++    triton = None
++    tl = None
++    libdevice = None
++
+ 
+ from nemotron_ocr.inference.models.detector.aspp import ASPP
+ from nemotron_ocr.inference.models.detector import regnet
+@@ -16,6 +26,156 @@ from nemotron_ocr.inference.models.detector import regnet
+ logger = logging.getLogger(__name__)
+ 
+ 
++if triton is not None:
++
++    @triton.jit
++    def _normalize_detector_input_kernel(
++        input_ptr,
++        mean_ptr,
++        std_ptr,
++        output_ptr,
++        total_elements,
++        spatial_size: tl.constexpr,
++        channels: tl.constexpr,
++        BLOCK_SIZE: tl.constexpr,
++    ):
++        offsets = tl.program_id(0) * BLOCK_SIZE + tl.arange(0, BLOCK_SIZE)
++        valid = offsets < total_elements
++        channel = (offsets // spatial_size) % channels
++        values = tl.load(input_ptr + offsets, mask=valid).to(tl.float32)
++        mean = tl.load(mean_ptr + channel, mask=valid).to(tl.float32)
++        std = tl.load(std_ptr + channel, mask=valid).to(tl.float32)
++        # Eager autocast performs fp16 subtraction followed by fp16 division.
++        # Preserve the intermediate rounding boundary while eliminating one
++        # full activation read/write pass.
++        centered = (values - mean).to(tl.float16)
++        normalized = libdevice.div_rn(centered.to(tl.float32), std).to(tl.float16)
++        tl.store(output_ptr + offsets, normalized, mask=valid)
++
++    @triton.jit
++    def _upsample_concat_nearest_kernel(
++        input_ptr,
++        side_ptr,
++        output_ptr,
++        total_elements,
++        input_channels: tl.constexpr,
++        side_channels: tl.constexpr,
++        output_height: tl.constexpr,
++        output_width: tl.constexpr,
++        BLOCK_SIZE: tl.constexpr,
++    ):
++        offsets = tl.program_id(0) * BLOCK_SIZE + tl.arange(0, BLOCK_SIZE)
++        valid = offsets < total_elements
++        output_x = offsets % output_width
++        quotient = offsets // output_width
++        output_y = quotient % output_height
++        quotient = quotient // output_height
++        output_channel = quotient % (input_channels + side_channels)
++        batch = quotient // (input_channels + side_channels)
++
++        input_offsets = (
++            (batch * input_channels + output_channel) * (output_height // 2)
++            + output_y // 2
++        ) * (output_width // 2) + output_x // 2
++        side_channel = output_channel - input_channels
++        side_offsets = (
++            (batch * side_channels + side_channel) * output_height + output_y
++        ) * output_width + output_x
++
++        from_input = output_channel < input_channels
++        values = tl.load(
++            input_ptr + input_offsets,
++            mask=valid & from_input,
++            other=0.0,
++        )
++        side_values = tl.load(
++            side_ptr + side_offsets,
++            mask=valid & ~from_input,
++            other=0.0,
++        )
++        tl.store(
++            output_ptr + offsets,
++            tl.where(from_input, values, side_values),
++            mask=valid,
++        )
++
++
++def _upsample_concat_nearest(input_tensor, side_tensor):
++    """Fuse exact 2x nearest upsampling with channel concatenation."""
++
++    def eager_upsample_concat():
++        return torch.cat(
++            (F.interpolate(input_tensor, scale_factor=2, mode="nearest"), side_tensor),
++            dim=1,
++        )
++
++    if triton is None or not input_tensor.is_cuda:
++        return eager_upsample_concat()
++
++    batch, input_channels, input_height, input_width = input_tensor.shape
++    side_batch, side_channels, output_height, output_width = side_tensor.shape
++    if (
++        batch != side_batch
++        or output_height != input_height * 2
++        or output_width != input_width * 2
++    ):
++        raise ValueError("fused upsample-concat requires an exact 2x side tensor")
++    if (
++        not input_tensor.is_contiguous()
++        or not side_tensor.is_contiguous()
++        or input_tensor.dtype != side_tensor.dtype
++        or input_tensor.device != side_tensor.device
++    ):
++        # Channels-last and other non-standard layouts remain correct through
++        # the eager implementation; the Triton kernel assumes dense NCHW.
++        return eager_upsample_concat()
++
++    output = torch.empty(
++        (batch, input_channels + side_channels, output_height, output_width),
++        dtype=input_tensor.dtype,
++        device=input_tensor.device,
++    )
++    total_elements = output.numel()
++    block_size = 4096
++    _upsample_concat_nearest_kernel[(triton.cdiv(total_elements, block_size),)](
++        input_tensor,
++        side_tensor,
++        output,
++        total_elements,
++        input_channels=input_channels,
++        side_channels=side_channels,
++        output_height=output_height,
++        output_width=output_width,
++        BLOCK_SIZE=block_size,
++        num_warps=8,
++    )
++    return output
++
++
++def _normalize_detector_input(input_tensor, mean, std):
++    """Fuse the detector's exact fp16 channel normalization."""
++    if triton is None or not input_tensor.is_cuda:
++        return (input_tensor - mean) / std
++    if input_tensor.dtype != torch.float16 or not input_tensor.is_contiguous():
++        return (input_tensor - mean) / std
++
++    output = torch.empty_like(input_tensor)
++    spatial_size = input_tensor.shape[-2] * input_tensor.shape[-1]
++    block_size = 1024
++    _normalize_detector_input_kernel[(triton.cdiv(input_tensor.numel(), block_size),)](
++        input_tensor,
++        mean,
++        std,
++        output,
++        input_tensor.numel(),
++        spatial_size=spatial_size,
++        channels=input_tensor.shape[1],
++        BLOCK_SIZE=block_size,
++        num_warps=4,
++    )
++    return output
++
++
+ def get_prior_offsets(output_shape, downsample):
+     """
+     Returns the locations of the priors in normalized image space.
+@@ -131,6 +291,9 @@ class merge(nn.Module):
+         )
+ 
+         self.num_features = num_features
++        self._fused_upsample_concat = (
++            os.environ.get("NEMOTRON_OCR_FUSED_UPSAMPLE_CONCAT", "0") == "1"
++        )
+ 
+         for m in self.modules():
+             if isinstance(m, nn.Conv2d):
+@@ -149,9 +312,12 @@ class merge(nn.Module):
+         y = x[0]
+         for i in range(len(x) - 1):
+             y = self.pre_upsamples[i](y)
+-            y = self.interpolate(y)
+             side = self.pre_sides[i](x[i + 1])
+-            y = torch.cat((y, side), 1)
++            if self._fused_upsample_concat:
++                y = _upsample_concat_nearest(y, side)
++            else:
++                y = self.interpolate(y)
++                y = torch.cat((y, side), 1)
+             y = self.post_upsamples[i](y)
+             feats.append(y)
+ 
+@@ -243,7 +409,9 @@ class output(nn.Module):
+ 
+     def forward(
+         self, feats: List[torch.Tensor]
+-    ) -> Tuple[torch.Tensor, Optional[torch.Tensor], Optional[torch.Tensor], List[torch.Tensor]]:
++    ) -> Tuple[
++        torch.Tensor, Optional[torch.Tensor], Optional[torch.Tensor], List[torch.Tensor]
++    ]:
+         x = feats[-1]
+ 
+         preds = self.preds(x)
+@@ -276,28 +444,41 @@ class output(nn.Module):
+ 
+ class FOTSDetector(nn.Module):
+     def __init__(
+-        self, verbose=True, coordinate_mode: str = "RBOX", backbone: str = "regnet_y_8gf", 
+-        scope: int = 512, **kwargs
++        self,
++        verbose=True,
++        coordinate_mode: str = "RBOX",
++        backbone: str = "regnet_y_8gf",
++        scope: int = 512,
++        **kwargs,
+     ):
+         super().__init__()
+ 
+         self.extractor = extractor(backbone, **kwargs)
+         self.merge = merge(self.extractor.depths)
+         self.num_features = self.merge.num_features
+-        self.output = output(self.num_features, self.extractor.downsample, coordinate_mode, scope=scope)
++        self.output = output(
++            self.num_features, self.extractor.downsample, coordinate_mode, scope=scope
++        )
+         self.verbose = verbose
+         self.inference_mode = False
+         self.scope = scope  # Store for reference
++        self._fused_input_normalization = (
++            os.environ.get("NEMOTRON_OCR_FUSED_INPUT_NORMALIZATION", "0") == "1"
++        )
+ 
+         self.downsample = self.extractor.downsample
+ 
+         self.register_buffer(
+             "input_mean",
+-            torch.tensor([0.485, 0.456, 0.406], dtype=torch.float16).reshape(1, -1, 1, 1),
++            torch.tensor([0.485, 0.456, 0.406], dtype=torch.float16).reshape(
++                1, -1, 1, 1
++            ),
+         )
+         self.register_buffer(
+             "input_std",
+-            torch.tensor([0.229, 0.224, 0.225], dtype=torch.float16).reshape(1, -1, 1, 1),
++            torch.tensor([0.229, 0.224, 0.225], dtype=torch.float16).reshape(
++                1, -1, 1, 1
++            ),
+         )
+ 
+     def set_current_and_total_steps(self, current_step, total_steps):
+@@ -312,7 +493,10 @@ class FOTSDetector(nn.Module):
+         List[torch.Tensor],
+         List[torch.Tensor],
+     ]:
+-        x = (x - self.input_mean) / self.input_std
++        if self._fused_input_normalization:
++            x = _normalize_detector_input(x, self.input_mean, self.input_std)
++        else:
++            x = (x - self.input_mean) / self.input_std
+         feats = self.extractor(x)
+ 
+         mg = self.merge(feats)
+diff --git a/nemotron-ocr/src/nemotron_ocr/inference/models/relational.py b/nemotron-ocr/src/nemotron_ocr/inference/models/relational.py
+index 0ea129c..9c333b1 100644
+--- a/nemotron-ocr/src/nemotron_ocr/inference/models/relational.py
++++ b/nemotron-ocr/src/nemotron_ocr/inference/models/relational.py
+@@ -3,6 +3,7 @@
+ 
+ import logging
+ import math
++import os
+ 
+ import torch
+ import torch.nn as nn
+@@ -23,17 +24,29 @@ NULL_CONNECTION_WEIGHT = -math.inf
+ DEFAULT_CHUNK = 128
+ 
+ 
+-def _pad_flat_to_batched(flat: torch.Tensor, region_counts: torch.Tensor, k_max: int, pad_value: float = 0.0):
++def _pad_flat_to_batched(
++    flat: torch.Tensor,
++    region_counts: torch.Tensor,
++    k_max: int,
++    pad_value: float = 0.0,
++):
+     """Reshape flat [N_total, ...] tensors into padded [B, k_max, ...] batches."""
+     batch_size = int(region_counts.shape[0])
+     rest = flat.shape[1:]
+     out = flat.new_full((batch_size, k_max, *rest), pad_value)
+-    offsets = torch.zeros(batch_size + 1, dtype=torch.long, device=flat.device)
+-    offsets[1:] = torch.cumsum(region_counts.to(device=flat.device, dtype=torch.long), dim=0)
+-    for i in range(batch_size):
+-        region_count = int(region_counts[i].item())
+-        if region_count > 0:
+-            out[i, :region_count] = flat[offsets[i] : offsets[i] + region_count]
++
++    if flat.shape[0] == 0:
++        return out
++
++    counts = region_counts.to(device=flat.device, dtype=torch.long)
++    offsets = torch.cumsum(counts, dim=0) - counts
++    batch_indices = torch.repeat_interleave(
++        torch.arange(batch_size, device=flat.device),
++        counts,
++        output_size=flat.shape[0],
++    )
++    positions = torch.arange(flat.shape[0], device=flat.device) - offsets[batch_indices]
++    out[batch_indices, positions] = flat
+     return out
+ 
+ 
+@@ -65,6 +78,7 @@ class GlobalRelationalModel(nn.Module):
+         dropout=0.1,
+         num_layers=4,
+         chunk_size=DEFAULT_CHUNK,
++        batched_geometry=False,
+     ):
+         super().__init__()
+ 
+@@ -74,6 +88,9 @@ class GlobalRelationalModel(nn.Module):
+         self.total_steps = 1
+         self.k = k
+         self.chunk_size = chunk_size
++        self.batched_geometry = batched_geometry or os.environ.get(
++            "NEMOTRON_OCR_BATCHED_RELATIONAL_GEOMETRY", "0"
++        ).strip().lower() in {"1", "true", "yes", "on"}
+         self.quad_rectify_grid_size = (2, 3)
+         self.quad_downscale = 1024.0
+         self.inference_mode = False
+@@ -324,6 +341,113 @@ class GlobalRelationalModel(nn.Module):
+ 
+         return full_encoding, ex_offsets, region_counts, mid_pts
+ 
++    def _build_batched_geometry_inputs(
++        self,
++        proj_rects: torch.Tensor,
++        mid_pts: torch.Tensor,
++        quads: torch.Tensor,
++        region_counts: torch.Tensor,
++        counts_list: list[int],
++    ):
++        """Build relational inputs with one ragged distance launch.
++
++        Images are grouped by their exact region count for ``topk``. This keeps
++        the last-dimension width and ``k`` identical to the legacy per-image
++        calls, including the ordering produced by ``sorted=False``. CPU region
++        counts are required so choosing the padded extent never synchronizes a
++        CUDA scalar back to the host.
++        """
++        device = proj_rects.device
++        dtype = proj_rects.dtype
++        feat_dim = proj_rects.shape[1]
++        z = self.k - 1
++        seq_len = z + 1
++        n_total = proj_rects.shape[0]
++        k_max = max(counts_list, default=0)
++
++        enc_input_flat = torch.zeros(
++            n_total,
++            seq_len,
++            2 * feat_dim + 2,
++            dtype=dtype,
++            device=device,
++        )
++        mask_flat = torch.ones(
++            n_total, seq_len, dtype=torch.bool, device=device
++        )
++        closest_flat = torch.zeros(
++            n_total, seq_len, dtype=torch.long, device=device
++        )
++
++        enc_input_flat[:, 0, :feat_dim] = proj_rects
++        enc_input_flat[:, 0, 2 * feat_dim] = -1
++        enc_input_flat[:, 0, 2 * feat_dim + 1] = -2
++        mask_flat[:, 0] = False
++
++        if n_total == 0 or z == 0:
++            return enc_input_flat, mask_flat, closest_flat
++
++        counts_device = region_counts.to(device=device, dtype=torch.long)
++        starts = torch.cumsum(counts_device, dim=0) - counts_device
++        padded_quads = _pad_flat_to_batched(quads, counts_device, k_max)
++        padded_rects = _pad_flat_to_batched(proj_rects, counts_device, k_max)
++        padded_centers = _pad_flat_to_batched(mid_pts, counts_device, k_max)
++        all_dists = get_cdist_batched(padded_quads, counts_device)
++
++        count_groups = {}
++        for image_index, count in enumerate(counts_list):
++            if count > 1:
++                count_groups.setdefault(count, []).append(image_index)
++
++        for count, image_indices in count_groups.items():
++            z_i = min(count - 1, z)
++            group_indices = torch.tensor(
++                image_indices, dtype=torch.long, device=device
++            )
++            group_rows = starts[group_indices, None] + torch.arange(
++                count, device=device
++            )
++
++            dists = all_dists.index_select(0, group_indices)[:, :count, :count]
++            topk_d, topk_idx = torch.topk(
++                dists,
++                k=z_i,
++                dim=2,
++                largest=False,
++                sorted=False,
++            )
++
++            rects = padded_rects.index_select(0, group_indices)[:, :count]
++            centers = padded_centers.index_select(0, group_indices)[:, :count]
++            group_quads = padded_quads.index_select(0, group_indices)[:, :count]
++
++            neighbor_rects = torch.gather(
++                rects.unsqueeze(1).expand(-1, count, -1, -1),
++                dim=2,
++                index=topk_idx.unsqueeze(3).expand(-1, -1, -1, feat_dim),
++            )
++            neighbor_centers = torch.gather(
++                centers.unsqueeze(1).expand(-1, count, -1, -1),
++                dim=2,
++                index=topk_idx.unsqueeze(3).expand(-1, -1, -1, 2),
++            )
++            directions = get_directions(
++                group_quads.reshape(-1, 4, 2),
++                neighbor_centers.reshape(-1, z_i, 2),
++            ).reshape(-1, count, z_i).to(dtype=dtype)
++            from_rects = rects.unsqueeze(2).expand(-1, -1, z_i, -1)
++
++            enc_input_flat[group_rows, 1 : z_i + 1, :feat_dim] = from_rects
++            enc_input_flat[
++                group_rows, 1 : z_i + 1, feat_dim : 2 * feat_dim
++            ] = neighbor_rects
++            enc_input_flat[group_rows, 1 : z_i + 1, 2 * feat_dim] = topk_d
++            enc_input_flat[group_rows, 1 : z_i + 1, 2 * feat_dim + 1] = directions
++            mask_flat[group_rows, 1 : z_i + 1] = False
++            closest_flat[group_rows, 1 : z_i + 1] = topk_idx + 1
++
++        return enc_input_flat, mask_flat, closest_flat
++
+     def forward(
+         self,
+         rectified_quads: torch.Tensor,
+@@ -370,38 +494,86 @@ class GlobalRelationalModel(nn.Module):
+             offsets.append(offsets[-1] + c)
+         n_total = offsets[-1]
+ 
+-        enc_input_flat = torch.zeros(n_total, seq_len, 2 * feat_dim + 2, dtype=dtype, device=device)
+-        mask_flat = torch.ones(n_total, seq_len, dtype=torch.bool, device=device)
+-        closest_flat = torch.zeros(n_total, seq_len, dtype=torch.long, device=device)
++        use_batched_geometry = (
++            self.batched_geometry
++            and region_counts.device.type == "cpu"
++            and region_counts.dim() == 1
++            and all(count >= 0 for count in counts_list)
++            and sum(counts_list) == n_total
++        )
++        if use_batched_geometry:
++            enc_input_flat, mask_flat, closest_flat = (
++                self._build_batched_geometry_inputs(
++                    proj_rects,
++                    mid_pts,
++                    quads,
++                    region_counts,
++                    counts_list,
++                )
++            )
++        else:
++            enc_input_flat = torch.zeros(
++                n_total,
++                seq_len,
++                2 * feat_dim + 2,
++                dtype=dtype,
++                device=device,
++            )
++            mask_flat = torch.ones(
++                n_total, seq_len, dtype=torch.bool, device=device
++            )
++            closest_flat = torch.zeros(
++                n_total, seq_len, dtype=torch.long, device=device
++            )
+ 
+-        for i, n_i in enumerate(counts_list):
+-            if n_i == 0:
+-                continue
+-            s, e = offsets[i], offsets[i + 1]
+-            rects_i = proj_rects[s:e]
+-            centers_i = mid_pts[s:e]
+-            quads_i = quads[s:e]
+-            z_i = min(n_i - 1, z)
+-
+-            from_r = rects_i.unsqueeze(1).expand(-1, seq_len, -1)
+-            enc_input_flat[s:e, 0, :feat_dim] = rects_i
+-            enc_input_flat[s:e, 0, 2 * feat_dim] = -1
+-            enc_input_flat[s:e, 0, 2 * feat_dim + 1] = -2
+-            mask_flat[s:e, 0] = False
+-
+-            if z_i > 0:
+-                dists_i = get_cdist(quads_i, centers_i)
+-                topk_d, topk_idx = torch.topk(dists_i, k=z_i, dim=1, largest=False, sorted=False)
+-                nb_r = torch.gather(rects_i.unsqueeze(0).expand(n_i, -1, -1), 1, topk_idx.unsqueeze(2).expand(-1, -1, feat_dim))
+-                nb_c = torch.gather(centers_i.unsqueeze(0).expand(n_i, -1, -1), 1, topk_idx.unsqueeze(2).expand(-1, -1, 2))
+-                dirs_i = get_directions(quads_i, nb_c)
+-
+-                enc_input_flat[s:e, 1:z_i + 1, :feat_dim] = from_r[:, 1:z_i + 1]
+-                enc_input_flat[s:e, 1:z_i + 1, feat_dim:2 * feat_dim] = nb_r
+-                enc_input_flat[s:e, 1:z_i + 1, 2 * feat_dim] = topk_d
+-                enc_input_flat[s:e, 1:z_i + 1, 2 * feat_dim + 1] = dirs_i
+-                mask_flat[s:e, 1:z_i + 1] = False
+-                closest_flat[s:e, 1:z_i + 1] = topk_idx + 1
++            for i, n_i in enumerate(counts_list):
++                if n_i == 0:
++                    continue
++                s, e = offsets[i], offsets[i + 1]
++                rects_i = proj_rects[s:e]
++                centers_i = mid_pts[s:e]
++                quads_i = quads[s:e]
++                z_i = min(n_i - 1, z)
++
++                from_r = rects_i.unsqueeze(1).expand(-1, seq_len, -1)
++                enc_input_flat[s:e, 0, :feat_dim] = rects_i
++                enc_input_flat[s:e, 0, 2 * feat_dim] = -1
++                enc_input_flat[s:e, 0, 2 * feat_dim + 1] = -2
++                mask_flat[s:e, 0] = False
++
++                if z_i > 0:
++                    dists_i = get_cdist(quads_i, centers_i)
++                    topk_d, topk_idx = torch.topk(
++                        dists_i,
++                        k=z_i,
++                        dim=1,
++                        largest=False,
++                        sorted=False,
++                    )
++                    nb_r = torch.gather(
++                        rects_i.unsqueeze(0).expand(n_i, -1, -1),
++                        1,
++                        topk_idx.unsqueeze(2).expand(-1, -1, feat_dim),
++                    )
++                    nb_c = torch.gather(
++                        centers_i.unsqueeze(0).expand(n_i, -1, -1),
++                        1,
++                        topk_idx.unsqueeze(2).expand(-1, -1, 2),
++                    )
++                    dirs_i = get_directions(quads_i, nb_c)
++
++                    enc_input_flat[s:e, 1 : z_i + 1, :feat_dim] = from_r[
++                        :, 1 : z_i + 1
++                    ]
++                    enc_input_flat[
++                        s:e, 1 : z_i + 1, feat_dim : 2 * feat_dim
++                    ] = nb_r
++                    enc_input_flat[s:e, 1 : z_i + 1, 2 * feat_dim] = topk_d
++                    enc_input_flat[s:e, 1 : z_i + 1, 2 * feat_dim + 1] = (
++                        dirs_i
++                    )
++                    mask_flat[s:e, 1 : z_i + 1] = False
++                    closest_flat[s:e, 1 : z_i + 1] = topk_idx + 1
+ 
+         # Chunked encoder on flat regions — always sees [chunk_size, seq_len, dim]
+         def _run_encoder(enc, mask):
+diff --git a/nemotron-ocr/src/nemotron_ocr/inference/pipeline_v2.py b/nemotron-ocr/src/nemotron_ocr/inference/pipeline_v2.py
+index 4e9cc42..584c436 100644
+--- a/nemotron-ocr/src/nemotron_ocr/inference/pipeline_v2.py
++++ b/nemotron-ocr/src/nemotron_ocr/inference/pipeline_v2.py
+@@ -87,16 +87,14 @@ def _argmax_softmax_probability(logits):
+     """Return argmax IDs and their softmax probabilities without a full output."""
+     if triton is None or not logits.is_cuda:
+         ids = logits.argmax(dim=2)
+-        probabilities = torch.softmax(logits, dim=2).gather(
+-            2, ids.unsqueeze(2)
+-        ).squeeze(2)
++        probabilities = (
++            torch.softmax(logits, dim=2).gather(2, ids.unsqueeze(2)).squeeze(2)
++        )
+         return ids, probabilities.float()
+ 
+     rows = logits.reshape(-1, logits.shape[-1])
+     ids = torch.empty(rows.shape[0], dtype=torch.int64, device=logits.device)
+-    probabilities = torch.empty(
+-        rows.shape[0], dtype=logits.dtype, device=logits.device
+-    )
++    probabilities = torch.empty(rows.shape[0], dtype=logits.dtype, device=logits.device)
+     block_size = triton.next_power_of_2(rows.shape[1])
+     _argmax_softmax_probability_kernel[(rows.shape[0],)](
+         rows,
+@@ -169,12 +167,52 @@ class NemotronOCRV2(NemotronOCR):
+ 
+         torch.backends.cuda.matmul.allow_tf32 = True
+         torch.backends.cudnn.allow_tf32 = True
+-        torch.backends.cudnn.benchmark = os.environ.get(
+-            "NEMOTRON_OCR_CUDNN_BENCHMARK", "0"
+-        ) == "1"
+-        self._detector_channels_last = os.environ.get(
+-            "NEMOTRON_OCR_DETECTOR_CHANNELS_LAST", "0"
+-        ) == "1"
++        torch.backends.cudnn.benchmark = (
++            os.environ.get("NEMOTRON_OCR_CUDNN_BENCHMARK", "0") == "1"
++        )
++        self._detector_channels_last = (
++            os.environ.get("NEMOTRON_OCR_DETECTOR_CHANNELS_LAST", "0") == "1"
++        )
++        self._mixed_grid_sample = (
++            os.environ.get("NEMOTRON_OCR_MIXED_GRID_SAMPLE", "0") == "1"
++        )
++        self._fused_batch_norm_relu_count = 0
++        self._fused_residual_norm_count = 0
++        self._fused_aspp_norm_add_count = 0
++        if os.environ.get("NEMOTRON_OCR_FUSED_ASPP_NORM_ADD", "0") == "1":
++            from nemotron_ocr.inference.models.detector.fast_batch_norm import (
++                fuse_aspp_batch_norm_relu_add,
++            )
++
++            self._fused_aspp_norm_add_count = fuse_aspp_batch_norm_relu_add(
++                self.detector
++            )
++            logger.info(
++                "Replaced %d ASPP norm/ReLU/residual-add paths",
++                self._fused_aspp_norm_add_count,
++            )
++        if os.environ.get("NEMOTRON_OCR_FUSED_RESIDUAL_NORM", "0") == "1":
++            from nemotron_ocr.inference.models.detector.fast_batch_norm import (
++                fuse_residual_batch_norm_add_relu,
++            )
++
++            self._fused_residual_norm_count = fuse_residual_batch_norm_add_relu(
++                self.detector
++            )
++            logger.info(
++                "Replaced %d detector residual norm/add/ReLU blocks",
++                self._fused_residual_norm_count,
++            )
++        if os.environ.get("NEMOTRON_OCR_FUSED_BATCH_NORM_RELU", "0") == "1":
++            from nemotron_ocr.inference.models.detector.fast_batch_norm import (
++                fuse_batch_norm_relu,
++            )
++
++            self._fused_batch_norm_relu_count = fuse_batch_norm_relu(self.detector)
++            logger.info(
++                "Replaced %d detector BatchNorm+ReLU pairs with fused kernels",
++                self._fused_batch_norm_relu_count,
++            )
+         if self._detector_channels_last:
+             self.detector.to(memory_format=torch.channels_last)
+         detector_compile_mode = os.environ.get("NEMOTRON_OCR_COMPILE_DETECTOR")
+@@ -216,14 +254,16 @@ class NemotronOCRV2(NemotronOCR):
+         if hasattr(self, "relational"):
+             self.relational.chunk_size = relational_chunk_size
+ 
+-        if verbose_post and hasattr(self, "relation_encoder") and hasattr(self.relation_encoder, "_verbose"):
++        if (
++            verbose_post
++            and hasattr(self, "relation_encoder")
++            and hasattr(self.relation_encoder, "_verbose")
++        ):
+             self.relation_encoder._verbose = True
+ 
+         if not self._detector_only and hasattr(self, "recognizer"):
+             self._pad_classifier_for_alignment(64)
+-            recognizer_compile_mode = os.environ.get(
+-                "NEMOTRON_OCR_COMPILE_RECOGNIZER"
+-            )
++            recognizer_compile_mode = os.environ.get("NEMOTRON_OCR_COMPILE_RECOGNIZER")
+             self._recognizer_clone_compiled_outputs = recognizer_compile_mode in {
+                 "reduce-overhead",
+                 "max-autotune",
+@@ -265,7 +305,9 @@ class NemotronOCRV2(NemotronOCR):
+         self.recognizer.classifier = new_cls
+         logger.info(
+             "Padded recognizer classifier %d -> %d (alignment=%d)",
+-            real, padded, alignment,
++            real,
++            padded,
++            alignment,
+         )
+ 
+     # ------------------------------------------------------------------
+@@ -347,7 +389,9 @@ class NemotronOCRV2(NemotronOCR):
+             del tensor_gpu
+ 
+             resized = interpolate_and_pad(
+-                padded.unsqueeze(0), self._pad_color, self.infer_length,
++                padded.unsqueeze(0),
++                self._pad_color,
++                self.infer_length,
+             ).squeeze(0)
+             del padded
+             resized_list.append(resized)
+@@ -377,14 +421,22 @@ class NemotronOCRV2(NemotronOCR):
+                 if t.shape[0] == 4:
+                     t = t[:3]
+                 if t.dtype != torch.uint8:
+-                    t = (t * 255).clamp(0, 255).to(torch.uint8) if t.is_floating_point() else t.to(torch.uint8)
++                    t = (
++                        (t * 255).clamp(0, 255).to(torch.uint8)
++                        if t.is_floating_point()
++                        else t.to(torch.uint8)
++                    )
+                 return t
+             if t.ndim == 3 and t.shape[2] in (1, 3, 4):
+                 t = t.permute(2, 0, 1)
+                 if t.shape[0] == 4:
+                     t = t[:3]
+                 if t.dtype != torch.uint8:
+-                    t = (t * 255).clamp(0, 255).to(torch.uint8) if t.is_floating_point() else t.to(torch.uint8)
++                    t = (
++                        (t * 255).clamp(0, 255).to(torch.uint8)
++                        if t.is_floating_point()
++                        else t.to(torch.uint8)
++                    )
+                 return t
+             raise ValueError(f"Unsupported tensor shape: {image.shape}")
+ 
+@@ -394,19 +446,29 @@ class NemotronOCRV2(NemotronOCR):
+             if image.shape[2] == 4:
+                 image = image[..., :3]
+             if image.dtype != np.uint8:
+-                image = (image * 255).clip(0, 255).astype(np.uint8) if image.max() <= 1.0 else image.astype(np.uint8)
++                image = (
++                    (image * 255).clip(0, 255).astype(np.uint8)
++                    if image.max() <= 1.0
++                    else image.astype(np.uint8)
++                )
+             return torch.from_numpy(image).permute(2, 0, 1)
+ 
+         from torchvision.io import read_image, decode_image
++
+         if isinstance(image, (str, os.PathLike)):
+             return read_image(str(image), mode="RGB")
+         if isinstance(image, bytes):
+             import base64
++
+             img_bytes = base64.b64decode(image)
+-            return decode_image(torch.frombuffer(img_bytes, dtype=torch.uint8), mode="RGB")
+-        if hasattr(image, 'read'):
++            return decode_image(
++                torch.frombuffer(img_bytes, dtype=torch.uint8), mode="RGB"
++            )
++        if hasattr(image, "read"):
+             image.seek(0)
+-            return decode_image(torch.frombuffer(image.getvalue(), dtype=torch.uint8), mode="RGB")
++            return decode_image(
++                torch.frombuffer(image.getvalue(), dtype=torch.uint8), mode="RGB"
++            )
+ 
+         raise TypeError(f"Unsupported input type: {type(image)}")
+ 
+@@ -455,8 +517,13 @@ class NemotronOCRV2(NemotronOCR):
+         to suppress edge pixels, then keeps only local maxima.  This prevents
+         the O(n^2) NMS adjacency blowup on images with large text regions
+         while preserving all real detection peaks.
++
++        Returns sigmoid probabilities with non-peaks masked exactly as in the
++        legacy filtered-logit path.  NMS reuses them so the dense confidence
++        map is not passed through sigmoid a second time.
+         """
+         with torch.inference_mode():
++            conf_sigmoid = torch.sigmoid(det_conf.float())
+             d_top = det_rboxes[..., 0].float()
+             d_right = det_rboxes[..., 1].float()
+             d_bottom = det_rboxes[..., 2].float()
+@@ -469,31 +536,42 @@ class NemotronOCRV2(NemotronOCR):
+ 
+             centerness = torch.sqrt((lr_min / lr_max) * (tb_min / tb_max))
+ 
+-            conf_sigmoid = torch.sigmoid(det_conf.float())
+             adjusted = conf_sigmoid * centerness
+ 
+             k = self._prefilter_peak_kernel
+             pad = k // 2
+             adj_4d = adjusted.unsqueeze(1)
+             pooled = F.max_pool2d(adj_4d, k, stride=1, padding=pad)
+-            pooled = pooled[:, 0, :det_conf.shape[1], :det_conf.shape[2]]
++            pooled = pooled[:, 0, : det_conf.shape[1], : det_conf.shape[2]]
+ 
+             peaks = (adjusted == pooled) & (adjusted > NMS_PROB_THRESHOLD)
+ 
+-            filtered = det_conf.clone()
+-            filtered[~peaks] = -100.0
+-
+-        return filtered
+-
+-    def _run_nms(self, det_conf, det_rboxes):
++            # Match ``torch.sigmoid(filtered_logits)`` exactly while reusing
++            # the probabilities already computed for peak selection.
++            # Detector logits can be fp16/bf16 under autocast, so cast back to
++            # their dtype before NMS.  Sigmoid(-100) is exactly zero in each
++            # detector dtype.  Keep a legacy fallback for non-detector dtypes
++            # (notably float64, where sigmoid(-100) remains nonzero).
++            if det_conf.dtype in (torch.float16, torch.bfloat16, torch.float32):
++                e2e_det_conf = conf_sigmoid.to(dtype=det_conf.dtype)
++                e2e_det_conf.masked_fill_(~peaks, 0.0)
++            else:
++                filtered = det_conf.clone()
++                filtered[~peaks] = -100.0
++                e2e_det_conf = torch.sigmoid(filtered)
++
++        return e2e_det_conf
++
++    def _run_nms(self, det_conf, det_rboxes, e2e_det_conf=None):
+         """Sigmoid + rrect_to_quads + NMS.
+ 
+         Returns:
+             (quads, confidence, region_counts, e2e_det_conf) or None if
+             zero detections.
+         """
+-        with torch.inference_mode():
+-            e2e_det_conf = torch.sigmoid(det_conf)
++        if e2e_det_conf is None:
++            with torch.inference_mode():
++                e2e_det_conf = torch.sigmoid(det_conf)
+ 
+         with amp.autocast("cuda", enabled=True), torch.inference_mode():
+             e2e_det_coords = rrect_to_quads(det_rboxes.float(), DETECTOR_DOWNSAMPLE)
+@@ -535,13 +613,19 @@ class NemotronOCRV2(NemotronOCR):
+             input_indices_cuda = input_indices.cuda(non_blocking=True)
+             region_counts_cpu = region_counts.cpu()
+ 
+-            det_fp32 = det_features.float()
+-            rec_quads = self.grid_sampler(det_fp32, rec_rectified, input_indices_cuda)
++            grid_features = (
++                det_features if self._mixed_grid_sample else det_features.float()
++            )
++            rec_quads = self.grid_sampler(
++                grid_features, rec_rectified, input_indices_cuda
++            )
+ 
+             rel_quads = None
+             if not self._skip_relational:
+                 rel_rectified = self.relational_quad_rectifier(quads_cuda, h, w)
+-                rel_quads = self.grid_sampler(det_fp32, rel_rectified, input_indices_cuda)
++                rel_quads = self.grid_sampler(
++                    grid_features, rel_rectified, input_indices_cuda
++                )
+ 
+         return quads_cuda, rec_quads, rel_quads, region_counts_cpu
+ 
+@@ -570,7 +654,13 @@ class NemotronOCRV2(NemotronOCR):
+             return (
+                 torch.empty(0, self.max_width, dtype=torch.int64, device=device),
+                 torch.empty(0, self.max_width, dtype=torch.float32, device=device),
+-                torch.empty(0, self.max_width, self.recognizer.feature_depth, dtype=torch.float16, device=device),
++                torch.empty(
++                    0,
++                    self.max_width,
++                    self.recognizer.feature_depth,
++                    dtype=torch.float16,
++                    device=device,
++                ),
+             )
+ 
+         cs = self.recognizer_chunk_size
+@@ -581,7 +671,12 @@ class NemotronOCRV2(NemotronOCR):
+                 chunk = rec_quads[start:end].half()
+                 real_n = chunk.shape[0]
+                 if real_n < cs:
+-                    pad = torch.zeros(cs - real_n, *chunk.shape[1:], dtype=chunk.dtype, device=chunk.device)
++                    pad = torch.zeros(
++                        cs - real_n,
++                        *chunk.shape[1:],
++                        dtype=chunk.dtype,
++                        device=chunk.device,
++                    )
+                     chunk = torch.cat([chunk, pad], dim=0)
+                 logits, feats = self.recognizer(chunk)
+ 
+@@ -597,7 +692,11 @@ class NemotronOCRV2(NemotronOCR):
+         def _cat_or_single(parts):
+             return parts[0] if len(parts) == 1 else torch.cat(parts, dim=0)
+ 
+-        return _cat_or_single(ids_parts), _cat_or_single(probs_parts), _cat_or_single(feat_parts)
++        return (
++            _cat_or_single(ids_parts),
++            _cat_or_single(probs_parts),
++            _cat_or_single(feat_parts),
++        )
+ 
+     # ------------------------------------------------------------------
+     # Phase 6 — Relational model + build output dict
+@@ -637,7 +736,9 @@ class NemotronOCRV2(NemotronOCR):
+ 
+             # Vectorized quad scaling
+             scale_factors = torch.as_tensor(
+-                padded_lengths, dtype=torch.float32, device=quads_cuda.device,
++                padded_lengths,
++                dtype=torch.float32,
++                device=quads_cuda.device,
+             ) / float(self.infer_length)
+             counts_long = region_counts.to(dtype=torch.long, device=quads_cuda.device)
+             scale_per_region = torch.repeat_interleave(
+@@ -680,24 +781,35 @@ class NemotronOCRV2(NemotronOCR):
+     def _decode_with_fallback(self, output):
+         """Decode recognized sequences using pre-computed argmax indices."""
+         return self.recog_encoder.convert_targets_to_labels(
+-            output, image_size=None, is_gt=False,
++            output,
++            image_size=None,
++            is_gt=False,
+         )
+ 
+-    def _postprocess_batch(self, output, original_shapes, merge_level, include_invalid, timings=None):
++    def _postprocess_batch(
++        self, output, original_shapes, merge_level, include_invalid, timings=None
++    ):
+         """Decode sequences, build relation graphs, format per-image results."""
+         import gc
++
+         gc_was_enabled = gc.isenabled()
+         gc.disable()
+ 
+         try:
+             return self._postprocess_batch_inner(
+-                output, original_shapes, merge_level, include_invalid, timings,
++                output,
++                original_shapes,
++                merge_level,
++                include_invalid,
++                timings,
+             )
+         finally:
+             if gc_was_enabled:
+                 gc.enable()
+ 
+-    def _postprocess_batch_inner(self, output, original_shapes, merge_level, include_invalid, timings=None):
++    def _postprocess_batch_inner(
++        self, output, original_shapes, merge_level, include_invalid, timings=None
++    ):
+         _t = time.perf_counter
+ 
+         t0 = _t()
+@@ -705,7 +817,9 @@ class NemotronOCRV2(NemotronOCR):
+         recog_decode_ms = (_t() - t0) * 1000
+ 
+         t0 = _t()
+-        relation_batch = self.relation_encoder.convert_targets_to_labels(output, image_size=None, is_gt=False)
++        relation_batch = self.relation_encoder.convert_targets_to_labels(
++            output, image_size=None, is_gt=False
++        )
+         rel_decode_ms = (_t() - t0) * 1000
+ 
+         t0 = _t()
+@@ -728,7 +842,9 @@ class NemotronOCRV2(NemotronOCR):
+         for example in batch:
+             for text_region in example:
+                 v = text_region.region.vertices
+-                text_region.region = v.cpu().numpy() if hasattr(v, 'cpu') else np.asarray(v)
++                text_region.region = (
++                    v.cpu().numpy() if hasattr(v, "cpu") else np.asarray(v)
++                )
+         graph_build_ms = (_t() - t0) * 1000
+ 
+         t0 = _t()
+@@ -741,7 +857,9 @@ class NemotronOCRV2(NemotronOCR):
+                 continue
+ 
+             boxes, texts, scores = parse_relational_results(example, level=merge_level)
+-            boxes, texts, scores = reorder_boxes(boxes, texts, scores, mode="top_left", dbscan_eps=10)
++            boxes, texts, scores = reorder_boxes(
++                boxes, texts, scores, mode="top_left", dbscan_eps=10
++            )
+ 
+             if len(boxes) == 0:
+                 all_predictions.append([])
+@@ -753,14 +871,16 @@ class NemotronOCRV2(NemotronOCR):
+ 
+             preds = []
+             for box, text, conf in zip(boxes_array, texts, scores):
+-                preds.append({
+-                    "text": text,
+-                    "confidence": float(conf),
+-                    "left": float(box[:, 0].min()),
+-                    "upper": float(box[:, 1].max()),
+-                    "right": float(box[:, 0].max()),
+-                    "lower": float(box[:, 1].min()),
+-                })
++                preds.append(
++                    {
++                        "text": text,
++                        "confidence": float(conf),
++                        "left": float(box[:, 0].min()),
++                        "upper": float(box[:, 1].max()),
++                        "right": float(box[:, 0].max()),
++                        "lower": float(box[:, 1].min()),
++                    }
++                )
+             all_predictions.append(preds)
+         format_ms = (_t() - t0) * 1000
+ 
+@@ -795,7 +915,8 @@ class NemotronOCRV2(NemotronOCR):
+         if profile:
+             t0 = time.perf_counter()
+         resized_batch, original_shapes, padded_lengths = self._preprocess_batch(
+-            images, timings=T,
++            images,
++            timings=T,
+         )
+         if profile:
+             torch.cuda.synchronize()
+@@ -811,10 +932,11 @@ class NemotronOCRV2(NemotronOCR):
+             T["detector"] = (time.perf_counter() - t0) * 1000
+ 
+         # Phase 2.5: centerness + peak prefilter
++        e2e_det_conf = None
+         if self._use_prefilter:
+             if profile:
+                 t0 = time.perf_counter()
+-            det_conf = self._prefilter_detections(det_conf, det_rboxes)
++            e2e_det_conf = self._prefilter_detections(det_conf, det_rboxes)
+             if profile:
+                 torch.cuda.synchronize()
+                 T["prefilter"] = (time.perf_counter() - t0) * 1000
+@@ -822,7 +944,7 @@ class NemotronOCRV2(NemotronOCR):
+         # Phase 3: NMS
+         if profile:
+             t0 = time.perf_counter()
+-        nms_result = self._run_nms(det_conf, det_rboxes)
++        nms_result = self._run_nms(det_conf, det_rboxes, e2e_det_conf)
+         del det_conf, det_rboxes
+         if profile:
+             torch.cuda.synchronize()
+@@ -833,7 +955,10 @@ class NemotronOCRV2(NemotronOCR):
+                 T["total"] = (time.perf_counter() - t_wall) * 1000
+                 logger.info(
+                     "batch=%d  regions=0  det=%.1f  nms=%.1f  total=%.1f ms (no detections)",
+-                    num_images, T["detector"], T["nms"], T["total"],
++                    num_images,
++                    T["detector"],
++                    T["nms"],
++                    T["total"],
+                 )
+             return [[] for _ in range(num_images)]
+ 
+@@ -844,7 +969,9 @@ class NemotronOCRV2(NemotronOCR):
+         if self._detector_only:
+             with torch.inference_mode():
+                 scale_factors = torch.as_tensor(
+-                    padded_lengths, dtype=torch.float32, device=quads.device,
++                    padded_lengths,
++                    dtype=torch.float32,
++                    device=quads.device,
+                 ) / float(self.infer_length)
+                 counts_long = region_counts.to(dtype=torch.long, device=quads.device)
+                 scale_per_region = torch.repeat_interleave(
+@@ -867,14 +994,16 @@ class NemotronOCRV2(NemotronOCR):
+                 predictions = []
+                 for i in range(n):
+                     q = quads_np[offset + i]
+-                    predictions.append({
+-                        "quad": q.tolist(),
+-                        "confidence": float(confs_np[offset + i]),
+-                        "left": float(q[:, 0].min() / orig_w),
+-                        "right": float(q[:, 0].max() / orig_w),
+-                        "upper": float(q[:, 1].max() / orig_h),
+-                        "lower": float(q[:, 1].min() / orig_h),
+-                    })
++                    predictions.append(
++                        {
++                            "quad": q.tolist(),
++                            "confidence": float(confs_np[offset + i]),
++                            "left": float(q[:, 0].min() / orig_w),
++                            "right": float(q[:, 0].max() / orig_w),
++                            "upper": float(q[:, 1].max() / orig_h),
++                            "lower": float(q[:, 1].min() / orig_h),
++                        }
++                    )
+                 offset += n
+                 all_predictions.append(predictions)
+ 
+@@ -882,15 +1011,23 @@ class NemotronOCRV2(NemotronOCR):
+                 T["total"] = (time.perf_counter() - t_wall) * 1000
+                 logger.info(
+                     "batch=%d  regions=%d  det=%.1f  nms=%.1f  total=%.1f ms (detector_only)",
+-                    num_images, total_regions, T["detector"], T["nms"], T["total"],
++                    num_images,
++                    total_regions,
++                    T["detector"],
++                    T["nms"],
++                    T["total"],
+                 )
+             return all_predictions
+ 
+         # Phase 4: rectify + grid sample
+         if profile:
+             t0 = time.perf_counter()
+-        quads_cuda, rec_quads, rel_quads, region_counts_cpu = self._run_rectify_and_sample(
+-            quads, region_counts, det_features,
++        quads_cuda, rec_quads, rel_quads, region_counts_cpu = (
++            self._run_rectify_and_sample(
++                quads,
++                region_counts,
++                det_features,
++            )
+         )
+         del det_features
+         if profile:
+@@ -910,9 +1047,13 @@ class NemotronOCRV2(NemotronOCR):
+         if self._skip_relational:
+             with amp.autocast("cuda", enabled=True), torch.inference_mode():
+                 scale_factors = torch.as_tensor(
+-                    padded_lengths, dtype=torch.float32, device=quads_cuda.device,
++                    padded_lengths,
++                    dtype=torch.float32,
++                    device=quads_cuda.device,
+                 ) / float(self.infer_length)
+-                counts_long = region_counts.to(dtype=torch.long, device=quads_cuda.device)
++                counts_long = region_counts.to(
++                    dtype=torch.long, device=quads_cuda.device
++                )
+                 scale_per_region = torch.repeat_interleave(
+                     scale_factors,
+                     counts_long,
+@@ -926,35 +1067,41 @@ class NemotronOCRV2(NemotronOCR):
+                 _before_eos = (seq_ids == 1).cumsum(dim=1) == 0
+                 _real = (seq_ids != 0) & _before_eos
+                 _counts = _real.sum(dim=1).clamp(min=1).float()
+-                _log_sum = (torch.log(seq_probs.clamp(min=1e-8)) * _real.float()).sum(dim=1)
++                _log_sum = (torch.log(seq_probs.clamp(min=1e-8)) * _real.float()).sum(
++                    dim=1
++                )
+                 text_confidence = torch.exp(_log_sum / _counts)
+ 
+-            batch = self._decode_with_fallback({
+-                "sequences": seq_ids.cpu(),
+-                "sequence_probs": seq_probs.cpu(),
+-                "text_confidence": text_confidence.cpu(),
+-                "region_counts": region_counts.cpu(),
+-                "quads": quads_scaled.cpu(),
+-                "confidence": confidence.cpu(),
+-            })
++            batch = self._decode_with_fallback(
++                {
++                    "sequences": seq_ids.cpu(),
++                    "sequence_probs": seq_probs.cpu(),
++                    "text_confidence": text_confidence.cpu(),
++                    "region_counts": region_counts.cpu(),
++                    "quads": quads_scaled.cpu(),
++                    "confidence": confidence.cpu(),
++                }
++            )
+             all_predictions = []
+             for img_idx, example in enumerate(batch):
+                 orig_h, orig_w = original_shapes[img_idx]
+                 predictions = []
+                 for text_region in example:
+                     v = text_region.region.vertices
+-                    v = v.cpu().numpy() if hasattr(v, 'cpu') else np.asarray(v)
++                    v = v.cpu().numpy() if hasattr(v, "cpu") else np.asarray(v)
+                     v_norm = v.copy()
+                     v_norm[:, 0] /= orig_w
+                     v_norm[:, 1] /= orig_h
+-                    predictions.append({
+-                        "text": text_region.text,
+-                        "confidence": text_region.confidence,
+-                        "left": float(v_norm[:, 0].min()),
+-                        "right": float(v_norm[:, 0].max()),
+-                        "upper": float(v_norm[:, 1].max()),
+-                        "lower": float(v_norm[:, 1].min()),
+-                    })
++                    predictions.append(
++                        {
++                            "text": text_region.text,
++                            "confidence": text_region.confidence,
++                            "left": float(v_norm[:, 0].min()),
++                            "right": float(v_norm[:, 0].max()),
++                            "upper": float(v_norm[:, 1].max()),
++                            "lower": float(v_norm[:, 1].min()),
++                        }
++                    )
+                 all_predictions.append(predictions)
+ 
+             if profile:
+@@ -963,9 +1110,14 @@ class NemotronOCRV2(NemotronOCR):
+                 logger.info(
+                     "batch=%d  regions=%d(%s)  det=%.1f  nms=%.1f  "
+                     "rectify=%.1f  recog=%.1f  total=%.1f ms (skip_relational)",
+-                    num_images, total_regions, counts_str,
+-                    T["detector"], T["nms"],
+-                    T["rectify"], T["recognizer"], T["total"],
++                    num_images,
++                    total_regions,
++                    counts_str,
++                    T["detector"],
++                    T["nms"],
++                    T["rectify"],
++                    T["recognizer"],
++                    T["total"],
+                 )
+             return all_predictions
+ 
+@@ -993,7 +1145,11 @@ class NemotronOCRV2(NemotronOCR):
+         if profile:
+             t0 = time.perf_counter()
+         results = self._postprocess_batch(
+-            output, original_shapes, merge_level, include_invalid, timings=T,
++            output,
++            original_shapes,
++            merge_level,
++            include_invalid,
++            timings=T,
+         )
+         if profile:
+             T["post_total"] = (time.perf_counter() - t0) * 1000
+@@ -1006,12 +1162,21 @@ class NemotronOCRV2(NemotronOCR):
+                 "rectify=%.1f  recog=%.1f  rel=%.1f  "
+                 "post[decode=%.1f rel=%.1f graph=%.1f fmt=%.1f]=%.1f  "
+                 "total=%.1f ms",
+-                num_images, total_regions, counts_str,
+-                T.get("img_load", 0), T.get("gpu_preproc", 0),
+-                T.get("detector", 0), T.get("prefilter", 0), T.get("nms", 0),
+-                T.get("rectify", 0), T.get("recognizer", 0), T.get("relational", 0),
+-                T.get("post_recog_decode", 0), T.get("post_rel_decode", 0),
+-                T.get("post_graph_build", 0), T.get("post_format", 0),
++                num_images,
++                total_regions,
++                counts_str,
++                T.get("img_load", 0),
++                T.get("gpu_preproc", 0),
++                T.get("detector", 0),
++                T.get("prefilter", 0),
++                T.get("nms", 0),
++                T.get("rectify", 0),
++                T.get("recognizer", 0),
++                T.get("relational", 0),
++                T.get("post_recog_decode", 0),
++                T.get("post_rel_decode", 0),
++                T.get("post_graph_build", 0),
++                T.get("post_format", 0),
+                 T.get("post_total", 0),
+                 T["total"],
+             )

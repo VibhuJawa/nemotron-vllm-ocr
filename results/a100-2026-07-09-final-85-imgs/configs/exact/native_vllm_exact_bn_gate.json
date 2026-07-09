@@ -1,0 +1,325 @@
+{
+  "schema_version": 1,
+  "defaults": {
+    "gpu": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+    "python": "/raid/vjawa/tmp/ocr_optimization/venv/bin/python",
+    "vllm_cli": "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm",
+    "vllm_root": "/raid/vjawa/tmp/ocr_optimization/vllm",
+    "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2",
+    "model_source": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2/nemotron-ocr/src",
+    "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+    "benchmark_script": "/home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py",
+    "output_root": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_config_sweeps",
+    "mps_root": "/tmp/nemotron-ocr-native-sweep",
+    "host": "127.0.0.1",
+    "base_port": 8401,
+    "ready_timeout_s": 900,
+    "benchmark_timeout_s": 3600,
+    "cuda_home": "/usr/local/cuda",
+    "hf_home": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+    "hf_hub_cache": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+    "torchinductor_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor",
+    "triton_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/triton",
+    "omp_num_threads": 4,
+    "env": {
+      "NEMOTRON_OCR_FUSED_UPSAMPLE_CONCAT": "1",
+      "NEMOTRON_OCR_FUSED_ASPP_CONCAT": "1",
+      "NEMOTRON_OCR_BATCHED_RELATIONAL_GEOMETRY": "1",
+      "NEMOTRON_OCR_MIXED_GRID_SAMPLE": "1",
+      "NEMOTRON_OCR_FUSED_BATCH_NORM_RELU": "1",
+      "NEMOTRON_OCR_FUSED_RESIDUAL_NORM": "1",
+      "NEMOTRON_OCR_FUSED_ASPP_NORM_ADD": "1",
+      "NEMOTRON_OCR_FUSED_INPUT_NORMALIZATION": "1",
+      "CPATH": "/raid/vjawa/tmp/ocr_optimization/python/cpython-3.12.12-linux-x86_64-gnu/include/python3.12"
+    },
+    "server": {
+      "replicas": 8,
+      "max_num_seqs": 64,
+      "gpu_memory_utilization": 0.85,
+      "renderer_num_workers": 4,
+      "detector_max_batch_size": 16,
+      "recognizer_chunk_size": 128,
+      "relational_chunk_size": 128,
+      "infer_length": 1024,
+      "mps_enabled": true,
+      "mps_active_thread_percentage": 25,
+      "mm_processor_cache_gb": 0,
+      "enforce_eager": true,
+      "async_scheduling": false,
+      "disable_access_log": true,
+      "disable_log_stats": true,
+      "extra_args": []
+    },
+    "benchmark": {
+      "num_prompts": 30000,
+      "replay_count": 30,
+      "concurrency_per_endpoint": 96,
+      "warmups_per_endpoint": 32,
+      "trace_interval_ms": 250,
+      "extra_args": []
+    }
+  },
+  "sweep": [
+    {
+      "name": "r8-c96-mps25-rec128-exact-fusions"
+    },
+    {
+      "name": "r8-c96-mps24-rec128-exact-fusions",
+      "server": {
+        "mps_active_thread_percentage": 24
+      }
+    },
+    {
+      "name": "r8-c96-mps28-rec128-exact-fusions",
+      "server": {
+        "mps_active_thread_percentage": 28
+      }
+    },
+    {
+      "name": "r8-c96-mps25-rec192-exact-fusions",
+      "server": {
+        "recognizer_chunk_size": 192
+      }
+    },
+    {
+      "name": "r8-c96-mps25-rec256-exact-fusions",
+      "server": {
+        "recognizer_chunk_size": 256
+      }
+    },
+    {
+      "name": "r8-seq48-c80-mps25-rec128-exact-fusions",
+      "server": {
+        "max_num_seqs": 48
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 80
+      }
+    },
+    {
+      "name": "r8-seq40-c72-mps25-rec128-exact-fusions",
+      "server": {
+        "max_num_seqs": 40
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 72
+      }
+    },
+    {
+      "name": "r8-seq32-c64-mps25-rec128-exact-fusions",
+      "server": {
+        "max_num_seqs": 32
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 64
+      }
+    },
+    {
+      "name": "r8-seq34-c66-mps25-rec128-exact-fusions",
+      "server": {
+        "max_num_seqs": 34
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 66
+      }
+    },
+    {
+      "name": "r8-seq36-c68-mps25-rec128-exact-fusions",
+      "server": {
+        "max_num_seqs": 36
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 68
+      }
+    },
+    {
+      "name": "r8-seq38-c70-mps25-rec128-exact-fusions",
+      "server": {
+        "max_num_seqs": 38
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 70
+      }
+    },
+    {
+      "name": "r8-seq40-c64-mps25-rec128-exact-fusions",
+      "server": {
+        "max_num_seqs": 40
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 64
+      }
+    },
+    {
+      "name": "r8-seq40-c56-mps25-rec128-exact-fusions",
+      "server": {
+        "max_num_seqs": 40
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 56
+      }
+    },
+    {
+      "name": "r8-seq40-c60-mps25-rec128-exact-fusions",
+      "server": {
+        "max_num_seqs": 40
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 60
+      }
+    },
+    {
+      "name": "r8-seq40-c68-mps25-rec128-exact-fusions",
+      "server": {
+        "max_num_seqs": 40
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 68
+      }
+    },
+    {
+      "name": "r8-seq40-c64-mps25-rec128-async-exact-fusions",
+      "server": {
+        "max_num_seqs": 40,
+        "async_scheduling": true
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 64
+      }
+    },
+    {
+      "name": "r8-seq40-c64-mps25-rec128-compiled-exact-fusions",
+      "server": {
+        "max_num_seqs": 40,
+        "enforce_eager": false
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 64
+      }
+    },
+    {
+      "name": "r8-seq40-c64-mps25-rec128-async-compiled-exact-fusions",
+      "server": {
+        "max_num_seqs": 40,
+        "enforce_eager": false,
+        "async_scheduling": true
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 64
+      }
+    },
+    {
+      "name": "r8-seq40-c80-mps25-rec128-exact-fusions",
+      "server": {
+        "max_num_seqs": 40
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 80
+      }
+    },
+    {
+      "name": "r9-seq36-c68-mps22-rec128-exact-fusions",
+      "server": {
+        "replicas": 9,
+        "max_num_seqs": 36,
+        "mps_active_thread_percentage": 22
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 68
+      }
+    },
+    {
+      "name": "r8-seq44-c76-mps25-rec128-exact-fusions",
+      "server": {
+        "max_num_seqs": 44
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 76
+      }
+    },
+    {
+      "name": "r8-seq52-c84-mps25-rec128-exact-fusions",
+      "server": {
+        "max_num_seqs": 52
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 84
+      }
+    },
+    {
+      "name": "r8-seq56-c88-mps25-rec128-exact-fusions",
+      "server": {
+        "max_num_seqs": 56
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 88
+      }
+    },
+    {
+      "name": "r8-seq48-c72-mps25-rec128-exact-fusions",
+      "server": {
+        "max_num_seqs": 48
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 72
+      }
+    },
+    {
+      "name": "r8-seq48-c96-mps25-rec128-exact-fusions",
+      "server": {
+        "max_num_seqs": 48
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 96
+      }
+    },
+    {
+      "name": "r8-det20-seq48-c80-mps25-rec128-exact-fusions",
+      "server": {
+        "detector_max_batch_size": 20,
+        "max_num_seqs": 48
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 80
+      }
+    },
+    {
+      "name": "r7-seq64-c96-mps28-rec128-exact-fusions",
+      "server": {
+        "replicas": 7,
+        "mps_active_thread_percentage": 28
+      }
+    },
+    {
+      "name": "r8-seq96-c128-mps25-rec128",
+      "server": {
+        "max_num_seqs": 96
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 128
+      }
+    },
+    {
+      "name": "r8-seq128-c160-mps25-rec128",
+      "server": {
+        "max_num_seqs": 128
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 160
+      }
+    },
+    {
+      "name": "r8-det24-seq64-c96-mps25-rec128",
+      "server": {
+        "detector_max_batch_size": 24
+      }
+    },
+    {
+      "name": "r9-seq64-c96-mps22-rec128",
+      "server": {
+        "replicas": 9,
+        "mps_active_thread_percentage": 22
+      }
+    }
+  ]
+}

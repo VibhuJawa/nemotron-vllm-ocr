@@ -21,21 +21,44 @@ The benchmarked implementation is split at the correct ownership boundary:
 
 - **vLLM integration and serving path:**
   [`VibhuJawa/vllm#1`](https://github.com/VibhuJawa/vllm/pull/1), pinned at
-  [`267b6f6d6`](https://github.com/VibhuJawa/vllm/commit/267b6f6d6aecf5e33d82f549941f9ee486e29ab1).
+  [`968f8c884`](https://github.com/VibhuJawa/vllm/commit/968f8c8849d9c10bb32f898107522d90f28fedce).
   This contains the native pooling model and I/O plugin, JPEG-byte ingestion,
   vLLM queue/sweep tooling, benchmark drivers, tests, and A100 report.
 - **Nemotron OCR model and CUDA optimizations:**
   [`nvidia/nemotron-ocr-v2` PR #8](https://huggingface.co/nvidia/nemotron-ocr-v2/discussions/8),
   pinned at
-  [`bb392d4`](https://huggingface.co/nvidia/nemotron-ocr-v2/commit/bb392d494b616d3a1692c3dbe59f63c1d2a8a7fa).
+  [`a92d75050`](https://huggingface.co/nvidia/nemotron-ocr-v2/commit/a92d75050f05c2638394e970bf8cec53c113d99b).
   This contains current-stream CUDA launches, reduced GPU synchronization,
   relational staging, fused OpenAI Triton decoding, and regression tests.
 - **Results and telemetry:**
+  [`results/a100-2026-07-09-final-85-imgs/`](results/a100-2026-07-09-final-85-imgs/README.md)
+  is the immutable final matched bundle: official HF, tuned clean vLLM, and
+  optimized native vLLM raw results/traces, repeated-control output agreement,
+  exact and portable sweep configs, reusable harnesses, and final charts.
+- **Earlier optimization checkpoint:**
   [`results/a100-2026-07-08/`](results/a100-2026-07-08/README.md) contains the
-  raw JSON/CSV traces, exact 1,000-page manifest, provenance, and final charts.
+  earlier 70.12 images/s optimization progression, exact 1,000-page manifest,
+  and historical charts.
 
-Until both pull requests merge, use the pinned commits above for an exact
-reproduction rather than the repositories' default branches.
+Until both pull requests merge, use the pinned commits above rather than the
+repositories' default branches. The final bundle also retains the exact
+benchmark-time base commits, patch hashes, and source-state copies.
+
+## Final matched A100 result: 85.3941303 images/s
+
+The final 30,000-image comparison measured **31.2456869 images/s** for the
+official NVIDIA/HF in-process pipeline, **45.1633991 images/s** for the tuned
+clean-model single-queue vLLM baseline, and **85.3941303 images/s** for the
+optimized eight-replica native-vLLM deployment. That is **2.733x** versus HF
+and **1.891x** versus the corrected clean-vLLM baseline, with zero failed vLLM
+requests.
+
+![Final matched 30K throughput](results/a100-2026-07-09-final-85-imgs/comparison/matched_30k_speedup.png)
+
+[Full report, raw result JSON, GPU traces, provenance, output-agreement summary, and reusable sweep tooling](results/a100-2026-07-09-final-85-imgs/README.md)
+
+This final bundle supersedes the 70.12 images/s historical checkpoint below for
+the current headline. The older section remains as an optimization record.
 
 ### Model-patch-only Hugging Face A/B
 
@@ -49,11 +72,11 @@ small-sample interval is **1.28% to 2.42%**.
 
 [Full protocol, statistics, raw JSON/CSV telemetry, and vector chart](results/a100-2026-07-09-model-pr8-ab/README.md)
 
-This is the speedup attributable to the model patch under direct HF execution.
-The 2.24x headline below is the complete optimized vLLM serving stack and is
-not attributed to the model PR alone.
+This is the speedup attributable to the earlier model-patch checkpoint under
+direct HF execution. The historical 2.24x result below is a complete serving
+stack result and is not attributed to the model PR alone.
 
-## A100 headline
+## Historical A100 checkpoint: 70.12 images/s
 
 The throughput-tuned native vLLM deployment reaches **70.12 images/s** on one
 A100 80GB over 30,000 timed JPEG-byte requests at the default

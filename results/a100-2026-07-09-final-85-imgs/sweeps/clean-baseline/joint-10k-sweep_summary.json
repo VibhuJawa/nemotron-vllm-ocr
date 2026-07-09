@@ -1,0 +1,2096 @@
+{
+  "allow_busy_gpu": false,
+  "argv": [
+    "/home/nfs/vjawa/ocr_optimization/scripts/run_native_vllm_sweep.py",
+    "--config",
+    "/home/nfs/vjawa/ocr_optimization/configs/native_vllm_clean_baseline_sweep.json",
+    "--only",
+    "joint-d32-rw4-s64-c128",
+    "--only",
+    "joint-d16-rw4-s96-c192",
+    "--only",
+    "adaptive-d8-rw4-s64-c192",
+    "--only",
+    "adaptive-d8-rw4-s32-c128",
+    "--only",
+    "adaptive-d8-rw4-s32-c192",
+    "--only",
+    "adaptive-d16-rw4-s64-c192",
+    "--only",
+    "adaptive-d16-rw4-s32-c128",
+    "--only",
+    "adaptive-d16-rw4-s32-c192",
+    "--label",
+    "clean-baseline-joint-10k"
+  ],
+  "config_source": {
+    "mtime_ns": 1783594680243490278,
+    "path": "/home/nfs/vjawa/ocr_optimization/configs/native_vllm_clean_baseline_sweep.json",
+    "sha256": "79e9892164858e2044820ddf5eeaaba55c331290ec7cdf7f36d84bd1df8e21a7",
+    "size_bytes": 5639
+  },
+  "datasets": {
+    "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl": {
+      "jpeg_data_uri_rows": 1000,
+      "jpeg_payload_bytes": 642407686,
+      "mtime_ns": 1783571267236863281,
+      "path": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+      "rows": 1000,
+      "sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+      "size_bytes": 856608912
+    }
+  },
+  "finished_at": "2026-07-09T11:34:35.950967+00:00",
+  "plans": [
+    {
+      "benchmark": {
+        "argv": [
+          "/raid/vjawa/tmp/ocr_optimization/venv/bin/python",
+          "/home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py",
+          "--endpoint",
+          "http://127.0.0.1:8421",
+          "--dataset",
+          "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+          "--output-dir",
+          "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/joint-d32-rw4-s64-c128/benchmark",
+          "--model",
+          "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+          "--num-prompts",
+          "10000",
+          "--replay-count",
+          "10",
+          "--infer-length",
+          "1024",
+          "--concurrency-per-endpoint",
+          "128",
+          "--warmups-per-endpoint",
+          "32",
+          "--gpu",
+          "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+          "--trace-interval-ms",
+          "250"
+        ],
+        "environment": {
+          "CUDA_HOME": "/usr/local/cuda",
+          "CUDA_VISIBLE_DEVICES": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+          "HF_HOME": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+          "HF_HUB_CACHE": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+          "HF_HUB_OFFLINE": "1",
+          "MKL_NUM_THREADS": "4",
+          "NEMOTRON_OCR_SOURCE": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+          "OMP_NUM_THREADS": "4",
+          "PATH": "/usr/local/cuda/bin:/opt/bin/:/home/nfs/vjawa/.codex/tmp/arg0/codex-arg0sgUk9p:/home/nfs/vjawa/.local/bin:/home/nfs/vjawa/.cargo/bin:/usr/local/cuda/bin:/opt/bin/:/raid/vjawa/codex/node_modules/.bin:/home/nfs/vjawa/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/nfs/vjawa:/home/nfs/vjawa",
+          "PYTHONPATH": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline:/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+          "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+          "TOKENIZERS_PARALLELISM": "false",
+          "TORCHINDUCTOR_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+          "TRITON_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+          "VLLM_LOGGING_LEVEL": "WARNING"
+        },
+        "shell_escaped": "/raid/vjawa/tmp/ocr_optimization/venv/bin/python /home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py --endpoint http://127.0.0.1:8421 --dataset /raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl --output-dir /raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/joint-d32-rw4-s64-c128/benchmark --model /raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline --num-prompts 10000 --replay-count 10 --infer-length 1024 --concurrency-per-endpoint 128 --warmups-per-endpoint 32 --gpu GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3 --trace-interval-ms 250"
+      },
+      "config": {
+        "base_port": 8421,
+        "benchmark": {
+          "concurrency_per_endpoint": 128,
+          "extra_args": [],
+          "num_prompts": 10000,
+          "replay_count": 10,
+          "trace_interval_ms": 250,
+          "warmups_per_endpoint": 32
+        },
+        "benchmark_script": "/home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py",
+        "benchmark_timeout_s": 1800,
+        "cuda_home": "/usr/local/cuda",
+        "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "env": {},
+        "expected_dataset_sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+        "expected_model_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+        "expected_model_extension_sha256": "05ac1b8d35a36b82595257ec85f081adb922c088249da9a83eaf6bc2b963ec1e",
+        "expected_vllm_commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+        "gpu": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+        "health_poll_interval_s": 1,
+        "health_settle_s": 2,
+        "hf_home": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+        "hf_hub_cache": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+        "host": "127.0.0.1",
+        "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+        "model_source": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+        "mps_root": "/tmp/nemotron-ocr-clean-baseline-sweep",
+        "name": "joint-d32-rw4-s64-c128",
+        "omp_num_threads": 4,
+        "output_root": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps",
+        "python": "/raid/vjawa/tmp/ocr_optimization/venv/bin/python",
+        "ready_timeout_s": 900,
+        "require_clean_repositories": true,
+        "server": {
+          "async_scheduling": false,
+          "detector_max_batch_size": 32,
+          "disable_access_log": true,
+          "disable_log_stats": true,
+          "enforce_eager": true,
+          "extra_args": [],
+          "gpu_memory_utilization": 0.85,
+          "hf_overrides": {},
+          "infer_length": 1024,
+          "max_num_seqs": 64,
+          "mm_processor_cache_gb": 0,
+          "mps_active_thread_percentage": [
+            100
+          ],
+          "mps_enabled": false,
+          "recognizer_chunk_size": 128,
+          "relational_chunk_size": 128,
+          "renderer_num_workers": 4,
+          "replicas": 1
+        },
+        "shutdown_timeout_s": 30,
+        "torchinductor_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+        "triton_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+        "vllm_cli": "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm",
+        "vllm_root": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline"
+      },
+      "endpoints": [
+        "http://127.0.0.1:8421"
+      ],
+      "mps": {
+        "enabled": false,
+        "environment": {},
+        "start": null,
+        "stop_stdin": null
+      },
+      "mps_runtime_dir": "/tmp/nemotron-ocr-clean-baseline-sweep/joint-d32-rw4-s64-c128-31d2171a07f3",
+      "name": "joint-d32-rw4-s64-c128",
+      "run_dir": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/joint-d32-rw4-s64-c128",
+      "servers": [
+        {
+          "argv": [
+            "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm",
+            "serve",
+            "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+            "--runner",
+            "pooling",
+            "--skip-tokenizer-init",
+            "--io-processor-plugin",
+            "nemotron_ocr_v2",
+            "--max-num-seqs",
+            "64",
+            "--gpu-memory-utilization",
+            "0.85",
+            "--mm-processor-cache-gb",
+            "0",
+            "--renderer-num-workers",
+            "4",
+            "--host",
+            "127.0.0.1",
+            "--port",
+            "8421",
+            "--hf-overrides",
+            "{\"architectures\":[\"NemotronOCRV2ForImageToText\"],\"model_type\":\"nemotron_ocr_v2\",\"nemotron_ocr_detector_max_batch_size\":32,\"nemotron_ocr_infer_length\":1024,\"nemotron_ocr_merge_level\":\"paragraph\",\"nemotron_ocr_model_subdir\":\"v2_multilingual\",\"nemotron_ocr_recognizer_chunk_size\":128,\"nemotron_ocr_relational_chunk_size\":128,\"nemotron_ocr_verbose_post\":false}",
+            "--enforce-eager",
+            "--no-async-scheduling",
+            "--disable-uvicorn-access-log",
+            "--disable-log-stats"
+          ],
+          "environment": {
+            "CUDA_HOME": "/usr/local/cuda",
+            "CUDA_VISIBLE_DEVICES": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+            "HF_HOME": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+            "HF_HUB_CACHE": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+            "HF_HUB_OFFLINE": "1",
+            "MKL_NUM_THREADS": "4",
+            "NEMOTRON_OCR_SOURCE": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+            "OMP_NUM_THREADS": "4",
+            "PATH": "/usr/local/cuda/bin:/opt/bin/:/home/nfs/vjawa/.codex/tmp/arg0/codex-arg0sgUk9p:/home/nfs/vjawa/.local/bin:/home/nfs/vjawa/.cargo/bin:/usr/local/cuda/bin:/opt/bin/:/raid/vjawa/codex/node_modules/.bin:/home/nfs/vjawa/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/nfs/vjawa:/home/nfs/vjawa",
+            "PYTHONPATH": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline:/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+            "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+            "TOKENIZERS_PARALLELISM": "false",
+            "TORCHINDUCTOR_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+            "TRITON_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+            "VLLM_LOGGING_LEVEL": "WARNING"
+          },
+          "shell_escaped": "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm serve /raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline --runner pooling --skip-tokenizer-init --io-processor-plugin nemotron_ocr_v2 --max-num-seqs 64 --gpu-memory-utilization 0.85 --mm-processor-cache-gb 0 --renderer-num-workers 4 --host 127.0.0.1 --port 8421 --hf-overrides '{\"architectures\":[\"NemotronOCRV2ForImageToText\"],\"model_type\":\"nemotron_ocr_v2\",\"nemotron_ocr_detector_max_batch_size\":32,\"nemotron_ocr_infer_length\":1024,\"nemotron_ocr_merge_level\":\"paragraph\",\"nemotron_ocr_model_subdir\":\"v2_multilingual\",\"nemotron_ocr_recognizer_chunk_size\":128,\"nemotron_ocr_relational_chunk_size\":128,\"nemotron_ocr_verbose_post\":false}' --enforce-eager --no-async-scheduling --disable-uvicorn-access-log --disable-log-stats"
+        }
+      ]
+    },
+    {
+      "benchmark": {
+        "argv": [
+          "/raid/vjawa/tmp/ocr_optimization/venv/bin/python",
+          "/home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py",
+          "--endpoint",
+          "http://127.0.0.1:8421",
+          "--dataset",
+          "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+          "--output-dir",
+          "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/joint-d16-rw4-s96-c192/benchmark",
+          "--model",
+          "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+          "--num-prompts",
+          "10000",
+          "--replay-count",
+          "10",
+          "--infer-length",
+          "1024",
+          "--concurrency-per-endpoint",
+          "192",
+          "--warmups-per-endpoint",
+          "32",
+          "--gpu",
+          "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+          "--trace-interval-ms",
+          "250"
+        ],
+        "environment": {
+          "CUDA_HOME": "/usr/local/cuda",
+          "CUDA_VISIBLE_DEVICES": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+          "HF_HOME": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+          "HF_HUB_CACHE": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+          "HF_HUB_OFFLINE": "1",
+          "MKL_NUM_THREADS": "4",
+          "NEMOTRON_OCR_SOURCE": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+          "OMP_NUM_THREADS": "4",
+          "PATH": "/usr/local/cuda/bin:/opt/bin/:/home/nfs/vjawa/.codex/tmp/arg0/codex-arg0sgUk9p:/home/nfs/vjawa/.local/bin:/home/nfs/vjawa/.cargo/bin:/usr/local/cuda/bin:/opt/bin/:/raid/vjawa/codex/node_modules/.bin:/home/nfs/vjawa/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/nfs/vjawa:/home/nfs/vjawa",
+          "PYTHONPATH": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline:/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+          "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+          "TOKENIZERS_PARALLELISM": "false",
+          "TORCHINDUCTOR_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+          "TRITON_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+          "VLLM_LOGGING_LEVEL": "WARNING"
+        },
+        "shell_escaped": "/raid/vjawa/tmp/ocr_optimization/venv/bin/python /home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py --endpoint http://127.0.0.1:8421 --dataset /raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl --output-dir /raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/joint-d16-rw4-s96-c192/benchmark --model /raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline --num-prompts 10000 --replay-count 10 --infer-length 1024 --concurrency-per-endpoint 192 --warmups-per-endpoint 32 --gpu GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3 --trace-interval-ms 250"
+      },
+      "config": {
+        "base_port": 8421,
+        "benchmark": {
+          "concurrency_per_endpoint": 192,
+          "extra_args": [],
+          "num_prompts": 10000,
+          "replay_count": 10,
+          "trace_interval_ms": 250,
+          "warmups_per_endpoint": 32
+        },
+        "benchmark_script": "/home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py",
+        "benchmark_timeout_s": 1800,
+        "cuda_home": "/usr/local/cuda",
+        "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "env": {},
+        "expected_dataset_sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+        "expected_model_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+        "expected_model_extension_sha256": "05ac1b8d35a36b82595257ec85f081adb922c088249da9a83eaf6bc2b963ec1e",
+        "expected_vllm_commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+        "gpu": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+        "health_poll_interval_s": 1,
+        "health_settle_s": 2,
+        "hf_home": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+        "hf_hub_cache": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+        "host": "127.0.0.1",
+        "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+        "model_source": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+        "mps_root": "/tmp/nemotron-ocr-clean-baseline-sweep",
+        "name": "joint-d16-rw4-s96-c192",
+        "omp_num_threads": 4,
+        "output_root": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps",
+        "python": "/raid/vjawa/tmp/ocr_optimization/venv/bin/python",
+        "ready_timeout_s": 900,
+        "require_clean_repositories": true,
+        "server": {
+          "async_scheduling": false,
+          "detector_max_batch_size": 16,
+          "disable_access_log": true,
+          "disable_log_stats": true,
+          "enforce_eager": true,
+          "extra_args": [],
+          "gpu_memory_utilization": 0.85,
+          "hf_overrides": {},
+          "infer_length": 1024,
+          "max_num_seqs": 96,
+          "mm_processor_cache_gb": 0,
+          "mps_active_thread_percentage": [
+            100
+          ],
+          "mps_enabled": false,
+          "recognizer_chunk_size": 128,
+          "relational_chunk_size": 128,
+          "renderer_num_workers": 4,
+          "replicas": 1
+        },
+        "shutdown_timeout_s": 30,
+        "torchinductor_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+        "triton_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+        "vllm_cli": "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm",
+        "vllm_root": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline"
+      },
+      "endpoints": [
+        "http://127.0.0.1:8421"
+      ],
+      "mps": {
+        "enabled": false,
+        "environment": {},
+        "start": null,
+        "stop_stdin": null
+      },
+      "mps_runtime_dir": "/tmp/nemotron-ocr-clean-baseline-sweep/joint-d16-rw4-s96-c192-3c5439446a15",
+      "name": "joint-d16-rw4-s96-c192",
+      "run_dir": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/joint-d16-rw4-s96-c192",
+      "servers": [
+        {
+          "argv": [
+            "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm",
+            "serve",
+            "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+            "--runner",
+            "pooling",
+            "--skip-tokenizer-init",
+            "--io-processor-plugin",
+            "nemotron_ocr_v2",
+            "--max-num-seqs",
+            "96",
+            "--gpu-memory-utilization",
+            "0.85",
+            "--mm-processor-cache-gb",
+            "0",
+            "--renderer-num-workers",
+            "4",
+            "--host",
+            "127.0.0.1",
+            "--port",
+            "8421",
+            "--hf-overrides",
+            "{\"architectures\":[\"NemotronOCRV2ForImageToText\"],\"model_type\":\"nemotron_ocr_v2\",\"nemotron_ocr_detector_max_batch_size\":16,\"nemotron_ocr_infer_length\":1024,\"nemotron_ocr_merge_level\":\"paragraph\",\"nemotron_ocr_model_subdir\":\"v2_multilingual\",\"nemotron_ocr_recognizer_chunk_size\":128,\"nemotron_ocr_relational_chunk_size\":128,\"nemotron_ocr_verbose_post\":false}",
+            "--enforce-eager",
+            "--no-async-scheduling",
+            "--disable-uvicorn-access-log",
+            "--disable-log-stats"
+          ],
+          "environment": {
+            "CUDA_HOME": "/usr/local/cuda",
+            "CUDA_VISIBLE_DEVICES": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+            "HF_HOME": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+            "HF_HUB_CACHE": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+            "HF_HUB_OFFLINE": "1",
+            "MKL_NUM_THREADS": "4",
+            "NEMOTRON_OCR_SOURCE": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+            "OMP_NUM_THREADS": "4",
+            "PATH": "/usr/local/cuda/bin:/opt/bin/:/home/nfs/vjawa/.codex/tmp/arg0/codex-arg0sgUk9p:/home/nfs/vjawa/.local/bin:/home/nfs/vjawa/.cargo/bin:/usr/local/cuda/bin:/opt/bin/:/raid/vjawa/codex/node_modules/.bin:/home/nfs/vjawa/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/nfs/vjawa:/home/nfs/vjawa",
+            "PYTHONPATH": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline:/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+            "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+            "TOKENIZERS_PARALLELISM": "false",
+            "TORCHINDUCTOR_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+            "TRITON_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+            "VLLM_LOGGING_LEVEL": "WARNING"
+          },
+          "shell_escaped": "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm serve /raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline --runner pooling --skip-tokenizer-init --io-processor-plugin nemotron_ocr_v2 --max-num-seqs 96 --gpu-memory-utilization 0.85 --mm-processor-cache-gb 0 --renderer-num-workers 4 --host 127.0.0.1 --port 8421 --hf-overrides '{\"architectures\":[\"NemotronOCRV2ForImageToText\"],\"model_type\":\"nemotron_ocr_v2\",\"nemotron_ocr_detector_max_batch_size\":16,\"nemotron_ocr_infer_length\":1024,\"nemotron_ocr_merge_level\":\"paragraph\",\"nemotron_ocr_model_subdir\":\"v2_multilingual\",\"nemotron_ocr_recognizer_chunk_size\":128,\"nemotron_ocr_relational_chunk_size\":128,\"nemotron_ocr_verbose_post\":false}' --enforce-eager --no-async-scheduling --disable-uvicorn-access-log --disable-log-stats"
+        }
+      ]
+    },
+    {
+      "benchmark": {
+        "argv": [
+          "/raid/vjawa/tmp/ocr_optimization/venv/bin/python",
+          "/home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py",
+          "--endpoint",
+          "http://127.0.0.1:8421",
+          "--dataset",
+          "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+          "--output-dir",
+          "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d8-rw4-s64-c192/benchmark",
+          "--model",
+          "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+          "--num-prompts",
+          "10000",
+          "--replay-count",
+          "10",
+          "--infer-length",
+          "1024",
+          "--concurrency-per-endpoint",
+          "192",
+          "--warmups-per-endpoint",
+          "32",
+          "--gpu",
+          "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+          "--trace-interval-ms",
+          "250"
+        ],
+        "environment": {
+          "CUDA_HOME": "/usr/local/cuda",
+          "CUDA_VISIBLE_DEVICES": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+          "HF_HOME": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+          "HF_HUB_CACHE": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+          "HF_HUB_OFFLINE": "1",
+          "MKL_NUM_THREADS": "4",
+          "NEMOTRON_OCR_SOURCE": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+          "OMP_NUM_THREADS": "4",
+          "PATH": "/usr/local/cuda/bin:/opt/bin/:/home/nfs/vjawa/.codex/tmp/arg0/codex-arg0sgUk9p:/home/nfs/vjawa/.local/bin:/home/nfs/vjawa/.cargo/bin:/usr/local/cuda/bin:/opt/bin/:/raid/vjawa/codex/node_modules/.bin:/home/nfs/vjawa/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/nfs/vjawa:/home/nfs/vjawa",
+          "PYTHONPATH": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline:/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+          "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+          "TOKENIZERS_PARALLELISM": "false",
+          "TORCHINDUCTOR_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+          "TRITON_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+          "VLLM_LOGGING_LEVEL": "WARNING"
+        },
+        "shell_escaped": "/raid/vjawa/tmp/ocr_optimization/venv/bin/python /home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py --endpoint http://127.0.0.1:8421 --dataset /raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl --output-dir /raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d8-rw4-s64-c192/benchmark --model /raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline --num-prompts 10000 --replay-count 10 --infer-length 1024 --concurrency-per-endpoint 192 --warmups-per-endpoint 32 --gpu GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3 --trace-interval-ms 250"
+      },
+      "config": {
+        "base_port": 8421,
+        "benchmark": {
+          "concurrency_per_endpoint": 192,
+          "extra_args": [],
+          "num_prompts": 10000,
+          "replay_count": 10,
+          "trace_interval_ms": 250,
+          "warmups_per_endpoint": 32
+        },
+        "benchmark_script": "/home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py",
+        "benchmark_timeout_s": 1800,
+        "cuda_home": "/usr/local/cuda",
+        "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "env": {},
+        "expected_dataset_sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+        "expected_model_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+        "expected_model_extension_sha256": "05ac1b8d35a36b82595257ec85f081adb922c088249da9a83eaf6bc2b963ec1e",
+        "expected_vllm_commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+        "gpu": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+        "health_poll_interval_s": 1,
+        "health_settle_s": 2,
+        "hf_home": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+        "hf_hub_cache": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+        "host": "127.0.0.1",
+        "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+        "model_source": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+        "mps_root": "/tmp/nemotron-ocr-clean-baseline-sweep",
+        "name": "adaptive-d8-rw4-s64-c192",
+        "omp_num_threads": 4,
+        "output_root": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps",
+        "python": "/raid/vjawa/tmp/ocr_optimization/venv/bin/python",
+        "ready_timeout_s": 900,
+        "require_clean_repositories": true,
+        "server": {
+          "async_scheduling": false,
+          "detector_max_batch_size": 8,
+          "disable_access_log": true,
+          "disable_log_stats": true,
+          "enforce_eager": true,
+          "extra_args": [],
+          "gpu_memory_utilization": 0.85,
+          "hf_overrides": {},
+          "infer_length": 1024,
+          "max_num_seqs": 64,
+          "mm_processor_cache_gb": 0,
+          "mps_active_thread_percentage": [
+            100
+          ],
+          "mps_enabled": false,
+          "recognizer_chunk_size": 128,
+          "relational_chunk_size": 128,
+          "renderer_num_workers": 4,
+          "replicas": 1
+        },
+        "shutdown_timeout_s": 30,
+        "torchinductor_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+        "triton_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+        "vllm_cli": "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm",
+        "vllm_root": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline"
+      },
+      "endpoints": [
+        "http://127.0.0.1:8421"
+      ],
+      "mps": {
+        "enabled": false,
+        "environment": {},
+        "start": null,
+        "stop_stdin": null
+      },
+      "mps_runtime_dir": "/tmp/nemotron-ocr-clean-baseline-sweep/adaptive-d8-rw4-s64-c192-4e27ac562cc9",
+      "name": "adaptive-d8-rw4-s64-c192",
+      "run_dir": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d8-rw4-s64-c192",
+      "servers": [
+        {
+          "argv": [
+            "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm",
+            "serve",
+            "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+            "--runner",
+            "pooling",
+            "--skip-tokenizer-init",
+            "--io-processor-plugin",
+            "nemotron_ocr_v2",
+            "--max-num-seqs",
+            "64",
+            "--gpu-memory-utilization",
+            "0.85",
+            "--mm-processor-cache-gb",
+            "0",
+            "--renderer-num-workers",
+            "4",
+            "--host",
+            "127.0.0.1",
+            "--port",
+            "8421",
+            "--hf-overrides",
+            "{\"architectures\":[\"NemotronOCRV2ForImageToText\"],\"model_type\":\"nemotron_ocr_v2\",\"nemotron_ocr_detector_max_batch_size\":8,\"nemotron_ocr_infer_length\":1024,\"nemotron_ocr_merge_level\":\"paragraph\",\"nemotron_ocr_model_subdir\":\"v2_multilingual\",\"nemotron_ocr_recognizer_chunk_size\":128,\"nemotron_ocr_relational_chunk_size\":128,\"nemotron_ocr_verbose_post\":false}",
+            "--enforce-eager",
+            "--no-async-scheduling",
+            "--disable-uvicorn-access-log",
+            "--disable-log-stats"
+          ],
+          "environment": {
+            "CUDA_HOME": "/usr/local/cuda",
+            "CUDA_VISIBLE_DEVICES": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+            "HF_HOME": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+            "HF_HUB_CACHE": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+            "HF_HUB_OFFLINE": "1",
+            "MKL_NUM_THREADS": "4",
+            "NEMOTRON_OCR_SOURCE": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+            "OMP_NUM_THREADS": "4",
+            "PATH": "/usr/local/cuda/bin:/opt/bin/:/home/nfs/vjawa/.codex/tmp/arg0/codex-arg0sgUk9p:/home/nfs/vjawa/.local/bin:/home/nfs/vjawa/.cargo/bin:/usr/local/cuda/bin:/opt/bin/:/raid/vjawa/codex/node_modules/.bin:/home/nfs/vjawa/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/nfs/vjawa:/home/nfs/vjawa",
+            "PYTHONPATH": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline:/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+            "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+            "TOKENIZERS_PARALLELISM": "false",
+            "TORCHINDUCTOR_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+            "TRITON_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+            "VLLM_LOGGING_LEVEL": "WARNING"
+          },
+          "shell_escaped": "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm serve /raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline --runner pooling --skip-tokenizer-init --io-processor-plugin nemotron_ocr_v2 --max-num-seqs 64 --gpu-memory-utilization 0.85 --mm-processor-cache-gb 0 --renderer-num-workers 4 --host 127.0.0.1 --port 8421 --hf-overrides '{\"architectures\":[\"NemotronOCRV2ForImageToText\"],\"model_type\":\"nemotron_ocr_v2\",\"nemotron_ocr_detector_max_batch_size\":8,\"nemotron_ocr_infer_length\":1024,\"nemotron_ocr_merge_level\":\"paragraph\",\"nemotron_ocr_model_subdir\":\"v2_multilingual\",\"nemotron_ocr_recognizer_chunk_size\":128,\"nemotron_ocr_relational_chunk_size\":128,\"nemotron_ocr_verbose_post\":false}' --enforce-eager --no-async-scheduling --disable-uvicorn-access-log --disable-log-stats"
+        }
+      ]
+    },
+    {
+      "benchmark": {
+        "argv": [
+          "/raid/vjawa/tmp/ocr_optimization/venv/bin/python",
+          "/home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py",
+          "--endpoint",
+          "http://127.0.0.1:8421",
+          "--dataset",
+          "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+          "--output-dir",
+          "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d8-rw4-s32-c128/benchmark",
+          "--model",
+          "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+          "--num-prompts",
+          "10000",
+          "--replay-count",
+          "10",
+          "--infer-length",
+          "1024",
+          "--concurrency-per-endpoint",
+          "128",
+          "--warmups-per-endpoint",
+          "32",
+          "--gpu",
+          "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+          "--trace-interval-ms",
+          "250"
+        ],
+        "environment": {
+          "CUDA_HOME": "/usr/local/cuda",
+          "CUDA_VISIBLE_DEVICES": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+          "HF_HOME": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+          "HF_HUB_CACHE": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+          "HF_HUB_OFFLINE": "1",
+          "MKL_NUM_THREADS": "4",
+          "NEMOTRON_OCR_SOURCE": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+          "OMP_NUM_THREADS": "4",
+          "PATH": "/usr/local/cuda/bin:/opt/bin/:/home/nfs/vjawa/.codex/tmp/arg0/codex-arg0sgUk9p:/home/nfs/vjawa/.local/bin:/home/nfs/vjawa/.cargo/bin:/usr/local/cuda/bin:/opt/bin/:/raid/vjawa/codex/node_modules/.bin:/home/nfs/vjawa/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/nfs/vjawa:/home/nfs/vjawa",
+          "PYTHONPATH": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline:/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+          "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+          "TOKENIZERS_PARALLELISM": "false",
+          "TORCHINDUCTOR_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+          "TRITON_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+          "VLLM_LOGGING_LEVEL": "WARNING"
+        },
+        "shell_escaped": "/raid/vjawa/tmp/ocr_optimization/venv/bin/python /home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py --endpoint http://127.0.0.1:8421 --dataset /raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl --output-dir /raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d8-rw4-s32-c128/benchmark --model /raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline --num-prompts 10000 --replay-count 10 --infer-length 1024 --concurrency-per-endpoint 128 --warmups-per-endpoint 32 --gpu GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3 --trace-interval-ms 250"
+      },
+      "config": {
+        "base_port": 8421,
+        "benchmark": {
+          "concurrency_per_endpoint": 128,
+          "extra_args": [],
+          "num_prompts": 10000,
+          "replay_count": 10,
+          "trace_interval_ms": 250,
+          "warmups_per_endpoint": 32
+        },
+        "benchmark_script": "/home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py",
+        "benchmark_timeout_s": 1800,
+        "cuda_home": "/usr/local/cuda",
+        "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "env": {},
+        "expected_dataset_sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+        "expected_model_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+        "expected_model_extension_sha256": "05ac1b8d35a36b82595257ec85f081adb922c088249da9a83eaf6bc2b963ec1e",
+        "expected_vllm_commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+        "gpu": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+        "health_poll_interval_s": 1,
+        "health_settle_s": 2,
+        "hf_home": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+        "hf_hub_cache": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+        "host": "127.0.0.1",
+        "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+        "model_source": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+        "mps_root": "/tmp/nemotron-ocr-clean-baseline-sweep",
+        "name": "adaptive-d8-rw4-s32-c128",
+        "omp_num_threads": 4,
+        "output_root": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps",
+        "python": "/raid/vjawa/tmp/ocr_optimization/venv/bin/python",
+        "ready_timeout_s": 900,
+        "require_clean_repositories": true,
+        "server": {
+          "async_scheduling": false,
+          "detector_max_batch_size": 8,
+          "disable_access_log": true,
+          "disable_log_stats": true,
+          "enforce_eager": true,
+          "extra_args": [],
+          "gpu_memory_utilization": 0.85,
+          "hf_overrides": {},
+          "infer_length": 1024,
+          "max_num_seqs": 32,
+          "mm_processor_cache_gb": 0,
+          "mps_active_thread_percentage": [
+            100
+          ],
+          "mps_enabled": false,
+          "recognizer_chunk_size": 128,
+          "relational_chunk_size": 128,
+          "renderer_num_workers": 4,
+          "replicas": 1
+        },
+        "shutdown_timeout_s": 30,
+        "torchinductor_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+        "triton_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+        "vllm_cli": "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm",
+        "vllm_root": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline"
+      },
+      "endpoints": [
+        "http://127.0.0.1:8421"
+      ],
+      "mps": {
+        "enabled": false,
+        "environment": {},
+        "start": null,
+        "stop_stdin": null
+      },
+      "mps_runtime_dir": "/tmp/nemotron-ocr-clean-baseline-sweep/adaptive-d8-rw4-s32-c128-e4d0bb6d5660",
+      "name": "adaptive-d8-rw4-s32-c128",
+      "run_dir": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d8-rw4-s32-c128",
+      "servers": [
+        {
+          "argv": [
+            "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm",
+            "serve",
+            "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+            "--runner",
+            "pooling",
+            "--skip-tokenizer-init",
+            "--io-processor-plugin",
+            "nemotron_ocr_v2",
+            "--max-num-seqs",
+            "32",
+            "--gpu-memory-utilization",
+            "0.85",
+            "--mm-processor-cache-gb",
+            "0",
+            "--renderer-num-workers",
+            "4",
+            "--host",
+            "127.0.0.1",
+            "--port",
+            "8421",
+            "--hf-overrides",
+            "{\"architectures\":[\"NemotronOCRV2ForImageToText\"],\"model_type\":\"nemotron_ocr_v2\",\"nemotron_ocr_detector_max_batch_size\":8,\"nemotron_ocr_infer_length\":1024,\"nemotron_ocr_merge_level\":\"paragraph\",\"nemotron_ocr_model_subdir\":\"v2_multilingual\",\"nemotron_ocr_recognizer_chunk_size\":128,\"nemotron_ocr_relational_chunk_size\":128,\"nemotron_ocr_verbose_post\":false}",
+            "--enforce-eager",
+            "--no-async-scheduling",
+            "--disable-uvicorn-access-log",
+            "--disable-log-stats"
+          ],
+          "environment": {
+            "CUDA_HOME": "/usr/local/cuda",
+            "CUDA_VISIBLE_DEVICES": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+            "HF_HOME": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+            "HF_HUB_CACHE": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+            "HF_HUB_OFFLINE": "1",
+            "MKL_NUM_THREADS": "4",
+            "NEMOTRON_OCR_SOURCE": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+            "OMP_NUM_THREADS": "4",
+            "PATH": "/usr/local/cuda/bin:/opt/bin/:/home/nfs/vjawa/.codex/tmp/arg0/codex-arg0sgUk9p:/home/nfs/vjawa/.local/bin:/home/nfs/vjawa/.cargo/bin:/usr/local/cuda/bin:/opt/bin/:/raid/vjawa/codex/node_modules/.bin:/home/nfs/vjawa/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/nfs/vjawa:/home/nfs/vjawa",
+            "PYTHONPATH": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline:/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+            "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+            "TOKENIZERS_PARALLELISM": "false",
+            "TORCHINDUCTOR_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+            "TRITON_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+            "VLLM_LOGGING_LEVEL": "WARNING"
+          },
+          "shell_escaped": "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm serve /raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline --runner pooling --skip-tokenizer-init --io-processor-plugin nemotron_ocr_v2 --max-num-seqs 32 --gpu-memory-utilization 0.85 --mm-processor-cache-gb 0 --renderer-num-workers 4 --host 127.0.0.1 --port 8421 --hf-overrides '{\"architectures\":[\"NemotronOCRV2ForImageToText\"],\"model_type\":\"nemotron_ocr_v2\",\"nemotron_ocr_detector_max_batch_size\":8,\"nemotron_ocr_infer_length\":1024,\"nemotron_ocr_merge_level\":\"paragraph\",\"nemotron_ocr_model_subdir\":\"v2_multilingual\",\"nemotron_ocr_recognizer_chunk_size\":128,\"nemotron_ocr_relational_chunk_size\":128,\"nemotron_ocr_verbose_post\":false}' --enforce-eager --no-async-scheduling --disable-uvicorn-access-log --disable-log-stats"
+        }
+      ]
+    },
+    {
+      "benchmark": {
+        "argv": [
+          "/raid/vjawa/tmp/ocr_optimization/venv/bin/python",
+          "/home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py",
+          "--endpoint",
+          "http://127.0.0.1:8421",
+          "--dataset",
+          "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+          "--output-dir",
+          "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d8-rw4-s32-c192/benchmark",
+          "--model",
+          "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+          "--num-prompts",
+          "10000",
+          "--replay-count",
+          "10",
+          "--infer-length",
+          "1024",
+          "--concurrency-per-endpoint",
+          "192",
+          "--warmups-per-endpoint",
+          "32",
+          "--gpu",
+          "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+          "--trace-interval-ms",
+          "250"
+        ],
+        "environment": {
+          "CUDA_HOME": "/usr/local/cuda",
+          "CUDA_VISIBLE_DEVICES": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+          "HF_HOME": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+          "HF_HUB_CACHE": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+          "HF_HUB_OFFLINE": "1",
+          "MKL_NUM_THREADS": "4",
+          "NEMOTRON_OCR_SOURCE": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+          "OMP_NUM_THREADS": "4",
+          "PATH": "/usr/local/cuda/bin:/opt/bin/:/home/nfs/vjawa/.codex/tmp/arg0/codex-arg0sgUk9p:/home/nfs/vjawa/.local/bin:/home/nfs/vjawa/.cargo/bin:/usr/local/cuda/bin:/opt/bin/:/raid/vjawa/codex/node_modules/.bin:/home/nfs/vjawa/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/nfs/vjawa:/home/nfs/vjawa",
+          "PYTHONPATH": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline:/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+          "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+          "TOKENIZERS_PARALLELISM": "false",
+          "TORCHINDUCTOR_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+          "TRITON_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+          "VLLM_LOGGING_LEVEL": "WARNING"
+        },
+        "shell_escaped": "/raid/vjawa/tmp/ocr_optimization/venv/bin/python /home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py --endpoint http://127.0.0.1:8421 --dataset /raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl --output-dir /raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d8-rw4-s32-c192/benchmark --model /raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline --num-prompts 10000 --replay-count 10 --infer-length 1024 --concurrency-per-endpoint 192 --warmups-per-endpoint 32 --gpu GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3 --trace-interval-ms 250"
+      },
+      "config": {
+        "base_port": 8421,
+        "benchmark": {
+          "concurrency_per_endpoint": 192,
+          "extra_args": [],
+          "num_prompts": 10000,
+          "replay_count": 10,
+          "trace_interval_ms": 250,
+          "warmups_per_endpoint": 32
+        },
+        "benchmark_script": "/home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py",
+        "benchmark_timeout_s": 1800,
+        "cuda_home": "/usr/local/cuda",
+        "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "env": {},
+        "expected_dataset_sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+        "expected_model_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+        "expected_model_extension_sha256": "05ac1b8d35a36b82595257ec85f081adb922c088249da9a83eaf6bc2b963ec1e",
+        "expected_vllm_commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+        "gpu": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+        "health_poll_interval_s": 1,
+        "health_settle_s": 2,
+        "hf_home": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+        "hf_hub_cache": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+        "host": "127.0.0.1",
+        "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+        "model_source": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+        "mps_root": "/tmp/nemotron-ocr-clean-baseline-sweep",
+        "name": "adaptive-d8-rw4-s32-c192",
+        "omp_num_threads": 4,
+        "output_root": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps",
+        "python": "/raid/vjawa/tmp/ocr_optimization/venv/bin/python",
+        "ready_timeout_s": 900,
+        "require_clean_repositories": true,
+        "server": {
+          "async_scheduling": false,
+          "detector_max_batch_size": 8,
+          "disable_access_log": true,
+          "disable_log_stats": true,
+          "enforce_eager": true,
+          "extra_args": [],
+          "gpu_memory_utilization": 0.85,
+          "hf_overrides": {},
+          "infer_length": 1024,
+          "max_num_seqs": 32,
+          "mm_processor_cache_gb": 0,
+          "mps_active_thread_percentage": [
+            100
+          ],
+          "mps_enabled": false,
+          "recognizer_chunk_size": 128,
+          "relational_chunk_size": 128,
+          "renderer_num_workers": 4,
+          "replicas": 1
+        },
+        "shutdown_timeout_s": 30,
+        "torchinductor_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+        "triton_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+        "vllm_cli": "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm",
+        "vllm_root": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline"
+      },
+      "endpoints": [
+        "http://127.0.0.1:8421"
+      ],
+      "mps": {
+        "enabled": false,
+        "environment": {},
+        "start": null,
+        "stop_stdin": null
+      },
+      "mps_runtime_dir": "/tmp/nemotron-ocr-clean-baseline-sweep/adaptive-d8-rw4-s32-c192-191bc7a95009",
+      "name": "adaptive-d8-rw4-s32-c192",
+      "run_dir": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d8-rw4-s32-c192",
+      "servers": [
+        {
+          "argv": [
+            "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm",
+            "serve",
+            "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+            "--runner",
+            "pooling",
+            "--skip-tokenizer-init",
+            "--io-processor-plugin",
+            "nemotron_ocr_v2",
+            "--max-num-seqs",
+            "32",
+            "--gpu-memory-utilization",
+            "0.85",
+            "--mm-processor-cache-gb",
+            "0",
+            "--renderer-num-workers",
+            "4",
+            "--host",
+            "127.0.0.1",
+            "--port",
+            "8421",
+            "--hf-overrides",
+            "{\"architectures\":[\"NemotronOCRV2ForImageToText\"],\"model_type\":\"nemotron_ocr_v2\",\"nemotron_ocr_detector_max_batch_size\":8,\"nemotron_ocr_infer_length\":1024,\"nemotron_ocr_merge_level\":\"paragraph\",\"nemotron_ocr_model_subdir\":\"v2_multilingual\",\"nemotron_ocr_recognizer_chunk_size\":128,\"nemotron_ocr_relational_chunk_size\":128,\"nemotron_ocr_verbose_post\":false}",
+            "--enforce-eager",
+            "--no-async-scheduling",
+            "--disable-uvicorn-access-log",
+            "--disable-log-stats"
+          ],
+          "environment": {
+            "CUDA_HOME": "/usr/local/cuda",
+            "CUDA_VISIBLE_DEVICES": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+            "HF_HOME": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+            "HF_HUB_CACHE": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+            "HF_HUB_OFFLINE": "1",
+            "MKL_NUM_THREADS": "4",
+            "NEMOTRON_OCR_SOURCE": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+            "OMP_NUM_THREADS": "4",
+            "PATH": "/usr/local/cuda/bin:/opt/bin/:/home/nfs/vjawa/.codex/tmp/arg0/codex-arg0sgUk9p:/home/nfs/vjawa/.local/bin:/home/nfs/vjawa/.cargo/bin:/usr/local/cuda/bin:/opt/bin/:/raid/vjawa/codex/node_modules/.bin:/home/nfs/vjawa/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/nfs/vjawa:/home/nfs/vjawa",
+            "PYTHONPATH": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline:/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+            "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+            "TOKENIZERS_PARALLELISM": "false",
+            "TORCHINDUCTOR_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+            "TRITON_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+            "VLLM_LOGGING_LEVEL": "WARNING"
+          },
+          "shell_escaped": "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm serve /raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline --runner pooling --skip-tokenizer-init --io-processor-plugin nemotron_ocr_v2 --max-num-seqs 32 --gpu-memory-utilization 0.85 --mm-processor-cache-gb 0 --renderer-num-workers 4 --host 127.0.0.1 --port 8421 --hf-overrides '{\"architectures\":[\"NemotronOCRV2ForImageToText\"],\"model_type\":\"nemotron_ocr_v2\",\"nemotron_ocr_detector_max_batch_size\":8,\"nemotron_ocr_infer_length\":1024,\"nemotron_ocr_merge_level\":\"paragraph\",\"nemotron_ocr_model_subdir\":\"v2_multilingual\",\"nemotron_ocr_recognizer_chunk_size\":128,\"nemotron_ocr_relational_chunk_size\":128,\"nemotron_ocr_verbose_post\":false}' --enforce-eager --no-async-scheduling --disable-uvicorn-access-log --disable-log-stats"
+        }
+      ]
+    },
+    {
+      "benchmark": {
+        "argv": [
+          "/raid/vjawa/tmp/ocr_optimization/venv/bin/python",
+          "/home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py",
+          "--endpoint",
+          "http://127.0.0.1:8421",
+          "--dataset",
+          "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+          "--output-dir",
+          "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d16-rw4-s64-c192/benchmark",
+          "--model",
+          "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+          "--num-prompts",
+          "10000",
+          "--replay-count",
+          "10",
+          "--infer-length",
+          "1024",
+          "--concurrency-per-endpoint",
+          "192",
+          "--warmups-per-endpoint",
+          "32",
+          "--gpu",
+          "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+          "--trace-interval-ms",
+          "250"
+        ],
+        "environment": {
+          "CUDA_HOME": "/usr/local/cuda",
+          "CUDA_VISIBLE_DEVICES": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+          "HF_HOME": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+          "HF_HUB_CACHE": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+          "HF_HUB_OFFLINE": "1",
+          "MKL_NUM_THREADS": "4",
+          "NEMOTRON_OCR_SOURCE": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+          "OMP_NUM_THREADS": "4",
+          "PATH": "/usr/local/cuda/bin:/opt/bin/:/home/nfs/vjawa/.codex/tmp/arg0/codex-arg0sgUk9p:/home/nfs/vjawa/.local/bin:/home/nfs/vjawa/.cargo/bin:/usr/local/cuda/bin:/opt/bin/:/raid/vjawa/codex/node_modules/.bin:/home/nfs/vjawa/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/nfs/vjawa:/home/nfs/vjawa",
+          "PYTHONPATH": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline:/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+          "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+          "TOKENIZERS_PARALLELISM": "false",
+          "TORCHINDUCTOR_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+          "TRITON_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+          "VLLM_LOGGING_LEVEL": "WARNING"
+        },
+        "shell_escaped": "/raid/vjawa/tmp/ocr_optimization/venv/bin/python /home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py --endpoint http://127.0.0.1:8421 --dataset /raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl --output-dir /raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d16-rw4-s64-c192/benchmark --model /raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline --num-prompts 10000 --replay-count 10 --infer-length 1024 --concurrency-per-endpoint 192 --warmups-per-endpoint 32 --gpu GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3 --trace-interval-ms 250"
+      },
+      "config": {
+        "base_port": 8421,
+        "benchmark": {
+          "concurrency_per_endpoint": 192,
+          "extra_args": [],
+          "num_prompts": 10000,
+          "replay_count": 10,
+          "trace_interval_ms": 250,
+          "warmups_per_endpoint": 32
+        },
+        "benchmark_script": "/home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py",
+        "benchmark_timeout_s": 1800,
+        "cuda_home": "/usr/local/cuda",
+        "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "env": {},
+        "expected_dataset_sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+        "expected_model_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+        "expected_model_extension_sha256": "05ac1b8d35a36b82595257ec85f081adb922c088249da9a83eaf6bc2b963ec1e",
+        "expected_vllm_commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+        "gpu": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+        "health_poll_interval_s": 1,
+        "health_settle_s": 2,
+        "hf_home": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+        "hf_hub_cache": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+        "host": "127.0.0.1",
+        "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+        "model_source": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+        "mps_root": "/tmp/nemotron-ocr-clean-baseline-sweep",
+        "name": "adaptive-d16-rw4-s64-c192",
+        "omp_num_threads": 4,
+        "output_root": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps",
+        "python": "/raid/vjawa/tmp/ocr_optimization/venv/bin/python",
+        "ready_timeout_s": 900,
+        "require_clean_repositories": true,
+        "server": {
+          "async_scheduling": false,
+          "detector_max_batch_size": 16,
+          "disable_access_log": true,
+          "disable_log_stats": true,
+          "enforce_eager": true,
+          "extra_args": [],
+          "gpu_memory_utilization": 0.85,
+          "hf_overrides": {},
+          "infer_length": 1024,
+          "max_num_seqs": 64,
+          "mm_processor_cache_gb": 0,
+          "mps_active_thread_percentage": [
+            100
+          ],
+          "mps_enabled": false,
+          "recognizer_chunk_size": 128,
+          "relational_chunk_size": 128,
+          "renderer_num_workers": 4,
+          "replicas": 1
+        },
+        "shutdown_timeout_s": 30,
+        "torchinductor_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+        "triton_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+        "vllm_cli": "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm",
+        "vllm_root": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline"
+      },
+      "endpoints": [
+        "http://127.0.0.1:8421"
+      ],
+      "mps": {
+        "enabled": false,
+        "environment": {},
+        "start": null,
+        "stop_stdin": null
+      },
+      "mps_runtime_dir": "/tmp/nemotron-ocr-clean-baseline-sweep/adaptive-d16-rw4-s64-c19-2ff65635630f",
+      "name": "adaptive-d16-rw4-s64-c192",
+      "run_dir": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d16-rw4-s64-c192",
+      "servers": [
+        {
+          "argv": [
+            "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm",
+            "serve",
+            "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+            "--runner",
+            "pooling",
+            "--skip-tokenizer-init",
+            "--io-processor-plugin",
+            "nemotron_ocr_v2",
+            "--max-num-seqs",
+            "64",
+            "--gpu-memory-utilization",
+            "0.85",
+            "--mm-processor-cache-gb",
+            "0",
+            "--renderer-num-workers",
+            "4",
+            "--host",
+            "127.0.0.1",
+            "--port",
+            "8421",
+            "--hf-overrides",
+            "{\"architectures\":[\"NemotronOCRV2ForImageToText\"],\"model_type\":\"nemotron_ocr_v2\",\"nemotron_ocr_detector_max_batch_size\":16,\"nemotron_ocr_infer_length\":1024,\"nemotron_ocr_merge_level\":\"paragraph\",\"nemotron_ocr_model_subdir\":\"v2_multilingual\",\"nemotron_ocr_recognizer_chunk_size\":128,\"nemotron_ocr_relational_chunk_size\":128,\"nemotron_ocr_verbose_post\":false}",
+            "--enforce-eager",
+            "--no-async-scheduling",
+            "--disable-uvicorn-access-log",
+            "--disable-log-stats"
+          ],
+          "environment": {
+            "CUDA_HOME": "/usr/local/cuda",
+            "CUDA_VISIBLE_DEVICES": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+            "HF_HOME": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+            "HF_HUB_CACHE": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+            "HF_HUB_OFFLINE": "1",
+            "MKL_NUM_THREADS": "4",
+            "NEMOTRON_OCR_SOURCE": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+            "OMP_NUM_THREADS": "4",
+            "PATH": "/usr/local/cuda/bin:/opt/bin/:/home/nfs/vjawa/.codex/tmp/arg0/codex-arg0sgUk9p:/home/nfs/vjawa/.local/bin:/home/nfs/vjawa/.cargo/bin:/usr/local/cuda/bin:/opt/bin/:/raid/vjawa/codex/node_modules/.bin:/home/nfs/vjawa/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/nfs/vjawa:/home/nfs/vjawa",
+            "PYTHONPATH": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline:/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+            "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+            "TOKENIZERS_PARALLELISM": "false",
+            "TORCHINDUCTOR_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+            "TRITON_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+            "VLLM_LOGGING_LEVEL": "WARNING"
+          },
+          "shell_escaped": "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm serve /raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline --runner pooling --skip-tokenizer-init --io-processor-plugin nemotron_ocr_v2 --max-num-seqs 64 --gpu-memory-utilization 0.85 --mm-processor-cache-gb 0 --renderer-num-workers 4 --host 127.0.0.1 --port 8421 --hf-overrides '{\"architectures\":[\"NemotronOCRV2ForImageToText\"],\"model_type\":\"nemotron_ocr_v2\",\"nemotron_ocr_detector_max_batch_size\":16,\"nemotron_ocr_infer_length\":1024,\"nemotron_ocr_merge_level\":\"paragraph\",\"nemotron_ocr_model_subdir\":\"v2_multilingual\",\"nemotron_ocr_recognizer_chunk_size\":128,\"nemotron_ocr_relational_chunk_size\":128,\"nemotron_ocr_verbose_post\":false}' --enforce-eager --no-async-scheduling --disable-uvicorn-access-log --disable-log-stats"
+        }
+      ]
+    },
+    {
+      "benchmark": {
+        "argv": [
+          "/raid/vjawa/tmp/ocr_optimization/venv/bin/python",
+          "/home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py",
+          "--endpoint",
+          "http://127.0.0.1:8421",
+          "--dataset",
+          "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+          "--output-dir",
+          "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d16-rw4-s32-c128/benchmark",
+          "--model",
+          "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+          "--num-prompts",
+          "10000",
+          "--replay-count",
+          "10",
+          "--infer-length",
+          "1024",
+          "--concurrency-per-endpoint",
+          "128",
+          "--warmups-per-endpoint",
+          "32",
+          "--gpu",
+          "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+          "--trace-interval-ms",
+          "250"
+        ],
+        "environment": {
+          "CUDA_HOME": "/usr/local/cuda",
+          "CUDA_VISIBLE_DEVICES": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+          "HF_HOME": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+          "HF_HUB_CACHE": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+          "HF_HUB_OFFLINE": "1",
+          "MKL_NUM_THREADS": "4",
+          "NEMOTRON_OCR_SOURCE": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+          "OMP_NUM_THREADS": "4",
+          "PATH": "/usr/local/cuda/bin:/opt/bin/:/home/nfs/vjawa/.codex/tmp/arg0/codex-arg0sgUk9p:/home/nfs/vjawa/.local/bin:/home/nfs/vjawa/.cargo/bin:/usr/local/cuda/bin:/opt/bin/:/raid/vjawa/codex/node_modules/.bin:/home/nfs/vjawa/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/nfs/vjawa:/home/nfs/vjawa",
+          "PYTHONPATH": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline:/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+          "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+          "TOKENIZERS_PARALLELISM": "false",
+          "TORCHINDUCTOR_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+          "TRITON_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+          "VLLM_LOGGING_LEVEL": "WARNING"
+        },
+        "shell_escaped": "/raid/vjawa/tmp/ocr_optimization/venv/bin/python /home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py --endpoint http://127.0.0.1:8421 --dataset /raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl --output-dir /raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d16-rw4-s32-c128/benchmark --model /raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline --num-prompts 10000 --replay-count 10 --infer-length 1024 --concurrency-per-endpoint 128 --warmups-per-endpoint 32 --gpu GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3 --trace-interval-ms 250"
+      },
+      "config": {
+        "base_port": 8421,
+        "benchmark": {
+          "concurrency_per_endpoint": 128,
+          "extra_args": [],
+          "num_prompts": 10000,
+          "replay_count": 10,
+          "trace_interval_ms": 250,
+          "warmups_per_endpoint": 32
+        },
+        "benchmark_script": "/home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py",
+        "benchmark_timeout_s": 1800,
+        "cuda_home": "/usr/local/cuda",
+        "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "env": {},
+        "expected_dataset_sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+        "expected_model_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+        "expected_model_extension_sha256": "05ac1b8d35a36b82595257ec85f081adb922c088249da9a83eaf6bc2b963ec1e",
+        "expected_vllm_commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+        "gpu": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+        "health_poll_interval_s": 1,
+        "health_settle_s": 2,
+        "hf_home": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+        "hf_hub_cache": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+        "host": "127.0.0.1",
+        "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+        "model_source": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+        "mps_root": "/tmp/nemotron-ocr-clean-baseline-sweep",
+        "name": "adaptive-d16-rw4-s32-c128",
+        "omp_num_threads": 4,
+        "output_root": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps",
+        "python": "/raid/vjawa/tmp/ocr_optimization/venv/bin/python",
+        "ready_timeout_s": 900,
+        "require_clean_repositories": true,
+        "server": {
+          "async_scheduling": false,
+          "detector_max_batch_size": 16,
+          "disable_access_log": true,
+          "disable_log_stats": true,
+          "enforce_eager": true,
+          "extra_args": [],
+          "gpu_memory_utilization": 0.85,
+          "hf_overrides": {},
+          "infer_length": 1024,
+          "max_num_seqs": 32,
+          "mm_processor_cache_gb": 0,
+          "mps_active_thread_percentage": [
+            100
+          ],
+          "mps_enabled": false,
+          "recognizer_chunk_size": 128,
+          "relational_chunk_size": 128,
+          "renderer_num_workers": 4,
+          "replicas": 1
+        },
+        "shutdown_timeout_s": 30,
+        "torchinductor_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+        "triton_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+        "vllm_cli": "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm",
+        "vllm_root": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline"
+      },
+      "endpoints": [
+        "http://127.0.0.1:8421"
+      ],
+      "mps": {
+        "enabled": false,
+        "environment": {},
+        "start": null,
+        "stop_stdin": null
+      },
+      "mps_runtime_dir": "/tmp/nemotron-ocr-clean-baseline-sweep/adaptive-d16-rw4-s32-c12-80e01c39dd3a",
+      "name": "adaptive-d16-rw4-s32-c128",
+      "run_dir": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d16-rw4-s32-c128",
+      "servers": [
+        {
+          "argv": [
+            "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm",
+            "serve",
+            "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+            "--runner",
+            "pooling",
+            "--skip-tokenizer-init",
+            "--io-processor-plugin",
+            "nemotron_ocr_v2",
+            "--max-num-seqs",
+            "32",
+            "--gpu-memory-utilization",
+            "0.85",
+            "--mm-processor-cache-gb",
+            "0",
+            "--renderer-num-workers",
+            "4",
+            "--host",
+            "127.0.0.1",
+            "--port",
+            "8421",
+            "--hf-overrides",
+            "{\"architectures\":[\"NemotronOCRV2ForImageToText\"],\"model_type\":\"nemotron_ocr_v2\",\"nemotron_ocr_detector_max_batch_size\":16,\"nemotron_ocr_infer_length\":1024,\"nemotron_ocr_merge_level\":\"paragraph\",\"nemotron_ocr_model_subdir\":\"v2_multilingual\",\"nemotron_ocr_recognizer_chunk_size\":128,\"nemotron_ocr_relational_chunk_size\":128,\"nemotron_ocr_verbose_post\":false}",
+            "--enforce-eager",
+            "--no-async-scheduling",
+            "--disable-uvicorn-access-log",
+            "--disable-log-stats"
+          ],
+          "environment": {
+            "CUDA_HOME": "/usr/local/cuda",
+            "CUDA_VISIBLE_DEVICES": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+            "HF_HOME": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+            "HF_HUB_CACHE": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+            "HF_HUB_OFFLINE": "1",
+            "MKL_NUM_THREADS": "4",
+            "NEMOTRON_OCR_SOURCE": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+            "OMP_NUM_THREADS": "4",
+            "PATH": "/usr/local/cuda/bin:/opt/bin/:/home/nfs/vjawa/.codex/tmp/arg0/codex-arg0sgUk9p:/home/nfs/vjawa/.local/bin:/home/nfs/vjawa/.cargo/bin:/usr/local/cuda/bin:/opt/bin/:/raid/vjawa/codex/node_modules/.bin:/home/nfs/vjawa/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/nfs/vjawa:/home/nfs/vjawa",
+            "PYTHONPATH": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline:/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+            "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+            "TOKENIZERS_PARALLELISM": "false",
+            "TORCHINDUCTOR_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+            "TRITON_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+            "VLLM_LOGGING_LEVEL": "WARNING"
+          },
+          "shell_escaped": "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm serve /raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline --runner pooling --skip-tokenizer-init --io-processor-plugin nemotron_ocr_v2 --max-num-seqs 32 --gpu-memory-utilization 0.85 --mm-processor-cache-gb 0 --renderer-num-workers 4 --host 127.0.0.1 --port 8421 --hf-overrides '{\"architectures\":[\"NemotronOCRV2ForImageToText\"],\"model_type\":\"nemotron_ocr_v2\",\"nemotron_ocr_detector_max_batch_size\":16,\"nemotron_ocr_infer_length\":1024,\"nemotron_ocr_merge_level\":\"paragraph\",\"nemotron_ocr_model_subdir\":\"v2_multilingual\",\"nemotron_ocr_recognizer_chunk_size\":128,\"nemotron_ocr_relational_chunk_size\":128,\"nemotron_ocr_verbose_post\":false}' --enforce-eager --no-async-scheduling --disable-uvicorn-access-log --disable-log-stats"
+        }
+      ]
+    },
+    {
+      "benchmark": {
+        "argv": [
+          "/raid/vjawa/tmp/ocr_optimization/venv/bin/python",
+          "/home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py",
+          "--endpoint",
+          "http://127.0.0.1:8421",
+          "--dataset",
+          "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+          "--output-dir",
+          "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d16-rw4-s32-c192/benchmark",
+          "--model",
+          "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+          "--num-prompts",
+          "10000",
+          "--replay-count",
+          "10",
+          "--infer-length",
+          "1024",
+          "--concurrency-per-endpoint",
+          "192",
+          "--warmups-per-endpoint",
+          "32",
+          "--gpu",
+          "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+          "--trace-interval-ms",
+          "250"
+        ],
+        "environment": {
+          "CUDA_HOME": "/usr/local/cuda",
+          "CUDA_VISIBLE_DEVICES": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+          "HF_HOME": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+          "HF_HUB_CACHE": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+          "HF_HUB_OFFLINE": "1",
+          "MKL_NUM_THREADS": "4",
+          "NEMOTRON_OCR_SOURCE": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+          "OMP_NUM_THREADS": "4",
+          "PATH": "/usr/local/cuda/bin:/opt/bin/:/home/nfs/vjawa/.codex/tmp/arg0/codex-arg0sgUk9p:/home/nfs/vjawa/.local/bin:/home/nfs/vjawa/.cargo/bin:/usr/local/cuda/bin:/opt/bin/:/raid/vjawa/codex/node_modules/.bin:/home/nfs/vjawa/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/nfs/vjawa:/home/nfs/vjawa",
+          "PYTHONPATH": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline:/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+          "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+          "TOKENIZERS_PARALLELISM": "false",
+          "TORCHINDUCTOR_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+          "TRITON_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+          "VLLM_LOGGING_LEVEL": "WARNING"
+        },
+        "shell_escaped": "/raid/vjawa/tmp/ocr_optimization/venv/bin/python /home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py --endpoint http://127.0.0.1:8421 --dataset /raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl --output-dir /raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d16-rw4-s32-c192/benchmark --model /raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline --num-prompts 10000 --replay-count 10 --infer-length 1024 --concurrency-per-endpoint 192 --warmups-per-endpoint 32 --gpu GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3 --trace-interval-ms 250"
+      },
+      "config": {
+        "base_port": 8421,
+        "benchmark": {
+          "concurrency_per_endpoint": 192,
+          "extra_args": [],
+          "num_prompts": 10000,
+          "replay_count": 10,
+          "trace_interval_ms": 250,
+          "warmups_per_endpoint": 32
+        },
+        "benchmark_script": "/home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py",
+        "benchmark_timeout_s": 1800,
+        "cuda_home": "/usr/local/cuda",
+        "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "env": {},
+        "expected_dataset_sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+        "expected_model_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+        "expected_model_extension_sha256": "05ac1b8d35a36b82595257ec85f081adb922c088249da9a83eaf6bc2b963ec1e",
+        "expected_vllm_commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+        "gpu": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+        "health_poll_interval_s": 1,
+        "health_settle_s": 2,
+        "hf_home": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+        "hf_hub_cache": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+        "host": "127.0.0.1",
+        "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+        "model_source": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+        "mps_root": "/tmp/nemotron-ocr-clean-baseline-sweep",
+        "name": "adaptive-d16-rw4-s32-c192",
+        "omp_num_threads": 4,
+        "output_root": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps",
+        "python": "/raid/vjawa/tmp/ocr_optimization/venv/bin/python",
+        "ready_timeout_s": 900,
+        "require_clean_repositories": true,
+        "server": {
+          "async_scheduling": false,
+          "detector_max_batch_size": 16,
+          "disable_access_log": true,
+          "disable_log_stats": true,
+          "enforce_eager": true,
+          "extra_args": [],
+          "gpu_memory_utilization": 0.85,
+          "hf_overrides": {},
+          "infer_length": 1024,
+          "max_num_seqs": 32,
+          "mm_processor_cache_gb": 0,
+          "mps_active_thread_percentage": [
+            100
+          ],
+          "mps_enabled": false,
+          "recognizer_chunk_size": 128,
+          "relational_chunk_size": 128,
+          "renderer_num_workers": 4,
+          "replicas": 1
+        },
+        "shutdown_timeout_s": 30,
+        "torchinductor_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+        "triton_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+        "vllm_cli": "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm",
+        "vllm_root": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline"
+      },
+      "endpoints": [
+        "http://127.0.0.1:8421"
+      ],
+      "mps": {
+        "enabled": false,
+        "environment": {},
+        "start": null,
+        "stop_stdin": null
+      },
+      "mps_runtime_dir": "/tmp/nemotron-ocr-clean-baseline-sweep/adaptive-d16-rw4-s32-c19-c81a2c253582",
+      "name": "adaptive-d16-rw4-s32-c192",
+      "run_dir": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d16-rw4-s32-c192",
+      "servers": [
+        {
+          "argv": [
+            "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm",
+            "serve",
+            "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+            "--runner",
+            "pooling",
+            "--skip-tokenizer-init",
+            "--io-processor-plugin",
+            "nemotron_ocr_v2",
+            "--max-num-seqs",
+            "32",
+            "--gpu-memory-utilization",
+            "0.85",
+            "--mm-processor-cache-gb",
+            "0",
+            "--renderer-num-workers",
+            "4",
+            "--host",
+            "127.0.0.1",
+            "--port",
+            "8421",
+            "--hf-overrides",
+            "{\"architectures\":[\"NemotronOCRV2ForImageToText\"],\"model_type\":\"nemotron_ocr_v2\",\"nemotron_ocr_detector_max_batch_size\":16,\"nemotron_ocr_infer_length\":1024,\"nemotron_ocr_merge_level\":\"paragraph\",\"nemotron_ocr_model_subdir\":\"v2_multilingual\",\"nemotron_ocr_recognizer_chunk_size\":128,\"nemotron_ocr_relational_chunk_size\":128,\"nemotron_ocr_verbose_post\":false}",
+            "--enforce-eager",
+            "--no-async-scheduling",
+            "--disable-uvicorn-access-log",
+            "--disable-log-stats"
+          ],
+          "environment": {
+            "CUDA_HOME": "/usr/local/cuda",
+            "CUDA_VISIBLE_DEVICES": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+            "HF_HOME": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+            "HF_HUB_CACHE": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+            "HF_HUB_OFFLINE": "1",
+            "MKL_NUM_THREADS": "4",
+            "NEMOTRON_OCR_SOURCE": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+            "OMP_NUM_THREADS": "4",
+            "PATH": "/usr/local/cuda/bin:/opt/bin/:/home/nfs/vjawa/.codex/tmp/arg0/codex-arg0sgUk9p:/home/nfs/vjawa/.local/bin:/home/nfs/vjawa/.cargo/bin:/usr/local/cuda/bin:/opt/bin/:/raid/vjawa/codex/node_modules/.bin:/home/nfs/vjawa/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/nfs/vjawa:/home/nfs/vjawa",
+            "PYTHONPATH": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline:/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+            "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+            "TOKENIZERS_PARALLELISM": "false",
+            "TORCHINDUCTOR_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+            "TRITON_CACHE_DIR": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+            "VLLM_LOGGING_LEVEL": "WARNING"
+          },
+          "shell_escaped": "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm serve /raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline --runner pooling --skip-tokenizer-init --io-processor-plugin nemotron_ocr_v2 --max-num-seqs 32 --gpu-memory-utilization 0.85 --mm-processor-cache-gb 0 --renderer-num-workers 4 --host 127.0.0.1 --port 8421 --hf-overrides '{\"architectures\":[\"NemotronOCRV2ForImageToText\"],\"model_type\":\"nemotron_ocr_v2\",\"nemotron_ocr_detector_max_batch_size\":16,\"nemotron_ocr_infer_length\":1024,\"nemotron_ocr_merge_level\":\"paragraph\",\"nemotron_ocr_model_subdir\":\"v2_multilingual\",\"nemotron_ocr_recognizer_chunk_size\":128,\"nemotron_ocr_relational_chunk_size\":128,\"nemotron_ocr_verbose_post\":false}' --enforce-eager --no-async-scheduling --disable-uvicorn-access-log --disable-log-stats"
+        }
+      ]
+    }
+  ],
+  "preexisting_gpu_processes": [],
+  "results": [
+    {
+      "benchmark_summary": {
+        "aggregate_images_per_second": 44.03658472630439,
+        "backend": "native_vllm_pooling_multi_endpoint",
+        "completed": 10000,
+        "concurrency_per_endpoint": 128,
+        "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "dispatcher": "work_conserving_client_side_queue",
+        "elapsed_s": 227.0839135721326,
+        "endpoints": [
+          {
+            "completed": 10000,
+            "endpoint": "http://127.0.0.1:8421/pooling",
+            "mean_e2el_ms": 2827.7232924573123,
+            "median_e2el_ms": 2722.794085741043
+          }
+        ],
+        "errors": [],
+        "failed": 0,
+        "gpu_trace": {
+          "gpu_mem_util_pct_avg": 39.64773922187172,
+          "gpu_mem_util_pct_max": 77.0,
+          "gpu_memory_used_mib_avg": 17601.368033648792,
+          "gpu_memory_used_mib_max": 41481.0,
+          "gpu_power_w_avg": 288.55237644584645,
+          "gpu_power_w_max": 433.5,
+          "gpu_util_pct_avg": 72.55625657202944,
+          "gpu_util_pct_max": 100.0,
+          "samples": 951
+        },
+        "gpu_trace_csv": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/joint-d32-rw4-s64-c128/benchmark/gpu_trace.csv",
+        "gpu_trace_stderr": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/joint-d32-rw4-s64-c128/benchmark/gpu_trace.stderr.log",
+        "infer_length": 1024,
+        "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+        "replay_count": 10,
+        "replicas": 1,
+        "timed_finished_at_epoch_s": 1783594970.247691,
+        "timed_repeated_image_count": 9000,
+        "timed_started_at_epoch_s": 1783594743.1637733,
+        "timed_workload_image_count": 10000,
+        "total_concurrency": 128,
+        "unique_image_count": 1000,
+        "warmups_per_endpoint": 32
+      },
+      "cleanup_warnings": [],
+      "error": null,
+      "name": "joint-d32-rw4-s64-c128",
+      "provenance": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/joint-d32-rw4-s64-c128/provenance.json",
+      "status": "complete"
+    },
+    {
+      "benchmark_summary": {
+        "aggregate_images_per_second": 44.22882332636805,
+        "backend": "native_vllm_pooling_multi_endpoint",
+        "completed": 10000,
+        "concurrency_per_endpoint": 192,
+        "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "dispatcher": "work_conserving_client_side_queue",
+        "elapsed_s": 226.0969035103917,
+        "endpoints": [
+          {
+            "completed": 10000,
+            "endpoint": "http://127.0.0.1:8421/pooling",
+            "mean_e2el_ms": 4315.7716856118295,
+            "median_e2el_ms": 4204.3297700583935
+          }
+        ],
+        "errors": [],
+        "failed": 0,
+        "gpu_trace": {
+          "gpu_mem_util_pct_avg": 38.61777301927195,
+          "gpu_mem_util_pct_max": 64.0,
+          "gpu_memory_used_mib_avg": 9228.991434689508,
+          "gpu_memory_used_mib_max": 37081.0,
+          "gpu_power_w_avg": 291.6155246252677,
+          "gpu_power_w_max": 437.1,
+          "gpu_util_pct_avg": 71.71948608137045,
+          "gpu_util_pct_max": 100.0,
+          "samples": 934
+        },
+        "gpu_trace_csv": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/joint-d16-rw4-s96-c192/benchmark/gpu_trace.csv",
+        "gpu_trace_stderr": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/joint-d16-rw4-s96-c192/benchmark/gpu_trace.stderr.log",
+        "infer_length": 1024,
+        "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+        "replay_count": 10,
+        "replicas": 1,
+        "timed_finished_at_epoch_s": 1783595239.9450479,
+        "timed_repeated_image_count": 9000,
+        "timed_started_at_epoch_s": 1783595013.8481421,
+        "timed_workload_image_count": 10000,
+        "total_concurrency": 192,
+        "unique_image_count": 1000,
+        "warmups_per_endpoint": 32
+      },
+      "cleanup_warnings": [],
+      "error": null,
+      "name": "joint-d16-rw4-s96-c192",
+      "provenance": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/joint-d16-rw4-s96-c192/provenance.json",
+      "status": "complete"
+    },
+    {
+      "benchmark_summary": {
+        "aggregate_images_per_second": 43.624596537836005,
+        "backend": "native_vllm_pooling_multi_endpoint",
+        "completed": 10000,
+        "concurrency_per_endpoint": 192,
+        "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "dispatcher": "work_conserving_client_side_queue",
+        "elapsed_s": 229.2284810319543,
+        "endpoints": [
+          {
+            "completed": 10000,
+            "endpoint": "http://127.0.0.1:8421/pooling",
+            "mean_e2el_ms": 4370.341995283961,
+            "median_e2el_ms": 4299.783764407039
+          }
+        ],
+        "errors": [],
+        "failed": 0,
+        "gpu_trace": {
+          "gpu_mem_util_pct_avg": 38.07897545357524,
+          "gpu_mem_util_pct_max": 60.0,
+          "gpu_memory_used_mib_avg": 8058.577374599787,
+          "gpu_memory_used_mib_max": 8479.0,
+          "gpu_power_w_avg": 294.4803842049093,
+          "gpu_power_w_max": 415.93,
+          "gpu_util_pct_avg": 71.8495197438634,
+          "gpu_util_pct_max": 100.0,
+          "samples": 937
+        },
+        "gpu_trace_csv": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d8-rw4-s64-c192/benchmark/gpu_trace.csv",
+        "gpu_trace_stderr": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d8-rw4-s64-c192/benchmark/gpu_trace.stderr.log",
+        "infer_length": 1024,
+        "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+        "replay_count": 10,
+        "replicas": 1,
+        "timed_finished_at_epoch_s": 1783595510.337834,
+        "timed_repeated_image_count": 9000,
+        "timed_started_at_epoch_s": 1783595281.109351,
+        "timed_workload_image_count": 10000,
+        "total_concurrency": 192,
+        "unique_image_count": 1000,
+        "warmups_per_endpoint": 32
+      },
+      "cleanup_warnings": [],
+      "error": null,
+      "name": "adaptive-d8-rw4-s64-c192",
+      "provenance": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d8-rw4-s64-c192/provenance.json",
+      "status": "complete"
+    },
+    {
+      "benchmark_summary": {
+        "aggregate_images_per_second": 43.96385918746964,
+        "backend": "native_vllm_pooling_multi_endpoint",
+        "completed": 10000,
+        "concurrency_per_endpoint": 128,
+        "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "dispatcher": "work_conserving_client_side_queue",
+        "elapsed_s": 227.4595584832132,
+        "endpoints": [
+          {
+            "completed": 10000,
+            "endpoint": "http://127.0.0.1:8421/pooling",
+            "mean_e2el_ms": 2895.9392352070663,
+            "median_e2el_ms": 2839.493755251169
+          }
+        ],
+        "errors": [],
+        "failed": 0,
+        "gpu_trace": {
+          "gpu_mem_util_pct_avg": 38.772532188841204,
+          "gpu_mem_util_pct_max": 60.0,
+          "gpu_memory_used_mib_avg": 5215.351931330472,
+          "gpu_memory_used_mib_max": 5317.0,
+          "gpu_power_w_avg": 299.01988197424896,
+          "gpu_power_w_max": 415.93,
+          "gpu_util_pct_avg": 72.99248927038627,
+          "gpu_util_pct_max": 100.0,
+          "samples": 932
+        },
+        "gpu_trace_csv": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d8-rw4-s32-c128/benchmark/gpu_trace.csv",
+        "gpu_trace_stderr": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d8-rw4-s32-c128/benchmark/gpu_trace.stderr.log",
+        "infer_length": 1024,
+        "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+        "replay_count": 10,
+        "replicas": 1,
+        "timed_finished_at_epoch_s": 1783595777.2923539,
+        "timed_repeated_image_count": 9000,
+        "timed_started_at_epoch_s": 1783595549.8327942,
+        "timed_workload_image_count": 10000,
+        "total_concurrency": 128,
+        "unique_image_count": 1000,
+        "warmups_per_endpoint": 32
+      },
+      "cleanup_warnings": [],
+      "error": null,
+      "name": "adaptive-d8-rw4-s32-c128",
+      "provenance": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d8-rw4-s32-c128/provenance.json",
+      "status": "complete"
+    },
+    {
+      "benchmark_summary": {
+        "aggregate_images_per_second": 41.98462385043934,
+        "backend": "native_vllm_pooling_multi_endpoint",
+        "completed": 10000,
+        "concurrency_per_endpoint": 192,
+        "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "dispatcher": "work_conserving_client_side_queue",
+        "elapsed_s": 238.18243639916182,
+        "endpoints": [
+          {
+            "completed": 10000,
+            "endpoint": "http://127.0.0.1:8421/pooling",
+            "mean_e2el_ms": 4487.437108029798,
+            "median_e2el_ms": 4387.188941240311
+          }
+        ],
+        "errors": [],
+        "failed": 0,
+        "gpu_trace": {
+          "gpu_mem_util_pct_avg": 37.272820512820516,
+          "gpu_mem_util_pct_max": 60.0,
+          "gpu_memory_used_mib_avg": 5181.84923076923,
+          "gpu_memory_used_mib_max": 5357.0,
+          "gpu_power_w_avg": 287.4908923076923,
+          "gpu_power_w_max": 415.0,
+          "gpu_util_pct_avg": 70.26564102564103,
+          "gpu_util_pct_max": 100.0,
+          "samples": 975
+        },
+        "gpu_trace_csv": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d8-rw4-s32-c192/benchmark/gpu_trace.csv",
+        "gpu_trace_stderr": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d8-rw4-s32-c192/benchmark/gpu_trace.stderr.log",
+        "infer_length": 1024,
+        "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+        "replay_count": 10,
+        "replicas": 1,
+        "timed_finished_at_epoch_s": 1783596055.2867572,
+        "timed_repeated_image_count": 9000,
+        "timed_started_at_epoch_s": 1783595817.1043196,
+        "timed_workload_image_count": 10000,
+        "total_concurrency": 192,
+        "unique_image_count": 1000,
+        "warmups_per_endpoint": 32
+      },
+      "cleanup_warnings": [],
+      "error": null,
+      "name": "adaptive-d8-rw4-s32-c192",
+      "provenance": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d8-rw4-s32-c192/provenance.json",
+      "status": "complete"
+    },
+    {
+      "benchmark_summary": {
+        "aggregate_images_per_second": 43.98109923637792,
+        "backend": "native_vllm_pooling_multi_endpoint",
+        "completed": 10000,
+        "concurrency_per_endpoint": 192,
+        "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "dispatcher": "work_conserving_client_side_queue",
+        "elapsed_s": 227.37039713934064,
+        "endpoints": [
+          {
+            "completed": 10000,
+            "endpoint": "http://127.0.0.1:8421/pooling",
+            "mean_e2el_ms": 4280.044949690253,
+            "median_e2el_ms": 4189.1767382621765
+          }
+        ],
+        "errors": [],
+        "failed": 0,
+        "gpu_trace": {
+          "gpu_mem_util_pct_avg": 38.24626865671642,
+          "gpu_mem_util_pct_max": 64.0,
+          "gpu_memory_used_mib_avg": 8631.413646055436,
+          "gpu_memory_used_mib_max": 37141.0,
+          "gpu_power_w_avg": 293.98934968017056,
+          "gpu_power_w_max": 418.05,
+          "gpu_util_pct_avg": 71.70682302771856,
+          "gpu_util_pct_max": 100.0,
+          "samples": 938
+        },
+        "gpu_trace_csv": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d16-rw4-s64-c192/benchmark/gpu_trace.csv",
+        "gpu_trace_stderr": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d16-rw4-s64-c192/benchmark/gpu_trace.stderr.log",
+        "infer_length": 1024,
+        "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+        "replay_count": 10,
+        "replicas": 1,
+        "timed_finished_at_epoch_s": 1783596326.3157258,
+        "timed_repeated_image_count": 9000,
+        "timed_started_at_epoch_s": 1783596098.9453266,
+        "timed_workload_image_count": 10000,
+        "total_concurrency": 192,
+        "unique_image_count": 1000,
+        "warmups_per_endpoint": 32
+      },
+      "cleanup_warnings": [],
+      "error": null,
+      "name": "adaptive-d16-rw4-s64-c192",
+      "provenance": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d16-rw4-s64-c192/provenance.json",
+      "status": "complete"
+    },
+    {
+      "benchmark_summary": {
+        "aggregate_images_per_second": 43.40081516811937,
+        "backend": "native_vllm_pooling_multi_endpoint",
+        "completed": 10000,
+        "concurrency_per_endpoint": 128,
+        "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "dispatcher": "work_conserving_client_side_queue",
+        "elapsed_s": 230.4104188196361,
+        "endpoints": [
+          {
+            "completed": 10000,
+            "endpoint": "http://127.0.0.1:8421/pooling",
+            "mean_e2el_ms": 2888.3537077777087,
+            "median_e2el_ms": 2823.866566643119
+          }
+        ],
+        "errors": [],
+        "failed": 0,
+        "gpu_trace": {
+          "gpu_mem_util_pct_avg": 38.3788037775446,
+          "gpu_mem_util_pct_max": 63.0,
+          "gpu_memory_used_mib_avg": 7689.048268625394,
+          "gpu_memory_used_mib_max": 37121.0,
+          "gpu_power_w_avg": 291.7326757607555,
+          "gpu_power_w_max": 419.08,
+          "gpu_util_pct_avg": 71.78488982161595,
+          "gpu_util_pct_max": 100.0,
+          "samples": 953
+        },
+        "gpu_trace_csv": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d16-rw4-s32-c128/benchmark/gpu_trace.csv",
+        "gpu_trace_stderr": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d16-rw4-s32-c128/benchmark/gpu_trace.stderr.log",
+        "infer_length": 1024,
+        "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+        "replay_count": 10,
+        "replicas": 1,
+        "timed_finished_at_epoch_s": 1783596600.8437684,
+        "timed_repeated_image_count": 9000,
+        "timed_started_at_epoch_s": 1783596370.4333484,
+        "timed_workload_image_count": 10000,
+        "total_concurrency": 128,
+        "unique_image_count": 1000,
+        "warmups_per_endpoint": 32
+      },
+      "cleanup_warnings": [],
+      "error": null,
+      "name": "adaptive-d16-rw4-s32-c128",
+      "provenance": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d16-rw4-s32-c128/provenance.json",
+      "status": "complete"
+    },
+    {
+      "benchmark_summary": {
+        "aggregate_images_per_second": 43.34304505050858,
+        "backend": "native_vllm_pooling_multi_endpoint",
+        "completed": 10000,
+        "concurrency_per_endpoint": 192,
+        "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "dispatcher": "work_conserving_client_side_queue",
+        "elapsed_s": 230.7175231538713,
+        "endpoints": [
+          {
+            "completed": 10000,
+            "endpoint": "http://127.0.0.1:8421/pooling",
+            "mean_e2el_ms": 4324.252822359279,
+            "median_e2el_ms": 4236.444719135761
+          }
+        ],
+        "errors": [],
+        "failed": 0,
+        "gpu_trace": {
+          "gpu_mem_util_pct_avg": 38.099685204616996,
+          "gpu_mem_util_pct_max": 64.0,
+          "gpu_memory_used_mib_avg": 7573.522560335782,
+          "gpu_memory_used_mib_max": 37101.0,
+          "gpu_power_w_avg": 290.092203567681,
+          "gpu_power_w_max": 424.09,
+          "gpu_util_pct_avg": 71.28016789087093,
+          "gpu_util_pct_max": 100.0,
+          "samples": 953
+        },
+        "gpu_trace_csv": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d16-rw4-s32-c192/benchmark/gpu_trace.csv",
+        "gpu_trace_stderr": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d16-rw4-s32-c192/benchmark/gpu_trace.stderr.log",
+        "infer_length": 1024,
+        "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+        "replay_count": 10,
+        "replicas": 1,
+        "timed_finished_at_epoch_s": 1783596874.4373283,
+        "timed_repeated_image_count": 9000,
+        "timed_started_at_epoch_s": 1783596643.7198045,
+        "timed_workload_image_count": 10000,
+        "total_concurrency": 192,
+        "unique_image_count": 1000,
+        "warmups_per_endpoint": 32
+      },
+      "cleanup_warnings": [],
+      "error": null,
+      "name": "adaptive-d16-rw4-s32-c192",
+      "provenance": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_sweeps/clean-baseline-joint-10k/adaptive-d16-rw4-s32-c192/provenance.json",
+      "status": "complete"
+    }
+  ],
+  "schema_version": 1,
+  "started_at": "2026-07-09T10:58:13.342990+00:00",
+  "status": "complete",
+  "strict_preflight": {
+    "adaptive-d16-rw4-s32-c128": {
+      "dataset": {
+        "mtime_ns": 1783571267236863281,
+        "path": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+        "size_bytes": 856608912
+      },
+      "source": {
+        "model_extension": {
+          "mtime_ns": 1783568495150478609,
+          "path": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src/nemotron_ocr_cpp/_nemotron_ocr_cpp.cpython-312-x86_64-linux-gnu.so",
+          "sha256": "05ac1b8d35a36b82595257ec85f081adb922c088249da9a83eaf6bc2b963ec1e",
+          "size_bytes": 89624208
+        },
+        "repositories": {
+          "model": {
+            "clean": true,
+            "commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+            "expected_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+            "path": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+            "status_short": []
+          },
+          "vllm": {
+            "clean": true,
+            "commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+            "expected_commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+            "path": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline",
+            "status_short": []
+          }
+        },
+        "require_clean_repositories": true
+      }
+    },
+    "adaptive-d16-rw4-s32-c192": {
+      "dataset": {
+        "mtime_ns": 1783571267236863281,
+        "path": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+        "size_bytes": 856608912
+      },
+      "source": {
+        "model_extension": {
+          "mtime_ns": 1783568495150478609,
+          "path": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src/nemotron_ocr_cpp/_nemotron_ocr_cpp.cpython-312-x86_64-linux-gnu.so",
+          "sha256": "05ac1b8d35a36b82595257ec85f081adb922c088249da9a83eaf6bc2b963ec1e",
+          "size_bytes": 89624208
+        },
+        "repositories": {
+          "model": {
+            "clean": true,
+            "commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+            "expected_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+            "path": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+            "status_short": []
+          },
+          "vllm": {
+            "clean": true,
+            "commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+            "expected_commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+            "path": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline",
+            "status_short": []
+          }
+        },
+        "require_clean_repositories": true
+      }
+    },
+    "adaptive-d16-rw4-s64-c192": {
+      "dataset": {
+        "mtime_ns": 1783571267236863281,
+        "path": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+        "size_bytes": 856608912
+      },
+      "source": {
+        "model_extension": {
+          "mtime_ns": 1783568495150478609,
+          "path": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src/nemotron_ocr_cpp/_nemotron_ocr_cpp.cpython-312-x86_64-linux-gnu.so",
+          "sha256": "05ac1b8d35a36b82595257ec85f081adb922c088249da9a83eaf6bc2b963ec1e",
+          "size_bytes": 89624208
+        },
+        "repositories": {
+          "model": {
+            "clean": true,
+            "commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+            "expected_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+            "path": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+            "status_short": []
+          },
+          "vllm": {
+            "clean": true,
+            "commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+            "expected_commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+            "path": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline",
+            "status_short": []
+          }
+        },
+        "require_clean_repositories": true
+      }
+    },
+    "adaptive-d8-rw4-s32-c128": {
+      "dataset": {
+        "mtime_ns": 1783571267236863281,
+        "path": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+        "size_bytes": 856608912
+      },
+      "source": {
+        "model_extension": {
+          "mtime_ns": 1783568495150478609,
+          "path": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src/nemotron_ocr_cpp/_nemotron_ocr_cpp.cpython-312-x86_64-linux-gnu.so",
+          "sha256": "05ac1b8d35a36b82595257ec85f081adb922c088249da9a83eaf6bc2b963ec1e",
+          "size_bytes": 89624208
+        },
+        "repositories": {
+          "model": {
+            "clean": true,
+            "commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+            "expected_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+            "path": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+            "status_short": []
+          },
+          "vllm": {
+            "clean": true,
+            "commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+            "expected_commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+            "path": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline",
+            "status_short": []
+          }
+        },
+        "require_clean_repositories": true
+      }
+    },
+    "adaptive-d8-rw4-s32-c192": {
+      "dataset": {
+        "mtime_ns": 1783571267236863281,
+        "path": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+        "size_bytes": 856608912
+      },
+      "source": {
+        "model_extension": {
+          "mtime_ns": 1783568495150478609,
+          "path": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src/nemotron_ocr_cpp/_nemotron_ocr_cpp.cpython-312-x86_64-linux-gnu.so",
+          "sha256": "05ac1b8d35a36b82595257ec85f081adb922c088249da9a83eaf6bc2b963ec1e",
+          "size_bytes": 89624208
+        },
+        "repositories": {
+          "model": {
+            "clean": true,
+            "commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+            "expected_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+            "path": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+            "status_short": []
+          },
+          "vllm": {
+            "clean": true,
+            "commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+            "expected_commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+            "path": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline",
+            "status_short": []
+          }
+        },
+        "require_clean_repositories": true
+      }
+    },
+    "adaptive-d8-rw4-s64-c192": {
+      "dataset": {
+        "mtime_ns": 1783571267236863281,
+        "path": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+        "size_bytes": 856608912
+      },
+      "source": {
+        "model_extension": {
+          "mtime_ns": 1783568495150478609,
+          "path": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src/nemotron_ocr_cpp/_nemotron_ocr_cpp.cpython-312-x86_64-linux-gnu.so",
+          "sha256": "05ac1b8d35a36b82595257ec85f081adb922c088249da9a83eaf6bc2b963ec1e",
+          "size_bytes": 89624208
+        },
+        "repositories": {
+          "model": {
+            "clean": true,
+            "commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+            "expected_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+            "path": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+            "status_short": []
+          },
+          "vllm": {
+            "clean": true,
+            "commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+            "expected_commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+            "path": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline",
+            "status_short": []
+          }
+        },
+        "require_clean_repositories": true
+      }
+    },
+    "joint-d16-rw4-s96-c192": {
+      "dataset": {
+        "mtime_ns": 1783571267236863281,
+        "path": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+        "size_bytes": 856608912
+      },
+      "source": {
+        "model_extension": {
+          "mtime_ns": 1783568495150478609,
+          "path": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src/nemotron_ocr_cpp/_nemotron_ocr_cpp.cpython-312-x86_64-linux-gnu.so",
+          "sha256": "05ac1b8d35a36b82595257ec85f081adb922c088249da9a83eaf6bc2b963ec1e",
+          "size_bytes": 89624208
+        },
+        "repositories": {
+          "model": {
+            "clean": true,
+            "commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+            "expected_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+            "path": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+            "status_short": []
+          },
+          "vllm": {
+            "clean": true,
+            "commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+            "expected_commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+            "path": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline",
+            "status_short": []
+          }
+        },
+        "require_clean_repositories": true
+      }
+    },
+    "joint-d32-rw4-s64-c128": {
+      "dataset": {
+        "mtime_ns": 1783571267236863281,
+        "path": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+        "sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+        "size_bytes": 856608912
+      },
+      "source": {
+        "model_extension": {
+          "mtime_ns": 1783568495150478609,
+          "path": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src/nemotron_ocr_cpp/_nemotron_ocr_cpp.cpython-312-x86_64-linux-gnu.so",
+          "sha256": "05ac1b8d35a36b82595257ec85f081adb922c088249da9a83eaf6bc2b963ec1e",
+          "size_bytes": 89624208
+        },
+        "repositories": {
+          "model": {
+            "clean": true,
+            "commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+            "expected_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+            "path": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+            "status_short": []
+          },
+          "vllm": {
+            "clean": true,
+            "commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+            "expected_commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+            "path": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline",
+            "status_short": []
+          }
+        },
+        "require_clean_repositories": true
+      }
+    }
+  },
+  "target_gpu": {
+    "compute_mode": "Default",
+    "driver_version": "580.95.05",
+    "index": "5",
+    "memory_total_mib": "81920",
+    "name": "NVIDIA A100-SXM4-80GB",
+    "pci_bus_id": "00000000:90:00.0",
+    "requested_selector": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+    "uuid": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3"
+  }
+}

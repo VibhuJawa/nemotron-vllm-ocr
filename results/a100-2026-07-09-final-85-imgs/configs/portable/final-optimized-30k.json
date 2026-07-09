@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "defaults": {
+    "gpu": "GPU-REPLACE-WITH-UUID",
+    "python": "/path/to/venv/bin/python",
+    "vllm_cli": "/path/to/venv/bin/vllm",
+    "vllm_root": "/path/to/optimized-vllm",
+    "model": "/path/to/optimized-nemotron-ocr-v2",
+    "model_source": "/path/to/optimized-nemotron-ocr-v2/nemotron-ocr/src",
+    "dataset": "/path/to/bo767_1k_pooling_jpeg_q100_444.jsonl",
+    "benchmark_script": "../../scripts/benchmark_multi_endpoint_pooling.py",
+    "output_root": "../../reproduction-results/final-optimized-30k",
+    "mps_root": "/tmp/nemotron-ocr-final-85-imgs",
+    "expected_vllm_commit": "968f8c8849d9c10bb32f898107522d90f28fedce",
+    "expected_model_commit": "a92d75050f05c2638394e970bf8cec53c113d99b",
+    "expected_dataset_sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+    "expected_model_extension_sha256": "ce31febda95a1d1ec4967f34a7f45cbb802cd107ec203062563d1c5a97af56e0",
+    "require_clean_repositories": true,
+    "host": "127.0.0.1",
+    "base_port": 8401,
+    "ready_timeout_s": 900,
+    "health_poll_interval_s": 1,
+    "health_settle_s": 2,
+    "shutdown_timeout_s": 30,
+    "benchmark_timeout_s": 3600,
+    "cuda_home": "/usr/local/cuda",
+    "hf_home": "~/.cache/huggingface",
+    "hf_hub_cache": "~/.cache/huggingface/hub",
+    "torchinductor_cache_dir": "~/.cache/torchinductor-nemotron-ocr",
+    "triton_cache_dir": "~/.cache/triton-nemotron-ocr",
+    "omp_num_threads": 4,
+    "env": {
+      "NEMOTRON_OCR_FUSED_UPSAMPLE_CONCAT": "1",
+      "NEMOTRON_OCR_FUSED_ASPP_CONCAT": "1",
+      "NEMOTRON_OCR_BATCHED_RELATIONAL_GEOMETRY": "1",
+      "NEMOTRON_OCR_MIXED_GRID_SAMPLE": "1",
+      "NEMOTRON_OCR_FUSED_BATCH_NORM_RELU": "1",
+      "NEMOTRON_OCR_FUSED_RESIDUAL_NORM": "1",
+      "NEMOTRON_OCR_FUSED_ASPP_NORM_ADD": "1",
+      "NEMOTRON_OCR_FUSED_INPUT_NORMALIZATION": "1"
+    },
+    "server": {
+      "replicas": 8,
+      "max_num_seqs": 40,
+      "gpu_memory_utilization": 0.85,
+      "renderer_num_workers": 4,
+      "detector_max_batch_size": 16,
+      "recognizer_chunk_size": 128,
+      "relational_chunk_size": 128,
+      "infer_length": 1024,
+      "mps_enabled": true,
+      "mps_active_thread_percentage": 25,
+      "mm_processor_cache_gb": 0,
+      "enforce_eager": true,
+      "async_scheduling": false,
+      "disable_access_log": true,
+      "disable_log_stats": true,
+      "extra_args": []
+    },
+    "benchmark": {
+      "num_prompts": 30000,
+      "replay_count": 30,
+      "concurrency_per_endpoint": 64,
+      "warmups_per_endpoint": 32,
+      "trace_interval_ms": 250,
+      "extra_args": []
+    }
+  },
+  "sweep": [
+    {
+      "name": "r8-seq40-c64-mps25-rec128-exact-fusions"
+    }
+  ]
+}
