@@ -32,30 +32,37 @@ A100 80GB over 30,000 timed JPEG-byte requests at the default
 | Average / maximum GPU power | 393.17 W / 446.51 W |
 | Peak observed GPU memory | 67,555 MiB |
 
-The clean official NVIDIA/Hugging Face comparison is being measured on the
-same JPEG corpus. It remains explicitly pending until that run completes; no
-model-card value or different workload is substituted.
+The clean official NVIDIA/Hugging Face in-process baseline reaches
+**31.25 images/s** on the identical 30K JPEG workload, making optimized vLLM
+**2.24× faster**. This is a measured local result, not the model-card number.
 
-### Live HF in-process baseline snapshot
+### GPU-active comparison: official HF vs optimized vLLM
 
-The isolated 30K HF run is in progress. The following values are a labeled
-midpoint snapshot and will be replaced by the final artifact:
+![GPU-active aligned utilization, power, and memory](results/a100-2026-07-08/gpu_active_hf_vs_optimized.png)
 
-| Metric | HF live snapshot | Optimized vLLM final |
+[Vector chart](results/a100-2026-07-08/gpu_active_hf_vs_optimized.svg)
+
+Both systems processed the same 30,000 JPEG-byte requests on the same A100,
+with startup and warmup excluded. Lines are trailing 15-second rolling means,
+aligned independently at the first sustained GPU-active sample.
+
+| Metric | Official HF in-process | Optimized vLLM |
 | --- | ---: | ---: |
-| Throughput | 31.74 images/s on 512-image tuning run | **70.12 images/s** |
-| Average GPU utilization | 50.66% | **99.74%** |
+| Throughput | 31.25 images/s | **70.12 images/s (2.24×)** |
+| Average GPU utilization | 50.75% | **99.74%** |
 | Median GPU utilization | 46% | ~100% |
-| Samples at ≥90% utilization | 38.98% | nearly continuous |
-| Average GPU power | 234.99 W | 393.17 W |
+| Samples at ≥90% utilization | 39.11% | nearly continuous |
+| Average GPU power | 235.14 W | 393.17 W |
 | Maximum GPU power | 425.29 W | 446.51 W |
 | Peak GPU memory | 18.09 GiB | 65.97 GiB |
 
 HF reaches 100% utilization during compute bursts, but drops during sequential
 decode, CPU postprocessing, and transitions between batches. The optimized
-replica queues fill those gaps. Final throughput and the aligned utilization,
-power, and memory graph will replace this snapshot after all 30,000 HF requests
-complete.
+replica queues fill those gaps. The clean vLLM baseline will be added as the
+third line after its isolated rerun completes.
+
+[Raw HF result](results/a100-2026-07-08/hf-official-inprocess-b64-d32-30k.json)
+· [Raw HF GPU trace](results/a100-2026-07-08/hf-official-inprocess-b64-d32-30k-gpu-trace.csv)
 
 ### How the optimized path works
 
