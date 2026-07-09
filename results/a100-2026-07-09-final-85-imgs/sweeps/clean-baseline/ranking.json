@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "ranking_contract": {
+    "unique_images": 1000,
+    "timed_images_per_run": 10000,
+    "replay_count": 10,
+    "infer_length": 1024,
+    "input_representation": "JPEG bytes",
+    "sort": "images_per_second descending",
+    "note": "Screen and joint sweeps are independent single-run measurements, not statistical repetitions. Exact plans and provenance remain in the source sweep summaries."
+  },
+  "source_sweeps": [
+    {
+      "file": "screen-10k-sweep_summary.json",
+      "sha256": "393fa01a2b79e4befc26f34b8177980f541adbb4aaad91fe204a1db0a2399600"
+    },
+    {
+      "file": "joint-10k-sweep_summary.json",
+      "sha256": "65c53db405572f46c0c2dff33d18a0db63b511352198d2cdd5ba99ec957792cf"
+    }
+  ],
+  "validated_winner_30k": {
+    "name": "joint-d16-rw4-s64-c128",
+    "images_per_second": 45.163399144454075,
+    "completed": 30000,
+    "failed": 0,
+    "source_file": "validation-30k-sweep_summary.json",
+    "source_sha256": "3db65a97b20677ce6bed4e6b98614cdcad249832c3f63aa2b1f3021be86063a8"
+  },
+  "ranking": [
+    {"source":"screen-10k","name":"joint-d16-rw4-s64-c128","images_per_second":44.344969346910055,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":16,"renderer_num_workers":4,"max_num_seqs":64,"concurrency_per_endpoint":128},
+    {"source":"joint-10k","name":"joint-d16-rw4-s96-c192","images_per_second":44.22882332636805,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":16,"renderer_num_workers":4,"max_num_seqs":96,"concurrency_per_endpoint":192},
+    {"source":"joint-10k","name":"joint-d32-rw4-s64-c128","images_per_second":44.03658472630439,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":32,"renderer_num_workers":4,"max_num_seqs":64,"concurrency_per_endpoint":128},
+    {"source":"joint-10k","name":"adaptive-d16-rw4-s64-c192","images_per_second":43.98109923637792,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":16,"renderer_num_workers":4,"max_num_seqs":64,"concurrency_per_endpoint":192},
+    {"source":"joint-10k","name":"adaptive-d8-rw4-s32-c128","images_per_second":43.96385918746964,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":8,"renderer_num_workers":4,"max_num_seqs":32,"concurrency_per_endpoint":128},
+    {"source":"screen-10k","name":"renderer-rw4","images_per_second":43.62488003799177,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":8,"renderer_num_workers":4,"max_num_seqs":64,"concurrency_per_endpoint":128},
+    {"source":"joint-10k","name":"adaptive-d8-rw4-s64-c192","images_per_second":43.624596537836005,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":8,"renderer_num_workers":4,"max_num_seqs":64,"concurrency_per_endpoint":192},
+    {"source":"joint-10k","name":"adaptive-d16-rw4-s32-c128","images_per_second":43.40081516811937,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":16,"renderer_num_workers":4,"max_num_seqs":32,"concurrency_per_endpoint":128},
+    {"source":"screen-10k","name":"client-c192","images_per_second":43.38133136886911,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":8,"renderer_num_workers":1,"max_num_seqs":64,"concurrency_per_endpoint":192},
+    {"source":"joint-10k","name":"adaptive-d16-rw4-s32-c192","images_per_second":43.34304505050858,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":16,"renderer_num_workers":4,"max_num_seqs":32,"concurrency_per_endpoint":192},
+    {"source":"screen-10k","name":"scheduler-s32","images_per_second":42.895349190291824,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":8,"renderer_num_workers":1,"max_num_seqs":32,"concurrency_per_endpoint":128},
+    {"source":"screen-10k","name":"renderer-rw2","images_per_second":42.73740871519142,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":8,"renderer_num_workers":2,"max_num_seqs":64,"concurrency_per_endpoint":128},
+    {"source":"screen-10k","name":"control-d8-rw1-s64-c128","images_per_second":42.532615329504864,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":8,"renderer_num_workers":1,"max_num_seqs":64,"concurrency_per_endpoint":128},
+    {"source":"screen-10k","name":"scheduler-s128","images_per_second":42.38605276024854,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":8,"renderer_num_workers":1,"max_num_seqs":128,"concurrency_per_endpoint":128},
+    {"source":"screen-10k","name":"client-c96","images_per_second":42.35123842257876,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":8,"renderer_num_workers":1,"max_num_seqs":64,"concurrency_per_endpoint":96},
+    {"source":"screen-10k","name":"scheduler-s96","images_per_second":42.35105425674292,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":8,"renderer_num_workers":1,"max_num_seqs":96,"concurrency_per_endpoint":128},
+    {"source":"joint-10k","name":"adaptive-d8-rw4-s32-c192","images_per_second":41.98462385043934,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":8,"renderer_num_workers":4,"max_num_seqs":32,"concurrency_per_endpoint":192},
+    {"source":"screen-10k","name":"client-c64","images_per_second":41.08524720251926,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":8,"renderer_num_workers":1,"max_num_seqs":64,"concurrency_per_endpoint":64},
+    {"source":"screen-10k","name":"detector-d12","images_per_second":40.55844112787576,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":12,"renderer_num_workers":1,"max_num_seqs":64,"concurrency_per_endpoint":128},
+    {"source":"screen-10k","name":"detector-d16","images_per_second":38.632072914005455,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":16,"renderer_num_workers":1,"max_num_seqs":64,"concurrency_per_endpoint":128},
+    {"source":"screen-10k","name":"detector-d24","images_per_second":37.82016966716113,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":24,"renderer_num_workers":1,"max_num_seqs":64,"concurrency_per_endpoint":128},
+    {"source":"screen-10k","name":"detector-d32","images_per_second":34.387020934896356,"completed":10000,"failed":0,"replicas":1,"detector_max_batch_size":32,"renderer_num_workers":1,"max_num_seqs":64,"concurrency_per_endpoint":128}
+  ]
+}

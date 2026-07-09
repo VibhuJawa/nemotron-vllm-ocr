@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "defaults": {
+    "gpu": "GPU-242d3c90-db9c-a49e-e2b9-ddb0b36f1ba3",
+    "python": "/raid/vjawa/tmp/ocr_optimization/venv/bin/python",
+    "vllm_cli": "/raid/vjawa/tmp/ocr_optimization/venv/bin/vllm",
+    "vllm_root": "/raid/vjawa/tmp/ocr_optimization/vllm-baseline",
+    "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline",
+    "model_source": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2-baseline/nemotron-ocr/src",
+    "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+    "benchmark_script": "/home/nfs/vjawa/ocr_optimization/scripts/benchmark_multi_endpoint_pooling.py",
+    "output_root": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_clean_baseline_validation",
+    "mps_root": "/tmp/nemotron-ocr-clean-baseline-validation",
+    "expected_vllm_commit": "62c2813a5af52bb2d60b1a2ee47bbfcf91280b9f",
+    "expected_model_commit": "0e83e83f17943524b90afa6c0fd82ac2bc1a40ca",
+    "expected_dataset_sha256": "139c96ef75a85da440350722a95d9eb3bd21dd4155d43f7281253f63c07eaa16",
+    "expected_model_extension_sha256": "05ac1b8d35a36b82595257ec85f081adb922c088249da9a83eaf6bc2b963ec1e",
+    "require_clean_repositories": true,
+    "host": "127.0.0.1",
+    "base_port": 8431,
+    "ready_timeout_s": 900,
+    "health_poll_interval_s": 1,
+    "health_settle_s": 2,
+    "shutdown_timeout_s": 30,
+    "benchmark_timeout_s": 2400,
+    "cuda_home": "/usr/local/cuda",
+    "hf_home": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface",
+    "hf_hub_cache": "/raid/vjawa/tmp/ocr_optimization/cache/huggingface/hub",
+    "torchinductor_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/torchinductor-baseline",
+    "triton_cache_dir": "/raid/vjawa/tmp/ocr_optimization/cache/triton-baseline",
+    "omp_num_threads": 4,
+    "env": {},
+    "server": {
+      "replicas": 1,
+      "max_num_seqs": 64,
+      "gpu_memory_utilization": 0.85,
+      "renderer_num_workers": 1,
+      "detector_max_batch_size": 8,
+      "recognizer_chunk_size": 128,
+      "relational_chunk_size": 128,
+      "infer_length": 1024,
+      "mps_enabled": false,
+      "mps_active_thread_percentage": 100,
+      "mm_processor_cache_gb": 0,
+      "enforce_eager": true,
+      "async_scheduling": false,
+      "disable_access_log": true,
+      "disable_log_stats": true,
+      "extra_args": []
+    },
+    "benchmark": {
+      "num_prompts": 30000,
+      "replay_count": 30,
+      "concurrency_per_endpoint": 128,
+      "warmups_per_endpoint": 32,
+      "trace_interval_ms": 250,
+      "extra_args": []
+    }
+  },
+  "sweep": [
+    {
+      "name": "control-d8-rw1-s64-c128"
+    },
+    {
+      "name": "detector-d12",
+      "server": {
+        "detector_max_batch_size": 12
+      }
+    },
+    {
+      "name": "detector-d16",
+      "server": {
+        "detector_max_batch_size": 16
+      }
+    },
+    {
+      "name": "detector-d24",
+      "server": {
+        "detector_max_batch_size": 24
+      }
+    },
+    {
+      "name": "detector-d32",
+      "server": {
+        "detector_max_batch_size": 32
+      }
+    },
+    {
+      "name": "renderer-rw2",
+      "server": {
+        "renderer_num_workers": 2
+      }
+    },
+    {
+      "name": "renderer-rw4",
+      "server": {
+        "renderer_num_workers": 4
+      }
+    },
+    {
+      "name": "scheduler-s32",
+      "server": {
+        "max_num_seqs": 32
+      }
+    },
+    {
+      "name": "scheduler-s96",
+      "server": {
+        "max_num_seqs": 96
+      }
+    },
+    {
+      "name": "scheduler-s128",
+      "server": {
+        "max_num_seqs": 128
+      }
+    },
+    {
+      "name": "client-c64",
+      "benchmark": {
+        "concurrency_per_endpoint": 64
+      }
+    },
+    {
+      "name": "client-c96",
+      "benchmark": {
+        "concurrency_per_endpoint": 96
+      }
+    },
+    {
+      "name": "client-c192",
+      "benchmark": {
+        "concurrency_per_endpoint": 192
+      }
+    },
+    {
+      "name": "joint-d16-rw4-s64-c128",
+      "server": {
+        "detector_max_batch_size": 16,
+        "renderer_num_workers": 4
+      }
+    },
+    {
+      "name": "joint-d32-rw4-s64-c128",
+      "server": {
+        "detector_max_batch_size": 32,
+        "renderer_num_workers": 4
+      }
+    },
+    {
+      "name": "joint-d16-rw4-s96-c192",
+      "server": {
+        "detector_max_batch_size": 16,
+        "renderer_num_workers": 4,
+        "max_num_seqs": 96
+      },
+      "benchmark": {
+        "concurrency_per_endpoint": 192
+      }
+    }
+  ]
+}

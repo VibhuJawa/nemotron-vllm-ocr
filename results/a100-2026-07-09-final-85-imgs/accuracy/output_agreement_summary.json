@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "verdict": {
+    "classification": "no_output_regression_detected",
+    "no_output_regression_detected": true,
+    "strict_pairwise_passed": false,
+    "scope": "Output agreement against repeated controls; this is not a labeled-ground-truth accuracy measurement."
+  },
+  "protocol": {
+    "pages_per_capture": 1000,
+    "captures": [
+      "control_a",
+      "control_b",
+      "full_exact_a",
+      "full_exact_b"
+    ],
+    "input": "JPEG bytes from the same ordered 1,000-page corpus",
+    "alignment_method": "global_sequence_alignment_text_geometry_v1",
+    "coordinate_atol": 0.001,
+    "confidence_atol": 0.002
+  },
+  "primary_control_a_vs_full_exact_a": {
+    "paired_images": 1000,
+    "image_count_match": true,
+    "image_sets_match": true,
+    "reference_regions": 26259,
+    "candidate_regions": 26258,
+    "region_count_mismatch_pages": 1,
+    "aligned_region_pairs": 26258,
+    "exact_text_pairs": 26241,
+    "matched_text_exact_rate": 0.9993525782618631,
+    "exact_page_text_sequences": 984,
+    "space_joined_text_exact_pages": 985,
+    "replacements": 17,
+    "deleted_reference_regions": 1,
+    "inserted_candidate_regions": 0,
+    "region_sequence_edit_count": 18,
+    "region_sequence_edit_rate": 0.0006854792642522564,
+    "exact_text_coordinate_max_abs_error": 1.5412918241697326e-7,
+    "exact_text_coordinate_above_atol": 0,
+    "exact_text_confidence_max_abs_error": 0.0013788644188800214,
+    "exact_text_confidence_above_atol": 0
+  },
+  "control_a_vs_control_b": {
+    "paired_images": 1000,
+    "region_count_mismatch_pages": 0,
+    "exact_page_text_sequences": 982,
+    "space_joined_text_exact_pages": 982,
+    "region_sequence_edit_count": 19,
+    "region_sequence_edit_rate": 0.0007235614455996039,
+    "matched_text_exact_rate": 0.9992764385544004
+  },
+  "full_exact_a_vs_full_exact_b": {
+    "paired_images": 1000,
+    "region_count_mismatch_pages": 1,
+    "exact_page_text_sequences": 992,
+    "space_joined_text_exact_pages": 993,
+    "region_sequence_edit_count": 10,
+    "region_sequence_edit_rate": 0.00038082181347347575,
+    "matched_text_exact_rate": 0.999657247315104
+  },
+  "control_b_vs_full_exact_b": {
+    "paired_images": 1000,
+    "region_count_mismatch_pages": 0,
+    "exact_page_text_sequences": 991,
+    "space_joined_text_exact_pages": 991,
+    "region_sequence_edit_count": 10,
+    "region_sequence_edit_rate": 0.00038082181347347575,
+    "matched_text_exact_rate": 0.9996191781865266
+  },
+  "control_repeat_envelope": {
+    "text_divergence_within_control_repeat_envelope": true,
+    "numeric_drift_within_tolerance": true,
+    "segmentation_change_pages": 1,
+    "segmentation_changes_preserve_space_joined_text": true,
+    "candidate_repeatability_within_10_percent_of_control_repeat": true,
+    "candidate_to_control_region_sequence_edit_rate_ratio": 0.7368421052631579,
+    "candidate_repeat_to_control_repeat_region_sequence_edit_rate_ratio": 0.5263157894736842
+  },
+  "source_code_context": {
+    "model_base_commit": "bb392d494b616d3a1692c3dbe59f63c1d2a8a7fa",
+    "model_repo_was_dirty": true,
+    "control_source_snapshot_tracked_diff_sha256": "4e67a1185c254308e509e9c294052ab1b6e151635b9a3ed2bd22d18e06e5fc31",
+    "note": "Prediction and envelope hashes below are the authoritative identities for this compact extraction."
+  },
+  "source_artifacts": {
+    "full_envelope": {
+      "original_path": "/raid/vjawa/tmp/ocr_optimization/results/accuracy_kernel2_jpeg_1k/full_exact_a/aligned_accuracy_envelope.json",
+      "sha256": "354fd6fe0eee3e37bce3766b5049605af3ca1db785140fce70f606d70324b15d"
+    },
+    "control_a_predictions": {
+      "original_path": "/raid/vjawa/tmp/ocr_optimization/results/accuracy_kernel2_jpeg_1k/controlled/control_a_predictions.json",
+      "sha256": "e36955e7b38587d8c93d67fd74962967bd2aefb465e9f30351920e5244a30c56"
+    },
+    "control_b_predictions": {
+      "original_path": "/raid/vjawa/tmp/ocr_optimization/results/accuracy_kernel2_jpeg_1k/controlled/control_b_predictions.json",
+      "sha256": "c99c987f84f5b5314d4820df45a625ff11bc35b639720e046358e6f274157a2c"
+    },
+    "full_exact_a_predictions": {
+      "original_path": "/raid/vjawa/tmp/ocr_optimization/results/accuracy_kernel2_jpeg_1k/full_exact_a/predictions.json",
+      "sha256": "8ff30b1c458c2d0c53712c7d0729d981a095b9b5a7d63ca36d36cb7cefc402d4"
+    },
+    "full_exact_b_predictions": {
+      "original_path": "/raid/vjawa/tmp/ocr_optimization/results/accuracy_kernel2_jpeg_1k/full_exact_b/predictions.json",
+      "sha256": "1351c29ba3800f5a6982778651dcbaadf0791a668150ec1747befdfaca3b1980"
+    },
+    "control_source_snapshot": {
+      "original_path": "/raid/vjawa/tmp/ocr_optimization/results/accuracy_kernel2_jpeg_1k/controlled/source_snapshot.json",
+      "sha256": "58e85e61b47d16cac3a4227e70d37109a0a5279cdd584f158d4057680101e4d5"
+    },
+    "full_exact_a_metrics": {
+      "original_path": "/raid/vjawa/tmp/ocr_optimization/results/accuracy_kernel2_jpeg_1k/full_exact_a/metrics.json",
+      "sha256": "89464cdefb764e5c360ff4a6a8d0bbed2187e0021637805a1894272a10a1aacb"
+    },
+    "full_exact_b_metrics": {
+      "original_path": "/raid/vjawa/tmp/ocr_optimization/results/accuracy_kernel2_jpeg_1k/full_exact_b/metrics.json",
+      "sha256": "8d2608561e1af106fea0cb01ac1b33984f3d37cde7197eb7c256002cc4bc5225"
+    }
+  }
+}
