@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "reference": "/raid/vjawa/tmp/ocr_optimization/results/equivalence_baseline_repeat_1024_32_predictions.json",
+  "candidate": "/raid/vjawa/tmp/ocr_optimization/results/equivalence_optimized_triton_1024_32_predictions.json",
+  "reference_images": 32,
+  "candidate_images": 32,
+  "region_count_mismatches": 0,
+  "paired_regions": 764,
+  "text_mismatches": 0,
+  "text_exact_rate": 1.0,
+  "max_coordinate_abs_error": 2.0498793029677387e-07,
+  "coordinate_atol": 0.001,
+  "max_confidence_abs_error": 0.0004151769855736953,
+  "confidence_atol": 0.001
+}

@@ -1,0 +1,81 @@
+{
+  "backend": "native_vllm_pooling_multi_endpoint",
+  "dispatcher": "work_conserving_client_side_queue",
+  "replicas": 8,
+  "unique_image_count": 1000,
+  "timed_workload_image_count": 10000,
+  "completed": 10000,
+  "failed": 0,
+  "elapsed_s": 144.7312108911574,
+  "aggregate_images_per_second": 69.09359728580125,
+  "concurrency_per_endpoint": 128,
+  "total_concurrency": 1024,
+  "warmups_per_endpoint": 16,
+  "timed_started_at_epoch_s": 1783574316.4170935,
+  "timed_finished_at_epoch_s": 1783574461.1483076,
+  "errors": [],
+  "endpoints": [
+    {
+      "endpoint": "http://127.0.0.1:8071/pooling",
+      "completed": 1231,
+      "mean_e2el_ms": 14257.316753561787,
+      "median_e2el_ms": 14311.028756201267
+    },
+    {
+      "endpoint": "http://127.0.0.1:8072/pooling",
+      "completed": 1228,
+      "mean_e2el_ms": 14755.513799000615,
+      "median_e2el_ms": 14355.130795389414
+    },
+    {
+      "endpoint": "http://127.0.0.1:8073/pooling",
+      "completed": 1295,
+      "mean_e2el_ms": 13901.249249293884,
+      "median_e2el_ms": 13803.790025413036
+    },
+    {
+      "endpoint": "http://127.0.0.1:8074/pooling",
+      "completed": 1232,
+      "mean_e2el_ms": 14722.483062279083,
+      "median_e2el_ms": 14337.279677391052
+    },
+    {
+      "endpoint": "http://127.0.0.1:8075/pooling",
+      "completed": 1284,
+      "mean_e2el_ms": 13984.14853804765,
+      "median_e2el_ms": 14132.808897644281
+    },
+    {
+      "endpoint": "http://127.0.0.1:8076/pooling",
+      "completed": 1296,
+      "mean_e2el_ms": 13998.417955236855,
+      "median_e2el_ms": 14157.180083915591
+    },
+    {
+      "endpoint": "http://127.0.0.1:8077/pooling",
+      "completed": 1168,
+      "mean_e2el_ms": 14871.095149108043,
+      "median_e2el_ms": 14219.505053013563
+    },
+    {
+      "endpoint": "http://127.0.0.1:8078/pooling",
+      "completed": 1266,
+      "mean_e2el_ms": 13986.007884024139,
+      "median_e2el_ms": 13972.971480339766
+    }
+  ],
+  "dataset": "/raid/vjawa/tmp/ocr_optimization/data/bo767_1k_pooling_jpeg_q100_444.jsonl",
+  "model": "/raid/vjawa/tmp/ocr_optimization/nemotron-ocr-v2",
+  "gpu_trace_csv": "/raid/vjawa/tmp/ocr_optimization/results/native_vllm_replicas/r8_s64_rw4_c128_det16_mps25_noaccesslog_jpeg_q100_dynamic10k/gpu_trace.csv",
+  "gpu_trace": {
+    "samples": 588,
+    "gpu_util_pct_avg": 99.36734693877551,
+    "gpu_util_pct_max": 100.0,
+    "gpu_mem_util_pct_avg": 66.2704081632653,
+    "gpu_mem_util_pct_max": 77.0,
+    "gpu_memory_used_mib_avg": 68421.9693877551,
+    "gpu_memory_used_mib_max": 68543.0,
+    "gpu_power_w_avg": 388.7236904761905,
+    "gpu_power_w_max": 444.38
+  }
+}
